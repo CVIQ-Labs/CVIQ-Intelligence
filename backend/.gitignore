@@ -1,2 +1,15 @@
+# Environment
 .env
 .env.example
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Virtual environment
+.venv/
+
+# ChromaDB data — regenerated on startup
+data/
