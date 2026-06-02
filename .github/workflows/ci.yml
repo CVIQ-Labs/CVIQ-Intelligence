@@ -24,3 +24,25 @@ jobs:
         run: pytest backend/tests/ -v
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Run Bandit security scan
+        run: |
+          pip install bandit
+          bandit -r backend/app -ll
+
+      - name: Run pip-audit vulnerability scan
+        run: |
+          pip install pip-audit
+          pip-audit -r backend/requirements.txt
+
+      - name: Build Docker image
+        run: docker build -t cv-reviewer:${{ github.sha }} ./backend
+
+      - name: Run Trivy image scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: cv-reviewer:${{ github.sha }}
+          format: table
+          exit-code: 1
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
