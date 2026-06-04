@@ -1,6 +1,22 @@
 # Role Matching Criteria for Tech Roles
-
 Use this document to assess how well a CV matches a specific tech role. For each role, the criteria below define what a strong candidate looks like.
+---
+## Graduate Software Engineer
+
+**Core technical skills required:**
+Programming fundamentals, data structures and algorithms, object-oriented programming, Git, debugging, problem solving
+
+**Commonly required:**
+Python, Java, JavaScript, C++, SQL, Linux, testing fundamentals
+
+**Soft skills:**
+Learning agility, teamwork, communication, adaptability
+
+**Red flags:**
+No projects, no GitHub activity, only coursework listed, no evidence of coding outside university
+
+**Strong signals:**
+Internships, hackathons, open-source contributions, deployed applications, technical leadership roles
 
 ---
 
@@ -13,13 +29,13 @@ Python or Java or Go, REST API design, SQL (PostgreSQL or MySQL), Git, Docker, t
 FastAPI or Django or Spring Boot, microservices, CI/CD, cloud (AWS or Azure or GCP), message queues (Kafka, RabbitMQ), Redis
 
 **Soft skills:**
-Problem-solving, code review participation, clear technical communication, ability to work in Agile/Scrum
+Problem-solving, code review participation, technical communication, Agile/Scrum experience
 
-**Red flags in CV:**
-No mention of testing, no version control (Git), purely front-end experience presented as full-stack, no evidence of working in a team codebase
+**Red flags:**
+No mention of testing, no version control, purely frontend experience presented as backend
 
 **Strong signals:**
-Open source contributions, side projects deployed to production, mentions of system design decisions, quantified performance improvements
+Production deployments, scalability improvements, API ownership, performance optimisation
 
 ---
 
@@ -29,92 +45,393 @@ Open source contributions, side projects deployed to production, mentions of sys
 JavaScript or TypeScript, React or Vue or Angular, HTML5, CSS3, responsive design, REST API consumption, Git
 
 **Commonly required:**
-Next.js, Tailwind CSS, component libraries (shadcn/ui, Material UI), accessibility (WCAG), testing (Jest, Cypress), state management (Redux, Zustand)
+Next.js, Tailwind CSS, Material UI, accessibility (WCAG), Jest, Cypress, Redux, Zustand
 
 **Soft skills:**
-Attention to detail, collaboration with designers (Figma literacy), cross-browser awareness
+Attention to detail, UX awareness, collaboration with designers
 
 **Red flags:**
-No mention of TypeScript in modern roles, no testing experience, only static HTML/CSS with no framework
+No TypeScript, no testing experience, only static websites
+
+**Strong signals:**
+Complex web applications, component libraries, accessibility improvements
 
 ---
 
-## Cloud Engineer / DevOps Engineer
+## Full Stack Engineer
 
 **Core technical skills required:**
-AWS or Azure or GCP (at least one), Linux, Bash or Python scripting, Docker, Kubernetes, CI/CD (GitHub Actions or Jenkins or CircleCI), Infrastructure as Code (Terraform or Pulumi)
+JavaScript/TypeScript, React, Node.js, SQL, REST APIs, Git
 
 **Commonly required:**
-Monitoring (Prometheus, Grafana, Datadog), logging (ELK stack), security (IAM, secrets management), networking (VPCs, load balancers, DNS)
+Next.js, FastAPI, Docker, PostgreSQL, AWS
 
-**Certifications that strengthen a CV:**
-AWS Solutions Architect, AWS DevOps Engineer, Azure Administrator (AZ-104), CKA (Certified Kubernetes Administrator), HashiCorp Terraform Associate
+**Soft skills:**
+Ownership mentality, adaptability, communication
 
 **Red flags:**
-Mentioning cloud tools without evidence of hands-on use, no mention of Infrastructure as Code, no CI/CD experience
+Only frontend or backend experience despite claiming full-stack
+
+**Strong signals:**
+End-to-end project ownership, deployed applications, full CI/CD pipelines
+
+---
+
+## Python Developer
+
+**Core technical skills required:**
+Python, OOP, SQL, API development, Git
+
+**Commonly required:**
+FastAPI, Django, Flask, Docker, pytest
+
+**Soft skills:**
+Analytical thinking, debugging
+
+**Red flags:**
+Only scripting experience, no software engineering practices
+
+**Strong signals:**
+Production APIs, automation systems, backend services
+
+---
+
+## Cloud Engineer
+
+**Core technical skills required:**
+AWS or Azure or GCP, Linux, Docker, networking, Infrastructure as Code
+
+**Commonly required:**
+Terraform, Kubernetes, CI/CD, monitoring, IAM
+
+**Certifications that strengthen a CV:**
+AWS Solutions Architect, AWS Developer, Azure Administrator, GCP Associate Engineer
+
+**Red flags:**
+Only certifications, no practical cloud projects
+
+**Strong signals:**
+Cloud migrations, infrastructure automation, multi-region deployments
+
+---
+
+## DevOps Engineer
+
+**Core technical skills required:**
+Linux, Docker, Kubernetes, CI/CD, Git, scripting
+
+**Commonly required:**
+Terraform, Prometheus, Grafana, Jenkins, GitHub Actions
+
+**Soft skills:**
+Automation mindset, incident response
+
+**Red flags:**
+No infrastructure automation experience
+
+**Strong signals:**
+Reduced deployment times, automated environments, platform ownership
+
+---
+
+## Site Reliability Engineer (SRE)
+
+**Core technical skills required:**
+Linux, cloud platforms, monitoring, observability, automation
+
+**Commonly required:**
+Prometheus, Grafana, Kubernetes, ELK Stack
+
+**Soft skills:**
+Incident management, troubleshooting under pressure
+
+**Red flags:**
+No production environment experience
+
+**Strong signals:**
+SLA/SLO management, uptime improvements, incident response leadership
+
+---
+
+## Data Analyst
+
+**Core technical skills required:**
+SQL, Excel, Power BI, Tableau
+
+**Commonly required:**
+Python, R, dashboard development
+
+**Soft skills:**
+Business communication, stakeholder engagement
+
+**Red flags:**
+No SQL experience
+
+**Strong signals:**
+Business impact metrics, executive dashboards, automated reporting
 
 ---
 
 ## Data Engineer
 
 **Core technical skills required:**
-Python, SQL, ETL/ELT pipelines, Apache Airflow or Prefect, cloud data warehouses (BigQuery, Snowflake, Redshift), Spark or Pandas
+Python, SQL, ETL/ELT pipelines, Apache Airflow, cloud data platforms
 
 **Commonly required:**
-dbt, Kafka, data modelling (star schema, dimensional modelling), orchestration, data quality tools
+Spark, Snowflake, Databricks, Kafka, dbt
 
 **Soft skills:**
-Understanding of business data needs, communication with analysts and stakeholders, documentation of data contracts
+Documentation, stakeholder communication
 
 **Red flags:**
-No mention of pipeline orchestration, treating SQL as a secondary skill, no experience with data at scale (10GB+)
-
----
-
-## Machine Learning / AI Engineer
-
-**Core technical skills required:**
-Python, scikit-learn or PyTorch or TensorFlow, SQL, model training and evaluation, version control (Git), data preprocessing
-
-**Commonly required:**
-LLMs and prompt engineering, RAG systems, vector databases (Pinecone, ChromaDB, Weaviate), MLflow or experiment tracking, cloud ML services (SageMaker, Vertex AI), API deployment (FastAPI)
+No orchestration tools, limited SQL expertise
 
 **Strong signals:**
-Deployed models to production (not just Jupyter notebooks), quantified model performance metrics, papers or open source projects in ML
-
-**Red flags:**
-Only academic ML with no deployment experience, no mention of data cleaning/preprocessing (unrealistic), Jupyter notebooks cited as production work
+Large-scale pipelines, data warehouse architecture, streaming systems
 
 ---
 
-## Cybersecurity Analyst / Penetration Tester
+## Data Scientist
 
 **Core technical skills required:**
-Networking fundamentals (TCP/IP, DNS, HTTP), Linux, scripting (Python or Bash), vulnerability scanning (Nessus, Burp Suite), OWASP Top 10
+Python, SQL, statistics, machine learning, data visualisation
 
 **Commonly required:**
-SIEM (Splunk, Sentinel), penetration testing methodology (PTES, OWASP), incident response, threat modelling, IAM, zero trust architecture
+Pandas, NumPy, Scikit-learn, Tableau
 
-**Certifications that strengthen a CV:**
-CompTIA Security+, CEH, OSCP, CISSP, SC-200 (Microsoft Security), AWS Security Specialty
+**Soft skills:**
+Storytelling with data, experimentation mindset
 
 **Red flags:**
-Listing certifications without any hands-on experience, no mention of specific tools, conflating IT support with security
+Only dashboard work, weak statistical foundation
+
+**Strong signals:**
+Business impact from predictive models
+
+---
+
+## Machine Learning Engineer
+
+**Core technical skills required:**
+Python, TensorFlow or PyTorch, SQL, model deployment, MLOps fundamentals
+
+**Commonly required:**
+Docker, Kubernetes, MLflow, cloud ML platforms
+
+**Soft skills:**
+Research skills, experimentation
+
+**Red flags:**
+Only notebook-based projects
+
+**Strong signals:**
+Production ML systems, model monitoring, measurable model performance
+
+---
+
+## AI Engineer
+
+**Core technical skills required:**
+Python, LLMs, prompt engineering, API integration, vector databases
+
+**Commonly required:**
+RAG pipelines, LangChain, Pinecone, Weaviate, FastAPI
+
+**Soft skills:**
+Rapid prototyping, communication
+
+**Red flags:**
+Only prompt engineering without engineering experience
+
+**Strong signals:**
+Production AI systems, deployed chatbots, agent architectures
+
+---
+
+## MLOps Engineer
+
+**Core technical skills required:**
+Python, Docker, Kubernetes, CI/CD, model deployment
+
+**Commonly required:**
+MLflow, Kubeflow, SageMaker, Vertex AI
+
+**Soft skills:**
+Automation mindset
+
+**Red flags:**
+No experience deploying ML workloads
+
+**Strong signals:**
+End-to-end ML lifecycle ownership
+
+---
+
+## Cybersecurity Analyst
+
+**Core technical skills required:**
+Networking, Linux, SIEM, incident response, security monitoring
+
+**Commonly required:**
+Splunk, Sentinel, Wireshark, threat intelligence
+
+**Certifications that strengthen a CV:**
+Security+, SC-200, CySA+
+
+**Red flags:**
+Security certifications without hands-on experience
+
+**Strong signals:**
+Threat hunting, incident investigations, SOC experience
+
+---
+
+## SOC Analyst
+
+**Core technical skills required:**
+SIEM, log analysis, incident triage, networking fundamentals
+
+**Commonly required:**
+Splunk, Sentinel, QRadar
+
+**Soft skills:**
+Attention to detail
+
+**Red flags:**
+No evidence of investigation experience
+
+**Strong signals:**
+Threat detection improvements, incident response metrics
+
+---
+
+## Penetration Tester
+
+**Core technical skills required:**
+Linux, networking, web security, OWASP Top 10
+
+**Commonly required:**
+Burp Suite, Metasploit, Nmap
+
+**Certifications that strengthen a CV:**
+OSCP, PNPT, CEH
+
+**Red flags:**
+No practical penetration testing examples
+
+**Strong signals:**
+Bug bounty findings, client assessments, security reports
+
+---
+
+## Security Engineer
+
+**Core technical skills required:**
+IAM, cloud security, network security, automation
+
+**Commonly required:**
+AWS Security, Azure Security, SIEM platforms
+
+**Soft skills:**
+Risk management
+
+**Red flags:**
+Only compliance-focused experience
+
+**Strong signals:**
+Security architecture design, security automation
+
+---
+
+## QA Automation Engineer
+
+**Core technical skills required:**
+Testing fundamentals, automation frameworks, Git
+
+**Commonly required:**
+Selenium, Cypress, Playwright
+
+**Soft skills:**
+Attention to detail
+
+**Red flags:**
+Only manual testing
+
+**Strong signals:**
+Automated testing pipelines, coverage improvements
 
 ---
 
 ## Product Manager (Technical)
 
 **Core skills required:**
-Product roadmap ownership, user story writing, stakeholder management, Agile/Scrum, Jira or Linear, data-informed decision making
+Roadmap ownership, user stories, Agile, stakeholder management
+
+**Commonly required:**
+Jira, analytics platforms, experimentation frameworks
 
 **Strong signals:**
-Evidence of shipping features end-to-end, experience with both technical teams and non-technical stakeholders, metrics-driven (DAU, conversion, NPS)
+Feature launches, KPI ownership, cross-functional leadership
 
 **Red flags:**
-No evidence of cross-functional collaboration, no metrics cited for product outcomes, purely project management without product ownership
+No measurable product outcomes
 
 ---
+
+## Biomedical Software Engineer
+
+**Core technical skills required:**
+Python, MATLAB, signal processing, data analysis
+
+**Commonly required:**
+Machine learning, biomechanics data, sensor data processing
+
+**Soft skills:**
+Scientific communication, interdisciplinary collaboration
+
+**Red flags:**
+No experience with physiological or biomedical datasets
+
+**Strong signals:**
+Motion capture projects, wearable sensor analytics, medical software
+
+---
+
+## Bioinformatics Engineer
+
+**Core technical skills required:**
+Python, R, genomics analysis, Linux
+
+**Commonly required:**
+Bioconductor, NGS pipelines, cloud computing
+
+**Soft skills:**
+Research collaboration
+
+**Red flags:**
+No biological data experience
+
+**Strong signals:**
+Published research, genomic pipelines, large-scale biological datasets
+
+---
+
+## Quantitative Developer
+
+**Core technical skills required:**
+Python, C++, mathematics, statistics
+
+**Commonly required:**
+Financial modelling, algorithmic trading systems
+
+**Soft skills:**
+Analytical reasoning
+
+**Red flags:**
+Weak mathematical foundation
+
+**Strong signals:**
+Optimisation algorithms, quantitative research, trading infrastructure
 
 ## Role Alignment Scoring Guide
 

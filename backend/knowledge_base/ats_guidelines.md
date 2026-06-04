@@ -1,93 +1,364 @@
 # ATS Guidelines for CV Optimisation
 
-ATS (Applicant Tracking Systems) are software tools used by most large employers to automatically screen CVs before a human ever reads them. A CV that fails ATS is rejected without review. These guidelines explain how to pass ATS screening.
+ATS (Applicant Tracking Systems) are software tools used by employers to automatically screen CVs before a recruiter reviews them. These guidelines define how ATS systems evaluate candidates and how CVs should be optimized for maximum visibility.
 
 ---
 
-## How ATS Works
+# How ATS Works
 
 ATS software scans uploaded CVs for:
-- Exact or near-exact keyword matches from the job description
-- Job titles that match the role being applied for
-- Required skills, tools, and technologies
-- Education qualifications and certifications
-- Years of experience
 
-The system scores the CV and filters out any below a threshold (typically 60–70%). Only the top-scoring CVs are passed to a recruiter.
+* Exact and semantic keyword matches from the job description
+* Relevant job titles and career progression
+* Technical skills, tools, frameworks, and technologies
+* Education, certifications, and qualifications
+* Years of relevant experience
+* Formatting and document structure
 
----
-
-## Common Reasons CVs Fail ATS
-
-### 1. Missing keywords
-The most common cause of failure. If the job description says "Kubernetes" and the CV says "container orchestration", many ATS tools will not match them. Use exact terminology where possible.
-
-### 2. Using images, tables, or text boxes
-ATS cannot reliably read text inside tables, text boxes, or images. A two-column CV layout often causes ATS to read columns in the wrong order, scrambling the content. Use single-column, plain formatting.
-
-### 3. Using headers/footers for important information
-Contact details placed in the document header or footer may be ignored by ATS. Put all important information in the main body.
-
-### 4. Non-standard section headings
-ATS looks for standard headings like "Work Experience", "Education", "Skills". Using creative alternatives ("Where I've Been", "My Toolkit") can confuse the parser.
-
-### 5. Saving in the wrong format
-PDF is generally safe but some older ATS tools struggle with it. `.docx` is the most universally compatible format. Avoid `.pages`, `.odt`, or scanned PDFs.
-
-### 6. Acronyms without full forms
-If the job description says "CI/CD" include both the acronym and the full form ("Continuous Integration / Continuous Deployment") at least once, as different ATS tools match differently.
+The ATS assigns a score and ranks applicants. Candidates below a predefined threshold are often filtered before human review.
 
 ---
 
-## ATS-Friendly Formatting Rules
+# ATS Scoring Framework
 
-- Use a single-column layout
-- Use standard fonts (Arial, Calibri, Times New Roman, Georgia)
-- Use standard section headings: Summary, Work Experience, Education, Skills, Certifications
-- Avoid headers and footers for key information
-- Keep file size under 2MB
-- Save as `.pdf` or `.docx`
-- Use bullet points, not tables or text boxes
-- Spell out acronyms at least once
+| Category               | Weight |
+| ---------------------- | ------ |
+| Keyword Match          | 40%    |
+| Role Alignment         | 20%    |
+| Skills Coverage        | 15%    |
+| Experience Relevance   | 15%    |
+| Formatting & Structure | 10%    |
 
----
-
-## Keyword Strategy
-
-The best source of keywords is the job description itself. Identify:
-- Required technical skills (programming languages, cloud platforms, tools)
-- Soft skills explicitly mentioned ("stakeholder communication", "cross-functional collaboration")
-- Certifications or qualifications listed as required or preferred
-- Job title variations ("Software Engineer", "Software Developer", "SWE")
-
-Mirror the exact language from the job description where possible. Do not keyword-stuff — keywords must appear in context within real sentences or bullets.
+Final ATS Score = Weighted Average Across All Categories
 
 ---
 
-## ATS Score Thresholds (Guidance)
+# ATS Score Thresholds
 
-| Score | Interpretation |
-|---|---|
-| 85–100 | Excellent — very likely to pass ATS and be seen by a recruiter |
-| 70–84 | Good — likely to pass but some keyword gaps to address |
-| 55–69 | Moderate — at risk of being filtered out; targeted improvements needed |
-| Below 55 | Poor — significant keyword and structure issues; likely to be rejected by ATS |
+| Score    | Interpretation                      |
+| -------- | ----------------------------------- |
+| 85-100   | Excellent - Strong ATS match        |
+| 70-84    | Good - Likely to pass ATS screening |
+| 55-69    | Moderate - Improvement recommended  |
+| Below 55 | Poor - High risk of rejection       |
 
 ---
 
-## Tech Role ATS Keywords by Category
+# Required CV Sections
 
-### Cloud & Infrastructure
-AWS, Azure, GCP, Kubernetes, Docker, Terraform, Ansible, CI/CD, Jenkins, GitHub Actions, Linux, Bash, Infrastructure as Code, SRE, DevOps
+## Mandatory
 
-### Software Engineering
-Python, Java, TypeScript, JavaScript, Node.js, React, FastAPI, REST API, microservices, SQL, PostgreSQL, MongoDB, Git, Agile, TDD, system design
+* Contact Information
+* Professional Summary
+* Work Experience
+* Education
+* Skills
 
-### Data & AI
-Python, pandas, NumPy, scikit-learn, TensorFlow, PyTorch, SQL, Spark, Airflow, ETL, data pipeline, machine learning, LLM, RAG, OpenAI, vector database
+## Recommended
 
-### Cybersecurity
-penetration testing, SIEM, SOC, vulnerability assessment, OWASP, network security, IAM, zero trust, incident response, threat modelling, CompTIA Security+, CISSP
+* Projects
+* Certifications
+* Publications
+* Leadership Experience
+* Volunteering
+* Awards
 
-### Product & Consulting
-stakeholder management, product roadmap, Agile, Scrum, OKRs, business requirements, user stories, Jira, Confluence, delivery, client-facing
+Missing mandatory sections should reduce ATS scores.
+
+---
+
+# Common Reasons CVs Fail ATS
+
+## Missing Keywords
+
+The most common cause of rejection.
+
+Example:
+
+Job Description:
+
+* Kubernetes
+
+CV:
+
+* Container Orchestration
+
+Many ATS systems may not match these terms. Use exact terminology whenever possible.
+
+---
+
+## Poor Formatting
+
+Avoid:
+
+* Tables
+* Text boxes
+* Images containing text
+* Multi-column layouts
+* Scanned PDFs
+
+Use a simple single-column structure.
+
+---
+
+## Non-Standard Headings
+
+Preferred headings:
+
+* Professional Summary
+* Work Experience
+* Education
+* Skills
+* Certifications
+* Projects
+
+Avoid creative alternatives that ATS systems may not recognize.
+
+---
+
+## Unsupported File Formats
+
+Recommended:
+
+* .docx
+* .pdf
+
+Avoid:
+
+* .pages
+* .odt
+* Image-based PDFs
+
+---
+
+## Acronyms Without Full Names
+
+Example:
+
+Good:
+
+* Continuous Integration / Continuous Deployment (CI/CD)
+
+Good ATS optimization includes both formats.
+
+---
+
+# ATS-Friendly Formatting Rules
+
+* Single-column layout
+* Standard fonts (Arial, Calibri, Times New Roman)
+* Consistent spacing
+* Bullet points for achievements
+* No graphics or icons
+* No important information in headers or footers
+* File size under 2MB
+* Save as PDF or DOCX
+
+---
+
+# Keyword Strategy
+
+The primary source of keywords should always be the target job description.
+
+Extract:
+
+* Technical skills
+* Frameworks
+* Programming languages
+* Cloud platforms
+* Certifications
+* Soft skills
+* Job title variations
+
+Mirror the employer's language where appropriate.
+
+Do not keyword stuff.
+
+Keywords should appear naturally inside bullet points and project descriptions.
+
+---
+
+# Keyword Density Guidelines
+
+## Strong
+
+* Core keyword appears 2-5 times naturally
+
+## Warning
+
+* Core keyword appears more than 10 times
+
+## Penalty
+
+* Repeated keyword lists without context
+* Hidden keywords
+* Unnatural keyword stuffing
+
+---
+
+# Achievement & Impact Analysis
+
+Recruiters prefer measurable achievements.
+
+## Strong Examples
+
+* Reduced deployment time by 45%
+* Improved API response speed by 32%
+* Processed 10M+ records daily
+* Increased model accuracy from 84% to 92%
+
+## Weak Examples
+
+* Worked on deployment pipelines
+* Assisted with machine learning projects
+* Responsible for backend development
+
+CVs with quantified achievements should receive higher ATS scores.
+
+---
+
+# Strong Action Verbs
+
+Preferred:
+
+* Built
+* Developed
+* Designed
+* Implemented
+* Automated
+* Architected
+* Optimized
+* Improved
+* Reduced
+* Increased
+* Delivered
+* Led
+
+Avoid excessive use of:
+
+* Helped
+* Assisted
+* Worked On
+* Responsible For
+* Participated In
+
+---
+
+# Technical Project Assessment
+
+Projects are especially important for students, graduates, and career changers.
+
+## Strong Projects
+
+Include:
+
+* Technologies Used
+* Business Objective
+* Technical Challenge
+* Quantified Outcome
+* GitHub Repository
+* Live Deployment
+
+## Weak Projects
+
+* Tutorial clones
+* No deployment
+* No measurable impact
+* No source code available
+
+---
+
+# Portfolio & GitHub Evaluation
+
+## Strong Signals
+
+* Active GitHub profile
+* Multiple repositories
+* Detailed README files
+* Deployment links
+* CI/CD workflows
+* Consistent commits
+
+## Moderate Signals
+
+* GitHub profile exists but limited activity
+
+## Weak Signals
+
+* No portfolio
+* No GitHub profile
+* Empty repositories
+
+---
+
+# ATS Red Flags
+
+* Missing technical projects
+* No quantified achievements
+* Missing core skills from target role
+* Generic professional summary
+* Inconsistent employment dates
+* Excessive buzzwords
+* Keyword stuffing
+* Unexplained employment gaps
+* Missing GitHub for technical roles
+
+---
+
+# Tech Role Keywords
+
+## Cloud & Infrastructure
+
+AWS, Azure, GCP, Kubernetes, Docker, Terraform, Ansible, Linux, Bash, CI/CD, GitHub Actions, Jenkins, Infrastructure as Code, SRE, DevOps
+
+---
+
+## Software Engineering
+
+Python, Java, C#, Go, JavaScript, TypeScript, React, Next.js, Node.js, FastAPI, Django, Spring Boot, REST API, Microservices, SQL, PostgreSQL, MongoDB, Git, Agile, TDD, System Design
+
+---
+
+## Data Engineering
+
+SQL, Python, Airflow, Spark, Kafka, Databricks, Snowflake, ETL, ELT, Data Pipeline, Data Warehouse, dbt
+
+---
+
+## AI & Machine Learning
+
+Python, Pandas, NumPy, Scikit-learn, TensorFlow, PyTorch, Machine Learning, Deep Learning, MLOps, MLflow
+
+### Modern AI Keywords
+
+LLM, RAG, LangChain, LangGraph, OpenAI API, Anthropic API, Pinecone, Weaviate, ChromaDB, Vector Database, AI Agents, Agentic AI, MCP, Semantic Search, Embeddings, Fine-Tuning
+
+---
+
+## Cybersecurity
+
+Penetration Testing, Vulnerability Assessment, SIEM, SOC, Splunk, Sentinel, OWASP, IAM, Zero Trust, Threat Modelling, Incident Response, CISSP, Security+
+
+---
+
+## Product & Consulting
+
+Stakeholder Management, Product Roadmap, Agile, Scrum, OKRs, Jira, Confluence, User Stories, Business Requirements, Client-Facing, Delivery Management
+
+---
+
+# Recruiter Review Layer
+
+Passing ATS is only the first stage.
+
+Recruiters typically evaluate:
+
+* Relevance of experience
+* Technical depth
+* Business impact
+* Project ownership
+* Career progression
+* Leadership evidence
+* Communication skills
+
+A high ATS score improves visibility, but strong achievements and demonstrated impact are what ultimately secure interviews.
