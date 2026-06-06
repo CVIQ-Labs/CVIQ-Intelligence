@@ -30,6 +30,25 @@ GOLDEN_DATASET = Path(__file__).parent / "golden_dataset.json"
 COLLECTION_NAME = "knowledge_base"
 
 
+def review_to_prose(review: dict) -> str:
+    strengths = "; ".join(review.get("strengths", []))
+    weaknesses = "; ".join(review.get("weaknesses", []))
+    keywords = ", ".join(review.get("missing_keywords", []))
+    bullets = "; ".join(
+        f"{b['original']} → {b['improved']}"
+        for b in review.get("suggested_bullets", [])
+    )
+    return (
+        f"Overall score: {review.get('overall_score')}. "
+        f"ATS score: {review.get('ats_score')}. "
+        f"Role alignment: {review.get('role_alignment')}. "
+        f"Strengths: {strengths}. "
+        f"Weaknesses: {weaknesses}. "
+        f"Missing keywords: {keywords}. "
+        f"Suggested bullet rewrites: {bullets}."
+    )
+
+
 def run_pipeline_for_eval(cv_text: str, job_description: str):
     query = f"{cv_text[:1000]}\n\n{job_description[:500]}"
     collection = get_collection(COLLECTION_NAME)
@@ -54,7 +73,7 @@ def main():
             f"Review this CV against the job description and provide scores, "
             f"missing keywords, strengths, weaknesses, and bullet rewrites."
         )
-        answers.append(json.dumps(review, indent=2))
+        answers.append(review_to_prose(review))
         contexts.append(chunks)
         print(f"  overall_score={review.get('overall_score')} ats_score={review.get('ats_score')}")
 
