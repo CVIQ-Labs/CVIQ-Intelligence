@@ -10,6 +10,8 @@ An AI-powered CV review platform that analyses your resume against a real job de
 ![Docker](https://img.shields.io/badge/Docker-Containerised-2496ED?style=flat&logo=docker&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Frontend-Vercel-000000?style=flat&logo=vercel&logoColor=white)
 ![Render](https://img.shields.io/badge/Backend-Render-46E3B7?style=flat&logo=render&logoColor=white)
+![Langfuse](https://img.shields.io/badge/Observability-Langfuse-F97316?style=flat)
+![Ragas](https://img.shields.io/badge/Evaluation-Ragas-6366F1?style=flat)
 
 ---
 
@@ -84,6 +86,58 @@ CV (PDF)  +  Job Description (text)
 
 ---
 
+## LLMOps
+
+The pipeline is instrumented end-to-end with production-grade observability, evaluation, and guardrails — the same tooling used in commercial AI systems.
+
+### Observability — Langfuse
+
+Every request is traced in [Langfuse](https://langfuse.com/):
+
+| Span | What is captured |
+|---|---|
+| **Trace** | CV length, JD length, prompt version — one trace per review request |
+| **Retrieval span** | Chunks retrieved, chunks dropped by relevance threshold, distance scores |
+| **Generation** | Full prompt sent to GPT, raw response, token usage, estimated cost per call |
+
+### RAG evaluation — Ragas
+
+A [Ragas](https://ragas.io/) evaluation suite runs against a golden dataset of synthetic CV/JD pairs every Monday at 9am UTC via GitHub Actions:
+
+| Metric | What it measures |
+|---|---|
+| **Faithfulness** | Are review claims grounded in the retrieved knowledge base context? |
+| **Answer Relevancy** | Is the feedback relevant to the specific CV and job description submitted? |
+
+Run manually:
+```bash
+cd backend
+pip install -r requirements-eval.txt
+OPENAI_API_KEY=sk-... python tests/eval/run_eval.py
+```
+
+### Prompt versioning
+
+System prompts live as versioned text files (`prompts/system_v1.0.0.txt`) and are loaded at runtime. The active version is set via the `PROMPT_VERSION` environment variable and attached to every Langfuse trace — so prompt changes can be correlated with score regressions without redeploying.
+
+### Relevance threshold
+
+Before any chunks reach the LLM, a cosine distance filter drops retrievals with distance > 0.8. Weak matches are logged and recorded in the Langfuse span so you can see exactly what the retriever discarded and why.
+
+### Token and cost logging
+
+After every GPT call, token usage and estimated cost are printed to the server logs and attached to the Langfuse generation:
+
+```
+[tokens] prompt=1842 completion=312 total=2154 cost=$0.0005
+```
+
+### Output gate
+
+The JSON response is scanned for hallucination markers (`"as an ai"`, `"i believe"`, `"i'm not sure"`, etc.) before being returned to the frontend. Any trigger is logged and flagged in the response payload for audit.
+
+---
+
 ## Tech stack
 
 ### Frontend
@@ -111,6 +165,8 @@ CV (PDF)  +  Job Description (text)
 | [OpenAI GPT-4o-mini](https://platform.openai.com/docs/models) | Review generation |
 | [OpenAI text-embedding-3-small](https://platform.openai.com/docs/guides/embeddings) | Semantic embeddings |
 | [ChromaDB 0.6.3](https://www.trychroma.com/) | Local vector store |
+| [Langfuse](https://langfuse.com/) | LLM observability — traces, spans, generations, cost tracking |
+| [Ragas](https://ragas.io/) | RAG evaluation — faithfulness and answer relevancy metrics |
 
 ### Infrastructure
 | Technology | Purpose |
@@ -255,9 +311,13 @@ Resume-Review-Engine/
 │   │   ├── review/         # Rubric, scorer
 │   │   └── Models/         # Pydantic response models
 │   ├── knowledge_base/     # CV rubric, ATS guidelines, bullet examples, role criteria
-│   ├── tests/              # pytest test suite (19 tests)
+│   ├── prompts/            # Versioned system prompt files (system_v1.0.0.txt)
+│   ├── tests/
+│   │   ├── unit/           # pytest unit test suite (19 tests)
+│   │   └── eval/           # Ragas evaluation suite + golden dataset
 │   ├── Dockerfile
-│   └── requirements.txt
+│   ├── requirements.txt
+│   └── requirements-eval.txt
 ├── frontend/
 │   ├── src/
 │   │   ├── api/            # Axios API client
@@ -268,7 +328,9 @@ Resume-Review-Engine/
 │   └── package.json
 ├── terraform/              # Azure infrastructure as code (planned)
 ├── docker-compose.yml
-└── .github/workflows/ci.yml
+└── .github/workflows/
+    ├── ci.yml              # Test, security scan, deploy on push to main
+    └── eval.yml            # Scheduled Ragas evaluation (Mondays 9am UTC)
 ```
 
 ---

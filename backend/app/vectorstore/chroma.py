@@ -29,10 +29,10 @@ def query_collection(
     collection: chromadb.Collection,
     query_embedding: list[float],
     n_results: int = 5,
-) -> list[str]:
+) -> tuple[list[str], list[float]]:
     results = collection.query(
         query_embeddings=[query_embedding],
         n_results=n_results,
+        include=["documents", "distances"],
     )
-    # results["documents"] is a list-of-lists — we only sent one query, so take index 0
-    return results["documents"][0]
+    return results["documents"][0], results["distances"][0]
