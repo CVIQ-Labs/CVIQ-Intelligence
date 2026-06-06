@@ -18,8 +18,13 @@ def retrieve_context(query: str, n_results: int = 6, trace=None) -> list[str]:
     dropped = len(chunks) - len(filtered)
     elapsed_ms = (time.perf_counter() - t0) * 1000
 
+    if dropped:
+        print(
+            f"[guardrail] gate=retrieval reason=relevance_threshold "
+            f"dropped={dropped} threshold={RELEVANCE_THRESHOLD}"
+        )
     print(
-        f"[retrieval] chunks={len(chunks)} kept={len(filtered)} dropped={dropped} "
+        f"[retrieval] chunks={len(chunks)} kept={len(filtered)} "
         f"latency={elapsed_ms:.0f}ms"
     )
 

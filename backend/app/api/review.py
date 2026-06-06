@@ -1,3 +1,4 @@
+import re
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 
 from app.ingestion.loader import load_text_from_bytes
@@ -8,7 +9,23 @@ from app.core.exceptions import CVReviewerError
 
 router = APIRouter()
 
-# Presidio PII detection — non-fatal if package or spaCy model not available
+# ── Input gate limits ────────────────────────────────────────────────────────
+MAX_CV_CHARS = 15_000
+MAX_JD_CHARS = 5_000
+
+# ── Prompt injection patterns ────────────────────────────────────────────────
+_INJECTION_PATTERNS = [
+    r"ignore\s+(all\s+)?(previous|above|prior)\s+(instructions?|prompts?|rules?)",
+    r"disregard\s+(all\s+)?(previous|system)\s+(instructions?|prompts?|rules?)",
+    r"forget\s+(everything|all|previous|your\s+instructions?)",
+    r"override\s+(your\s+)?(system\s+)?(prompt|instructions?)",
+    r"reveal\s+(your\s+)?(system\s+)?prompt",
+    r"you\s+are\s+now\s+a",
+    r"new\s+(system\s+)?persona",
+    r"pretend\s+(you\s+are|to\s+be)",
+]
+
+# ── Presidio PII detection ───────────────────────────────────────────────────
 _pii_analyzer = None
 try:
     from presidio_analyzer import AnalyzerEngine
@@ -22,6 +39,32 @@ try:
 except BaseException as e:
     print(f"[pii-gate] Presidio not available: {e}")
 
+# ── Guardrails AI output schema validation ───────────────────────────────────
+_output_guard = None
+try:
+    from guardrails import Guard
+    _output_guard = Guard.from_pydantic(output_class=ReviewResponse)
+    print("[guardrails-ai] output guard initialized")
+except BaseException as e:
+    print(f"[guardrails-ai] not available: {e}")
+
+
+def _check_prompt_injection(text: str, source: str) -> None:
+    lower = text.lower()
+    for pattern in _INJECTION_PATTERNS:
+        if re.search(pattern, lower):
+            print(f"[guardrail] gate=input reason=prompt_injection source={source}")
+            raise HTTPException(status_code=400, detail="Input contains disallowed content.")
+
+
+def _check_length(text: str, max_chars: int, source: str) -> None:
+    if len(text) > max_chars:
+        print(f"[guardrail] gate=input reason=length_exceeded source={source} chars={len(text)} limit={max_chars}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"{source.upper()} exceeds maximum length of {max_chars} characters.",
+        )
+
 
 def _detect_pii(text: str) -> None:
     if not _pii_analyzer:
@@ -30,9 +73,26 @@ def _detect_pii(text: str) -> None:
         results = _pii_analyzer.analyze(text=text, language="en")
         if results:
             entity_types = sorted({r.entity_type for r in results})
-            print(f"[pii-gate] detected {len(results)} PII entities: {entity_types}")
+            print(f"[guardrail] gate=input reason=pii_detected entities={entity_types} count={len(results)}")
     except Exception:
         pass
+
+
+def _guardrails_validate(review: dict) -> dict:
+    if not _output_guard:
+        return review
+    try:
+        import json
+        outcome = _output_guard.parse(json.dumps(review))
+        # 0.5+ returns ValidationOutcome; 0.4.x returns tuple
+        validated = getattr(outcome, "validated_output", None)
+        if validated is None and isinstance(outcome, tuple) and len(outcome) >= 2:
+            validated = outcome[1]
+        if validated:
+            return validated if isinstance(validated, dict) else review
+    except Exception as e:
+        print(f"[guardrail] gate=output reason=schema_violation detail={e}")
+    return review
 
 
 @router.post("/review", response_model=ReviewResponse)
@@ -47,15 +107,21 @@ async def review_cv(
     except CVReviewerError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    # Detect PII for audit logging — we do not mask before the LLM
-    # because the CV content is necessary for the review to work
+    # ── Input gate ────────────────────────────────────────────────────────────
+    _check_length(cv_text, MAX_CV_CHARS, "cv")
+    _check_length(job_description, MAX_JD_CHARS, "jd")
+    _check_prompt_injection(cv_text, "cv")
+    _check_prompt_injection(job_description, "jd")
     _detect_pii(cv_text)
 
+    # ── Pipeline ──────────────────────────────────────────────────────────────
     try:
         raw_review = run_review_pipeline(cv_text, job_description)
     except CVReviewerError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+    # ── Output gate ───────────────────────────────────────────────────────────
     cleaned = validate_and_clean(raw_review)
+    cleaned = _guardrails_validate(cleaned)
 
     return cleaned

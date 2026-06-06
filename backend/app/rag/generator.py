@@ -7,7 +7,6 @@ from app.rag.prompts import SYSTEM_PROMPT, build_review_prompt
 
 client = OpenAI(api_key=settings.openai_api_key)
 
-# GPT-4o-mini pricing (USD per token)
 _COST_PER_INPUT_TOKEN = 0.15 / 1_000_000
 _COST_PER_OUTPUT_TOKEN = 0.60 / 1_000_000
 
@@ -27,7 +26,7 @@ def _check_output_gate(review: dict) -> dict:
     text = json.dumps(review).lower()
     triggered = [m for m in _HALLUCINATION_MARKERS if m in text]
     if triggered:
-        print(f"[output-gate] WARNING: hallucination markers detected: {triggered}")
+        print(f"[guardrail] gate=output reason=hallucination_marker markers={triggered}")
         review["_output_gate_warning"] = triggered
     return review
 
