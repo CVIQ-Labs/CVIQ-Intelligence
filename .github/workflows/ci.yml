@@ -58,6 +58,22 @@ jobs:
       - name: Trigger Render deploy
         run: curl -s "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" | grep -q '"id"'
 
+      - name: Smoke test — wait for healthy deploy (60s timeout)
+        run: |
+          echo "Waiting for Render to come up..."
+          for i in $(seq 1 12); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.RENDER_SERVICE_URL }}/health")
+            if [ "$STATUS" = "200" ]; then
+              echo "Health check passed (attempt $i)"
+              exit 0
+            fi
+            echo "Attempt $i/12: got HTTP $STATUS — retrying in 5s"
+            sleep 5
+          done
+          echo "Smoke test failed: /health did not return 200 within 60s"
+          echo "Roll back by re-deploying a previous version from the Render dashboard."
+          exit 1
+
   deploy-frontend:
     runs-on: ubuntu-latest
     needs: test
