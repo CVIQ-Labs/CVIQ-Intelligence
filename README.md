@@ -353,8 +353,6 @@ Once the Azure deployment is stable, the system will be migrated to Kubernetes f
 
 ### Terraform + Azure (planned)
 Full Azure deployment managed with Terraform: Azure Container Registry, Azure Container App, Azure Key Vault for secrets, and Azure File Share for ChromaDB persistence.
-### Add in a Cover letter feature (planned)
-Generate personalised, ATS-aligned cover letters using candidate profiles, AI Matrix scoring, user preferences, and job descriptions to create tailored application content at scale.
 ---
 
 ## Team
