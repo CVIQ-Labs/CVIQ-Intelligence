@@ -1,10 +1,6 @@
 name: AKS — Build & Deploy
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "backend/**"
   workflow_dispatch:
 
 # Requires the same Azure secrets as aks-provision.yml.
