@@ -1,15 +1,18 @@
 # CV Reviewer AI
 
-An AI-powered CV review platform that analyses your resume against a real job description and returns structured, actionable feedback. Built with a RAG (Retrieval-Augmented Generation) pipeline, semantic search, and GPT-4o to give feedback that is grounded in real hiring criteria, not generic advice.
+An AI-powered CV review platform that analyses your resume against a real job description and returns structured, actionable feedback. Built with a RAG (Retrieval-Augmented Generation) pipeline, semantic search, and GPT-4o-mini to give feedback grounded in real hiring criteria — not generic advice.
 
 [![CI](https://github.com/jamiemoorearthur/Resume-Review-Engine/actions/workflows/ci.yml/badge.svg)](https://github.com/jamiemoorearthur/Resume-Review-Engine/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.136-009688?style=flat&logo=fastapi&logoColor=white)
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=white)
-![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o-412991?style=flat&logo=openai&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o--mini-412991?style=flat&logo=openai&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Containerised-2496ED?style=flat&logo=docker&logoColor=white)
+![Fly.io](https://img.shields.io/badge/Backend-Fly.io-8B5CF6?style=flat&logo=flydotio&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Frontend-Vercel-000000?style=flat&logo=vercel&logoColor=white)
-![Render](https://img.shields.io/badge/Backend-Render-46E3B7?style=flat&logo=render&logoColor=white)
+![Terraform](https://img.shields.io/badge/IaC-Terraform-7B42BC?style=flat&logo=terraform&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Orchestration-Kubernetes-326CE5?style=flat&logo=kubernetes&logoColor=white)
+![Azure](https://img.shields.io/badge/Cloud-Azure-0078D4?style=flat&logo=microsoftazure&logoColor=white)
 ![Langfuse](https://img.shields.io/badge/Observability-Langfuse-F97316?style=flat)
 ![Ragas](https://img.shields.io/badge/Evaluation-Ragas-6366F1?style=flat)
 
@@ -20,9 +23,7 @@ An AI-powered CV review platform that analyses your resume against a real job de
 | | URL |
 |---|---|
 | **Frontend** | [cviq27.vercel.app](https://cviq27.vercel.app/) |
-| **Backend API** | [cv-reviewer-api.onrender.com/docs](https://cv-reviewer-api.onrender.com/docs) |
-
-> Note: The backend runs on Render's free tier and spins down after 15 minutes of inactivity. The first request may take 30 seconds to wake up.
+| **Backend API** | [cv-reviewer-api.fly.dev/docs](https://cv-reviewer-api.fly.dev/docs) |
 
 ---
 
@@ -32,20 +33,39 @@ Upload a CV (PDF) and paste a job description. The system returns:
 
 ```json
 {
-  "overall_score": 75,
-  "ats_score": 70,
+  "overall_score": 72,
+  "ats_score": 68,
+  "recruiter_score": 6,
+  "category_scores": {
+    "role_alignment": 75,
+    "skills_match": 70,
+    "experience_relevance": 65,
+    "ats_keyword_match": 68,
+    "bullet_point_quality": 60,
+    "structure_readability": 80,
+    "missing_evidence": 55
+  },
   "role_alignment": "Good",
-  "missing_keywords": ["Django", "PostgreSQL", "OpenAPI", "OAuth2"],
+  "missing_keywords": ["Docker", "PostgreSQL"],
   "strengths": ["Strong Python and backend experience"],
-  "weaknesses": ["No evidence of production daemon or background worker experience"],
+  "weaknesses": ["No evidence of production deployment experience"],
+  "section_recommendations": ["Add a Technical Skills section"],
   "suggested_bullets": [
     {
       "original": "Built AI chatbot using FastAPI",
-      "improved": "Built and deployed a FastAPI-based AI chatbot with prompt-injection filtering, structured logging and Docker support, reducing customer queries by 22%."
+      "improved": "Built and deployed a FastAPI-based AI chatbot handling 10k requests/day, reducing support queries by 22%."
     }
   ]
 }
 ```
+
+**Response fields:**
+- `overall_score` — weighted average across 7 rubric categories (0–100)
+- `ats_score` — ATS keyword match score (0–100)
+- `recruiter_score` — likelihood a recruiter shortlists this CV in a 6-second scan (0–10)
+- `category_scores` — individual raw score for each of the 7 rubric categories before weighting
+- `section_recommendations` — sections to add or remove based on the target role
+- `suggested_bullets` — rewrites that scale with CV quality: 4–6 for weak CVs, 0–1 for strong CVs
 
 ---
 
@@ -88,7 +108,7 @@ CV (PDF)  +  Job Description (text)
 
 ## LLMOps
 
-The pipeline is instrumented end-to-end with production-grade observability, evaluation, and guardrails — the same tooling used in commercial AI systems.
+The pipeline is instrumented end-to-end with production-grade observability, evaluation, and guardrails.
 
 ### Observability — Langfuse
 
@@ -107,8 +127,8 @@ A [Ragas](https://ragas.io/) evaluation suite runs against a golden dataset of s
 | Metric | What it measures |
 |---|---|
 | **Faithfulness** | Are review claims grounded in the retrieved knowledge base context? |
-| **Answer Relevancy** | Is the feedback relevant to the specific CV and job description submitted? |
-| **Context Precision** | Are the retrieved chunks actually useful for generating the correct answer? |
+| **Answer Relevancy** | Is the feedback relevant to the specific CV and JD submitted? |
+| **Context Precision** | Are the retrieved chunks actually useful for generating the answer? |
 | **Context Recall** | Does the retrieved context cover everything in the expected answer? |
 
 Run manually:
@@ -120,15 +140,15 @@ OPENAI_API_KEY=sk-... python tests/eval/run_eval.py
 
 ### Prompt versioning
 
-System prompts live as versioned text files (`prompts/system_v1.0.0.txt`) and are loaded at runtime. The active version is set via the `PROMPT_VERSION` environment variable and attached to every Langfuse trace — so prompt changes can be correlated with score regressions without redeploying.
+System prompts live as versioned text files (`prompts/system_v1.0.0.txt`) and are loaded at runtime. The active version is set via `PROMPT_VERSION` and attached to every Langfuse trace — prompt changes can be correlated with score regressions without redeploying.
 
 ### Relevance threshold
 
-Before any chunks reach the LLM, a cosine distance filter drops retrievals with distance > 0.8. Weak matches are logged and recorded in the Langfuse span so you can see exactly what the retriever discarded and why.
+Before any chunks reach the LLM, a cosine distance filter drops retrievals with distance > 0.8. Weak matches are logged in the Langfuse span so you can see exactly what the retriever discarded and why.
 
 ### Token and cost logging
 
-After every GPT call, token usage and estimated cost are printed to the server logs and attached to the Langfuse generation:
+After every GPT call, token usage and estimated cost are logged and attached to the Langfuse generation:
 
 ```
 [tokens] prompt=1842 completion=312 total=2154 cost=$0.0005
@@ -136,15 +156,15 @@ After every GPT call, token usage and estimated cost are printed to the server l
 
 ### Output gate
 
-The JSON response is scanned for hallucination markers (`"as an ai"`, `"i believe"`, `"i'm not sure"`, etc.) before being returned to the frontend. Any trigger is logged and flagged in the response payload for audit.
+The JSON response is scanned for hallucination markers (`"as an ai"`, `"i believe"`, `"i'm not sure"`) before being returned to the frontend. Any trigger is logged and flagged in the response payload for audit.
 
 ### PII detection — Microsoft Presidio
 
-Every CV submitted is scanned by [Presidio](https://microsoft.github.io/presidio/) before processing. Detected PII entities (names, email addresses, phone numbers, etc.) are logged for audit — the CV content is not masked before reaching the LLM, as the review requires it, but every entity type is recorded so the system has a full audit trail of what personal data was processed.
+Every CV submitted is scanned by [Presidio](https://microsoft.github.io/presidio/) before processing. Detected PII entities (names, emails, phone numbers) are logged for audit with a full record of what personal data was processed.
 
 ### Chunk metadata
 
-Every knowledge base chunk stored in ChromaDB carries a source filename, SHA-256 document hash, chunk index, and ingestion timestamp. This enables targeted deletes when documents change, a full audit trail for retrieved content, and blast-radius isolation if bad data enters the index.
+Every ChromaDB chunk carries a source filename, SHA-256 document hash, chunk index, and ingestion timestamp — enabling targeted deletes when documents change and a full audit trail for retrieved content.
 
 ---
 
@@ -166,8 +186,8 @@ Every knowledge base chunk stored in ChromaDB carries a source filename, SHA-256
 | [FastAPI 0.136](https://fastapi.tiangolo.com/) | API framework |
 | [Uvicorn](https://www.uvicorn.org/) | ASGI server |
 | [Pydantic v2](https://docs.pydantic.dev/) | Request/response validation |
-| [pypdf 6.10.2](https://pypdf.readthedocs.io/) | PDF text extraction |
-| [python-multipart 0.0.27](https://multipart.fastapiexpert.com/) | File upload handling |
+| [pypdf 6.13.3](https://pypdf.readthedocs.io/) | PDF text extraction |
+| [python-multipart](https://multipart.fastapiexpert.com/) | File upload handling |
 
 ### AI and NLP
 | Technology | Purpose |
@@ -175,16 +195,19 @@ Every knowledge base chunk stored in ChromaDB carries a source filename, SHA-256
 | [OpenAI GPT-4o-mini](https://platform.openai.com/docs/models) | Review generation |
 | [OpenAI text-embedding-3-small](https://platform.openai.com/docs/guides/embeddings) | Semantic embeddings |
 | [ChromaDB 0.6.3](https://www.trychroma.com/) | Local vector store |
-| [Langfuse](https://langfuse.com/) | LLM observability — traces, spans, generations, cost tracking |
-| [Ragas](https://ragas.io/) | RAG evaluation — faithfulness, answer relevancy, context precision, context recall |
-| [Microsoft Presidio](https://microsoft.github.io/presidio/) | PII detection and audit logging on CV input |
+| [Langfuse](https://langfuse.com/) | LLM observability |
+| [Ragas](https://ragas.io/) | RAG evaluation |
+| [Microsoft Presidio](https://microsoft.github.io/presidio/) | PII detection and audit logging |
 
 ### Infrastructure
 | Technology | Purpose |
 |---|---|
 | [Docker](https://www.docker.com/) | Containerisation |
-| [Render](https://render.com/) | Backend cloud deployment |
-| [Vercel](https://vercel.com/) | Frontend cloud deployment |
+| [Fly.io](https://fly.io/) | Backend hosting — always-on, no cold starts, 512MB RAM, London region |
+| [Vercel](https://vercel.com/) | Frontend hosting |
+| [Terraform](https://www.terraform.io/) | Azure infrastructure as code (AKS, ACR, Key Vault, storage) |
+| [Kubernetes](https://kubernetes.io/) | Container orchestration (AKS manifests ready for migration) |
+| [Azure](https://azure.microsoft.com/) | Cloud provider for future scaled deployment |
 | [GitHub Actions](https://github.com/features/actions) | CI/CD |
 
 ---
@@ -196,18 +219,19 @@ Browser (Vercel)
       |
       | HTTPS POST /review (multipart/form-data)
       v
-FastAPI Backend (Render)
+FastAPI Backend (Fly.io — always-on, London region)
       |
       |-- pypdf extracts CV text
-      |-- ChromaDB retrieves relevant knowledge base chunks
+      |-- ChromaDB retrieves relevant knowledge base chunks (persisted Fly volume)
       |-- GPT-4o-mini generates structured review
       |
       v
 JSON response back to frontend
 ```
+
 <img width="580" height="206" alt="image" src="https://github.com/user-attachments/assets/e5512de3-5cbf-4bc9-b0aa-4334a80a2ac1" />
 
-The frontend and backend are deployed independently. The React app on Vercel calls the FastAPI backend on Render directly from the browser. CORS is configured on the backend to allow requests from the Vercel domain.
+The frontend and backend are deployed independently. The React app on Vercel calls the FastAPI backend on Fly.io directly from the browser. CORS is configured on the backend to allow requests from the Vercel domain.
 
 ---
 
@@ -217,36 +241,29 @@ Security was treated as a first-class concern throughout the build, not somethin
 
 ### Dependency and code scanning (CI gates)
 
-Every push to `main` runs three automated security checks. The pipeline fails and blocks deployment if any of them report critical or high severity findings.
+Every push to `main` runs three automated security checks that block deployment on critical/high findings.
 
 | Tool | What it scans | Threshold |
 |---|---|---|
-| [Bandit](https://bandit.readthedocs.io/) | Python source code for common vulnerabilities (injection, hardcoded secrets, unsafe functions) | Medium and above |
-| [pip-audit](https://pypi.org/project/pip-audit/) | Python dependencies against the OSV and PyPI Advisory databases | Any known CVE |
-| [Trivy](https://trivy.dev/) | Docker image (OS packages + Python packages installed in the container) | Critical and High (fixed only) |
+| [Bandit](https://bandit.readthedocs.io/) | Python source code — injection, hardcoded secrets, unsafe functions | Medium and above |
+| [pip-audit](https://pypi.org/project/pip-audit/) | Python dependencies against OSV and PyPI Advisory databases | Any known CVE |
+| [Trivy](https://trivy.dev/) | Docker image (OS packages + Python packages) | Critical and High (fixed only) |
 
 ### Vulnerability remediation history
 
-The project has gone through multiple rounds of dependency hardening since initial build:
-
-- Migrated from `PyPDF2` (deprecated, CVE-2023-36464) to `pypdf 6.10.2` which patches 25 DoS vulnerabilities in PDF parsing
-- Upgraded `python-multipart` from 0.0.19 to 0.0.27, patching a path traversal vulnerability (CVE-2026-24486) and a DoS vulnerability (CVE-2026-40347)
-- Upgraded `python-dotenv` from 1.0.1 to 1.2.2, patching a symlink file overwrite vulnerability (CVE-2026-28684)
-- Upgraded `FastAPI` from 0.115.6 to 0.136.3 to pull in `starlette 1.2.1`, patching a DoS via malformed Range headers (CVE-2025-62727)
-- Upgraded `wheel` to 0.47.0 and `setuptools` to 82.0.1 to patch vendored dependency CVEs
+- Migrated from `PyPDF2` (deprecated, CVE-2023-36464) to `pypdf` which patches 25+ DoS vulnerabilities in PDF parsing
+- Bumped `pypdf` from `6.12.0` → `6.13.0` → `6.13.3` across three rounds of newly disclosed CVEs
+- Upgraded `python-multipart` to patch path traversal (CVE-2026-24486) and DoS (CVE-2026-40347)
+- Upgraded `python-dotenv` to patch symlink file overwrite (CVE-2026-28684)
+- Upgraded `FastAPI` to pull in `starlette 1.2.1`, patching DoS via malformed Range headers (CVE-2025-62727)
+- Upgraded `wheel` and `setuptools` to patch vendored dependency CVEs
 
 ### Secrets management
 
-- The OpenAI API key lives in `.env` which is in `.gitignore` and never committed
+- `.env` is in `.gitignore` — never committed
 - `.env.example` documents required variable names without values
-- On Render, secrets are injected as environment variables at runtime, never baked into the image
-- The Docker image is built from a `.dockerignore` that explicitly excludes `.env`, `.venv`, and the ChromaDB data folder
-
-### Input validation
-
-- All API request bodies are validated by Pydantic v2 before any processing occurs
-- File uploads are validated for type (PDF and TXT only) and content (empty documents are rejected)
-- Custom exception handlers return clean error messages without exposing stack traces or internal paths
+- On Fly.io, secrets are injected as environment variables via `fly secrets set` — never baked into the image
+- `CORS_ORIGINS` is a comma-separated env var parsed at runtime — no hardcoded origins in code
 
 ---
 
@@ -256,9 +273,9 @@ The project has gone through multiple rounds of dependency hardening since initi
 |---|---|---|
 | `GET` | `/health` | Health check |
 | `POST` | `/upload` | Parse a CV file and return extracted text |
-| `POST` | `/review` | Full AI review: scores, keywords, strengths, weaknesses, bullet rewrites |
+| `POST` | `/review` | Full AI review — scores, keywords, strengths, weaknesses, bullet rewrites |
 
-Full interactive documentation at: [https://cv-reviewer-api.onrender.com/docs](https://cv-reviewer-api.onrender.com/docs)
+Full interactive documentation: [cv-reviewer-api.fly.dev/docs](https://cv-reviewer-api.fly.dev/docs)
 
 ---
 
@@ -277,6 +294,7 @@ source .venv/Scripts/activate  # Windows
 # or: source .venv/bin/activate  # Mac/Linux
 
 pip install -r requirements.txt
+python -c "from spacy.cli import download; download('en_core_web_sm')"
 echo "OPENAI_API_KEY=sk-your-key-here" > .env
 uvicorn app.main:app --reload
 ```
@@ -307,26 +325,42 @@ pytest tests/ -v
 
 ---
 
+## CI/CD
+
+| Workflow | Trigger | What it does |
+|---|---|---|
+| `ci.yml` | Push / PR to `main` | Run tests, Bandit, pip-audit, Docker build, Trivy scan, deploy to Fly.io |
+| `eval.yml` | Monday 9am UTC | Ragas RAG evaluation against golden dataset |
+| `aks-provision.yml` | Manual only | Bootstrap Terraform state storage, run `terraform apply` on Azure AKS |
+| `aks-cd.yml` | Manual only | Build `linux/amd64` image, push to ACR, deploy to AKS |
+| `aks-destroy.yml` | Manual (`confirm: DESTROY`) | Tear down all Azure resources |
+
+The AKS workflows are manual-only and will not trigger automatically. They are ready for when the product migrates to Azure.
+
+---
+
 ## Project structure
 
 ```
 Resume-Review-Engine/
 ├── backend/
 │   ├── app/
-│   │   ├── api/            # FastAPI routers (health, upload, review)
+│   │   ├── api/            # FastAPI routers (health, upload, review, knowledge_base)
 │   │   ├── core/           # Config, exceptions
 │   │   ├── ingestion/      # PDF parsing, text loading, chunking
 │   │   ├── embeddings/     # OpenAI embedding wrapper
 │   │   ├── vectorstore/    # ChromaDB integration
 │   │   ├── rag/            # Pipeline, retriever, generator, prompts
-│   │   ├── review/         # Rubric, scorer
+│   │   ├── review/         # Rubric weights, scorer/validator
 │   │   └── Models/         # Pydantic response models
 │   ├── knowledge_base/     # CV rubric, ATS guidelines, bullet examples, role criteria
 │   ├── prompts/            # Versioned system prompt files (system_v1.0.0.txt)
 │   ├── tests/
-│   │   ├── unit/           # pytest unit test suite (19 tests)
+│   │   ├── test_api.py     # FastAPI endpoint tests
+│   │   ├── test_rag.py     # Chunker, loader, scorer unit tests
 │   │   └── eval/           # Ragas evaluation suite + golden dataset
 │   ├── Dockerfile
+│   ├── fly.toml            # Fly.io deployment config
 │   ├── requirements.txt
 │   └── requirements-eval.txt
 ├── frontend/
@@ -337,28 +371,34 @@ Resume-Review-Engine/
 │   │   └── styles/         # CSS per page
 │   ├── index.html
 │   └── package.json
-├── terraform/              # Azure infrastructure as code (planned)
+├── terraform/              # Azure AKS, ACR, Key Vault, Log Analytics (IaC)
+├── k8s/                    # Kubernetes manifests (namespace, deployment, service, storage, secrets)
 ├── docker-compose.yml
 └── .github/workflows/
-    ├── ci.yml              # Test, security scan, deploy on push to main
-    └── eval.yml            # Scheduled Ragas evaluation (Mondays 9am UTC)
+    ├── ci.yml              # Test, security scan, deploy to Fly.io on push to main
+    ├── eval.yml            # Scheduled Ragas evaluation (Mondays 9am UTC)
+    ├── aks-provision.yml   # Manual — Terraform apply on Azure
+    ├── aks-cd.yml          # Manual — Build and deploy to AKS
+    └── aks-destroy.yml     # Manual — Tear down Azure resources
 ```
 
 ---
 
 ## Roadmap
 
-### Kubernetes (planned)
-Once the Azure deployment is stable, the system will be migrated to Kubernetes for production-grade orchestration. This includes horizontal pod autoscaling, rolling updates, and a proper ingress controller with rate limiting.
+- [ ] Prometheus metrics endpoint (`/metrics`) — request latency, score distributions, error rates
+- [ ] Grafana dashboard — visualise metrics from Prometheus
+- [ ] Score breakdown displayed on frontend (API fields `category_scores` already available)
+- [ ] User accounts and auth (Clerk)
+- [ ] Paywall for `recruiter_score` as a pro feature
+- [ ] Migrate to Azure AKS when funded (Terraform + Kubernetes manifests already in place)
 
-### Terraform + Azure (planned)
-Full Azure deployment managed with Terraform: Azure Container Registry, Azure Container App, Azure Key Vault for secrets, and Azure File Share for ChromaDB persistence.
 ---
 
 ## Team
 
 Built by [Seyi Bello](https://github.com/seyiabello), [Jamie Moore-Arthur](https://github.com/jamiemoorearthur), and [Rochelle Smith](https://github.com/rochellejjsmith).
 
-- Seyi: AI/application layer (RAG pipeline, embeddings, vector store, review logic, API endpoints, infrastructure, CI/CD, security)
-- Jamie: Knowledge base content, ingestion pipeline, file upload, FastAPI contributions
-- [Rochelle Smith](https://github.com/rochellejjsmith): Frontend (React UI, component design, upload flow, results display, Vercel deployment)
+- **Seyi** — AI/application layer: RAG pipeline, embeddings, vector store, review logic, API endpoints, infrastructure (Fly.io, Terraform, Kubernetes, Azure), CI/CD, security scanning
+- **Jamie** — Knowledge base content, ingestion pipeline, file upload, FastAPI contributions
+- **Rochelle** — Frontend: React UI, component design, upload flow, results display, Vercel deployment
