@@ -42,6 +42,7 @@ Return ONLY a JSON object with this exact structure:
 {{
   "overall_score": <integer 0-100>,
   "ats_score": <integer 0-100>,
+  "recruiter_score": <integer 0-10>,
   "role_alignment": <"Strong" | "Good" | "Moderate" | "Weak">,
   "missing_keywords": [<list of strings>],
   "strengths": [<list of strings, max 4>],
@@ -57,6 +58,7 @@ Return ONLY a JSON object with this exact structure:
 Rules:
 - overall_score is the weighted average across all 7 rubric categories
 - ats_score is specifically the ATS keyword match score
+- recruiter_score is how likely a recruiter is to shortlist this CV in a 6-second scan (0-10). Weight ATS keyword presence, role alignment, bullet clarity, and quantified achievements most heavily. A 10 means near-certain shortlist; a 0 means immediate rejection.
 - missing_keywords must be exact terms from the job description that are absent from the CV
 - suggested_bullets must quote exact text from the CV — do not invent bullets
 - Return at least 2 suggested_bullets if any weak bullets exist
