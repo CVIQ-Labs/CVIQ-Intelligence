@@ -55,14 +55,20 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
-      - name: Trigger Render deploy
-        run: curl -s "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" | grep -q '"id"'
+      - uses: actions/checkout@v4
 
-      - name: Smoke test — wait for healthy deploy (60s timeout)
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy to Fly.io
+        working-directory: backend
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Smoke test
         run: |
-          echo "Waiting for Render to come up..."
           for i in $(seq 1 12); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.RENDER_SERVICE_URL }}/health")
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://cv-reviewer-api.fly.dev/health)
             if [ "$STATUS" = "200" ]; then
               echo "Health check passed (attempt $i)"
               exit 0
@@ -71,7 +77,6 @@ jobs:
             sleep 5
           done
           echo "Smoke test failed: /health did not return 200 within 60s"
-          echo "Roll back by re-deploying a previous version from the Render dashboard."
           exit 1
 
   deploy-frontend:
