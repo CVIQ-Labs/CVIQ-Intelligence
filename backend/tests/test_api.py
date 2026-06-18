@@ -36,10 +36,21 @@ MINIMAL_PDF = (
 MOCK_REVIEW = {
     "overall_score": 80,
     "ats_score": 75,
+    "recruiter_score": 7,
+    "category_scores": {
+        "role_alignment": 80,
+        "skills_match": 75,
+        "experience_relevance": 70,
+        "ats_keyword_match": 75,
+        "bullet_point_quality": 65,
+        "structure_readability": 80,
+        "missing_evidence": 60,
+    },
     "role_alignment": "Good",
     "missing_keywords": ["Docker", "PostgreSQL"],
     "strengths": ["Strong Python experience"],
     "weaknesses": ["No mention of Docker"],
+    "section_recommendations": [],
     "suggested_bullets": [
         {
             "original": "Built a backend service",

@@ -78,6 +78,7 @@ def test_scorer_clamps_score_above_100():
     raw = {
         "overall_score": 150,
         "ats_score": 110,
+        "recruiter_score": 5,
         "role_alignment": "Strong",
         "missing_keywords": [],
         "strengths": [],
@@ -94,6 +95,7 @@ def test_scorer_clamps_score_below_0():
     raw = {
         "overall_score": -10,
         "ats_score": -5,
+        "recruiter_score": 5,
         "role_alignment": "Weak",
         "missing_keywords": [],
         "strengths": [],
@@ -110,6 +112,7 @@ def test_scorer_fixes_invalid_role_alignment():
     raw = {
         "overall_score": 70,
         "ats_score": 65,
+        "recruiter_score": 5,
         "role_alignment": "Very Strong",   # not a valid label
         "missing_keywords": [],
         "strengths": [],
@@ -126,6 +129,7 @@ def test_scorer_accepts_valid_role_alignment_labels():
         raw = {
             "overall_score": 70,
             "ats_score": 65,
+            "recruiter_score": 5,
             "role_alignment": label,
             "missing_keywords": [],
             "strengths": [],
@@ -141,11 +145,57 @@ def test_scorer_fills_missing_list_fields():
     raw = {
         "overall_score": 70,
         "ats_score": 65,
+        "recruiter_score": 5,
         "role_alignment": "Good",
-        # missing_keywords, strengths, weaknesses, suggested_bullets all absent
+        # missing_keywords, strengths, weaknesses, section_recommendations, suggested_bullets all absent
     }
     result = validate_and_clean(raw)
     assert result["missing_keywords"] == []
     assert result["strengths"] == []
     assert result["weaknesses"] == []
+    assert result["section_recommendations"] == []
     assert result["suggested_bullets"] == []
+
+
+def test_scorer_fills_missing_category_scores():
+    """If GPT omits category_scores entirely, all keys should default to 0."""
+    raw = {
+        "overall_score": 70,
+        "ats_score": 65,
+        "recruiter_score": 5,
+        "role_alignment": "Good",
+        "missing_keywords": [],
+        "strengths": [],
+        "weaknesses": [],
+        "suggested_bullets": [],
+        # category_scores absent
+    }
+    result = validate_and_clean(raw)
+    assert "category_scores" in result
+    assert all(v == 0 for v in result["category_scores"].values())
+
+
+def test_scorer_clamps_category_scores():
+    """Category scores outside 0-100 should be clamped."""
+    raw = {
+        "overall_score": 70,
+        "ats_score": 65,
+        "recruiter_score": 5,
+        "role_alignment": "Good",
+        "category_scores": {
+            "role_alignment": 150,
+            "skills_match": -10,
+            "experience_relevance": 80,
+            "ats_keyword_match": 70,
+            "bullet_point_quality": 60,
+            "structure_readability": 75,
+            "missing_evidence": 50,
+        },
+        "missing_keywords": [],
+        "strengths": [],
+        "weaknesses": [],
+        "suggested_bullets": [],
+    }
+    result = validate_and_clean(raw)
+    assert result["category_scores"]["role_alignment"] == 100
+    assert result["category_scores"]["skills_match"] == 0
