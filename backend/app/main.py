@@ -11,7 +11,7 @@ from app.core.config import settings
 from app.ingestion.chunker import chunk_text
 from app.embeddings.embedder import embed_texts
 from app.vectorstore.chroma import get_collection, add_documents
-
+from app.api import testimonial 
 KNOWLEDGE_BASE_DIR = Path("knowledge_base")
 COLLECTION_NAME = "knowledge_base"
 
@@ -75,7 +75,7 @@ app.include_router(health.router)
 app.include_router(upload.router)
 app.include_router(review.router)
 app.include_router(knowledge_base.router)
-
+app.include_router (testimonial.router)
 
 @app.get("/")
 def root():
