@@ -1,13 +1,17 @@
-from app.ingestion.parser import extract_text_from_pdf
+from app.ingestion.parser import extract_text_from_pdf, extract_text_from_docx
 from app.core.exceptions import InvalidFileTypeError, EmptyDocumentError
 
 
 def load_text_from_bytes(file_bytes: bytes, filename: str) -> str:
-    if not filename.lower().endswith((".pdf", ".txt")):
+    name = filename.lower()
+
+    if not name.endswith((".pdf", ".txt", ".docx")):
         raise InvalidFileTypeError(f"Unsupported file type: {filename}")
 
-    if filename.lower().endswith(".pdf"):
+    if name.endswith(".pdf"):
         text = extract_text_from_pdf(file_bytes)
+    elif name.endswith(".docx"):
+        text = extract_text_from_docx(file_bytes)
     else:
         text = file_bytes.decode("utf-8", errors="ignore")
 

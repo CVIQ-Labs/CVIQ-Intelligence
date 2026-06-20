@@ -65,10 +65,10 @@ def test_load_empty_txt_raises_error():
         load_text_from_bytes(b"   ", "empty.txt")
 
 
-def test_load_unsupported_extension_docx_raises_error():
-    """.docx files are not supported and should raise InvalidFileTypeError."""
+def test_load_unsupported_extension_jpg_raises_error():
+    """.jpg files are not supported and should raise InvalidFileTypeError."""
     with pytest.raises(InvalidFileTypeError):
-        load_text_from_bytes(b"PK fake docx bytes", "cv.docx")
+        load_text_from_bytes(b"fake image bytes", "photo.jpg")
 
 
 # --- Scorer ---
