@@ -129,22 +129,64 @@
 
 /* ── CV Modal ────────────────────────────────────────── */
 .cv-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 24px; }
-.cv-modal { background: #13151f; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; width: 100%; max-width: 780px; height: 85vh; display: flex; flex-direction: column; overflow: hidden; }
-.cv-modal-header { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.cv-modal-wide { background: #13151f; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; width: 100%; max-width: 1200px; height: 88vh; display: flex; flex-direction: column; overflow: hidden; }
+
+.cv-modal-header { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
 .cv-modal-title { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.8); }
 .cv-modal-close { background: none; border: none; color: rgba(255,255,255,0.4); font-size: 16px; cursor: pointer; padding: 4px 8px; border-radius: 6px; font-family: inherit; transition: all 0.2s; }
 .cv-modal-close:hover { color: #fff; background: rgba(255,255,255,0.08); }
-.cv-modal-body { flex: 1; overflow: hidden; position: relative; }
-.cv-modal-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 16px; color: rgba(255,255,255,0.4); font-size: 14px; }
-.cv-modal-error { display: flex; align-items: center; justify-content: center; height: 100%; color: #fca5a5; font-size: 14px; }
-.cv-modal-iframe { width: 100%; height: 100%; border: none; background: #fff; }
-.cv-modal-docx { height: 100%; overflow-y: auto; padding: 32px 40px; background: #fff; color: #1a1a1a; font-family: 'Times New Roman', serif; font-size: 14px; line-height: 1.7; }
-.cv-modal-docx h1, .cv-modal-docx h2, .cv-modal-docx h3 { color: #1a1a1a; margin-bottom: 8px; }
-.cv-modal-docx p { margin-bottom: 8px; }
+
+/* Two-panel split layout */
+.cv-modal-split { display: grid; grid-template-columns: 1fr 320px; flex: 1; overflow: hidden; min-height: 0; }
+
+/* Left panel */
+.cv-panel-left { overflow: hidden; border-right: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; min-height: 0; }
+.cv-modal-iframe { width: 100%; height: 100%; border: none; }
+.cv-modal-docx { height: 100%; overflow-y: auto; padding: 40px 48px; background: #fff; color: #1a1a1a; font-family: 'Arial', sans-serif; font-size: 14px; line-height: 1.7; }
+.cv-modal-docx h1, .cv-modal-docx h2, .cv-modal-docx h3 { color: #1a1a1a; margin-bottom: 8px; margin-top: 16px; }
+.cv-modal-docx h1:first-child, .cv-modal-docx h2:first-child { margin-top: 0; }
+.cv-modal-docx p { margin-bottom: 6px; }
 .cv-modal-docx ul { padding-left: 20px; margin-bottom: 8px; }
 .cv-modal-docx li { margin-bottom: 4px; }
 
+/* Right panel */
+.cv-panel-right { overflow-y: auto; background: #0f1117; display: flex; flex-direction: column; min-height: 0; }
+.cv-panel-right-header { padding: 14px 16px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.07); flex-shrink: 0; position: sticky; top: 0; background: #0f1117; z-index: 1; }
+.cv-panel-empty { padding: 20px 16px; font-size: 13px; color: rgba(255,255,255,0.3); }
+
+.cv-feedback-section { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.cv-feedback-section-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+
+.cv-feedback-item { margin-bottom: 8px; border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+.cv-feedback-item:last-child { margin-bottom: 0; }
+.cv-feedback-keyword { background: rgba(234,179,8,0.07); border: 1px solid rgba(234,179,8,0.2); }
+.cv-feedback-bullet { background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.2); }
+
+.cv-feedback-term { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.85); }
+.cv-feedback-hint { font-size: 11px; color: rgba(234,179,8,0.7); font-style: italic; }
+.cv-feedback-snippet { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.6; }
+
+.cv-feedback-original { font-size: 12px; color: rgba(255,255,255,0.35); line-height: 1.6; display: block; border-left: 2px solid rgba(255,255,255,0.1); padding-left: 8px; }
+
+.cv-bullet-arrow { display: flex; align-items: center; gap: 6px; margin: 6px 0; }
+.cv-bullet-arrow-line { flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+.cv-bullet-arrow-text { font-size: 10px; color: rgba(255,255,255,0.2); white-space: nowrap; }
+
+.cv-feedback-improved-wrap { display: flex; align-items: flex-start; gap: 8px; }
+.cv-feedback-improved { font-size: 12px; color: #93c5fd; line-height: 1.6; flex: 1; border-left: 2px solid #3b82f6; padding-left: 8px; display: block; }
+
+.cv-copy-btn { background: rgba(59,130,246,0.1); color: #93c5fd; border: 1px solid rgba(59,130,246,0.2); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+.cv-copy-btn:hover { background: rgba(59,130,246,0.2); }
+.cv-copy-btn.copied { background: rgba(29,158,117,0.15); color: #5dcaa5; border-color: rgba(29,158,117,0.3); }
+
+.cv-modal-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 16px; color: rgba(255,255,255,0.4); font-size: 14px; }
+.cv-modal-error { display: flex; align-items: center; justify-content: center; height: 100%; color: #fca5a5; font-size: 14px; }
+
+@media (max-width: 900px) {
+  .cv-modal-split { grid-template-columns: 1fr; grid-template-rows: 55% 45%; }
+  .cv-panel-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); }
+}
 @media (max-width: 600px) {
-  .cv-modal { height: 92vh; border-radius: 12px; }
-  .cv-modal-docx { padding: 20px; }
+  .cv-modal-wide { height: 94vh; border-radius: 12px; }
+  .cv-modal-docx { padding: 20px 22px; }
 }
