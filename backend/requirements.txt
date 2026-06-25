@@ -9,6 +9,7 @@ python-multipart==0.0.31
 pypdf==6.13.3
 python-docx==1.1.2
 fpdf2==2.8.7
+supabase==2.15.0
 
 # OpenAI
 openai==1.59.6

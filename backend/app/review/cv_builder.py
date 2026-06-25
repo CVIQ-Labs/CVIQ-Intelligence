@@ -3,6 +3,7 @@ from docx import Document
 from docx.shared import Pt, RGBColor
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
+import unicodedata
 from fpdf import FPDF
 
 
@@ -93,6 +94,11 @@ def build_edited_cv_docx(
     return buf.read()
 
 
+def _safe(text: str) -> str:
+    """Normalize unicode to latin-1 safe characters for Helvetica font."""
+    return unicodedata.normalize("NFKD", text).encode("latin-1", errors="replace").decode("latin-1")
+
+
 def build_edited_cv_pdf(
     cv_text: str,
     suggested_bullets: list[dict],
@@ -114,7 +120,7 @@ def build_edited_cv_pdf(
     pdf.set_text_color(40, 40, 40)
     for line in cv_text.split("\n"):
         stripped = line.strip()
-        pdf.multi_cell(0, 5, stripped if stripped else "", new_x="LMARGIN", new_y="NEXT")
+        pdf.multi_cell(0, 5, _safe(stripped) if stripped else "", new_x="LMARGIN", new_y="NEXT")
 
     # ── AI Suggested Improvements ────────────────────────────────────────────
     pdf.add_page()
@@ -147,11 +153,11 @@ def build_edited_cv_pdf(
             if original:
                 pdf.set_font("Helvetica", size=10)
                 pdf.set_text_color(150, 150, 150)
-                pdf.multi_cell(0, 5, f"  Original:  {original}", new_x="LMARGIN", new_y="NEXT")
+                pdf.multi_cell(0, 5, _safe(f"  Original:  {original}"), new_x="LMARGIN", new_y="NEXT")
 
             pdf.set_font("Helvetica", "B", 10)
             pdf.set_text_color(16, 112, 90)
-            pdf.multi_cell(0, 5, f"  Improved:  {improved}", new_x="LMARGIN", new_y="NEXT")
+            pdf.multi_cell(0, 5, _safe(f"  Improved:  {improved}"), new_x="LMARGIN", new_y="NEXT")
             pdf.ln(3)
 
     if missing_keywords:
@@ -164,7 +170,7 @@ def build_edited_cv_pdf(
         pdf.cell(0, 8, "Keywords to Add", new_x="LMARGIN", new_y="NEXT")
         pdf.set_font("Helvetica", size=10)
         pdf.set_text_color(40, 40, 40)
-        pdf.multi_cell(0, 6, ", ".join(missing_keywords), new_x="LMARGIN", new_y="NEXT")
+        pdf.multi_cell(0, 6, _safe(", ".join(missing_keywords)), new_x="LMARGIN", new_y="NEXT")
 
     if section_recommendations:
         pdf.ln(4)
@@ -177,6 +183,6 @@ def build_edited_cv_pdf(
         pdf.set_font("Helvetica", size=10)
         pdf.set_text_color(40, 40, 40)
         for rec in section_recommendations:
-            pdf.multi_cell(0, 6, f"  - {rec}", new_x="LMARGIN", new_y="NEXT")
+            pdf.multi_cell(0, 6, _safe(f"  - {rec}"), new_x="LMARGIN", new_y="NEXT")
 
     return bytes(pdf.output())
