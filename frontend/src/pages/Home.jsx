@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../styles/App.css'
+import Testimonials from '../components/Testimonials'
 
 function Home() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -154,6 +155,9 @@ function Home() {
           ))}
         </div>
       </section>
+
+      {/* Testimonials */}
+      <Testimonials />
 
       {/* CTA */}
       <section className="cta-section">
