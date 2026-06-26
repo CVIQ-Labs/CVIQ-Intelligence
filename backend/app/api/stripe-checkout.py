@@ -2,52 +2,86 @@ import os
 import stripe
 from fastapi import APIRouter, HTTPException
 
-# Create router (DO NOT create FastAPI() here)
 router = APIRouter()
 
-# Load Stripe secret safely (CI/CD won't crash if missing)
-STRIPE_SECRET = os.getenv("STRIPE_SECRET_KEY", "sk_test_dummy")
-client = stripe.StripeClient(STRIPE_SECRET)
+STRIPE_SECRET = os.getenv("STRIPE_SECRET_KEY")
+PRICE_ID = os.getenv("STRIPE_PRICE_ID")
+YOUR_DOMAIN = os.getenv(
+    "YOUR_DOMAIN",
+    "https://cv-reviewer-api.fly.dev"
+)
 
-# Your backend domain
-YOUR_DOMAIN = "https://cv-reviewer-api.fly.dev"
+
+def get_client():
+    if not STRIPE_SECRET:
+        raise HTTPException(
+            status_code=500,
+            detail="Stripe is not configured."
+        )
+    return stripe.StripeClient(STRIPE_SECRET)
 
 
 @router.post("/create-checkout-session")
 async def create_checkout_session():
-    """
-    Creates a Stripe Checkout Session and returns the client secret.
-    """
+
+    if not PRICE_ID:
+        raise HTTPException(
+            status_code=500,
+            detail="Missing STRIPE_PRICE_ID"
+        )
+
+    client = get_client()
+
     try:
-        session = client.v1.checkout.sessions.create(params={
-            "ui_mode": "embedded_page",
-            "line_items": [
-                {
-                    "price": "{{PRICE_ID}}",  # Replace with your real price ID
-                    "quantity": 1,
-                }
-            ],
-            "mode": "payment",
-            "return_url": f"{YOUR_DOMAIN}/return.html?session_id={{CHECKOUT_SESSION_ID}}",
-        })
+        session = client.v1.checkout.sessions.create(
+            params={
+                "ui_mode": "embedded",
+                "line_items": [
+                    {
+                        "price": PRICE_ID,
+                        "quantity": 1,
+                    }
+                ],
+                "mode": "payment",
+                "return_url": (
+                    f"{YOUR_DOMAIN}/return.html"
+                    "?session_id={{CHECKOUT_SESSION_ID}}"
+                ),
+            }
+        )
 
-        return {"clientSecret": session.client_secret}
+        return {
+            "clientSecret": session.client_secret
+        }
 
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except stripe.StripeError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
 
 
 @router.get("/session-status")
 async def session_status(session_id: str):
-    """
-    Retrieves the status of a Stripe Checkout Session.
-    """
+
+    client = get_client()
+
     try:
         session = client.v1.checkout.sessions.retrieve(session_id)
+
+        email = (
+            session.customer_details.email
+            if session.customer_details
+            else None
+        )
+
         return {
             "status": session.status,
-            "customer_email": session.customer_details.email,
+            "customer_email": email,
         }
 
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except stripe.StripeError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
