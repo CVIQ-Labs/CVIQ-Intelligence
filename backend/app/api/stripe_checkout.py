@@ -8,7 +8,7 @@ STRIPE_SECRET = os.getenv("STRIPE_SECRET_KEY")
 PRICE_ID = os.getenv("STRIPE_PRICE_ID")
 YOUR_DOMAIN = os.getenv(
     "YOUR_DOMAIN",
-    "https://cv-reviewer-api.fly.dev"
+    "http://129.159.222.241"
 )
 
 
@@ -33,7 +33,7 @@ async def create_checkout_session():
     client = get_client()
 
     try:
-        session = client.v1.checkout.sessions.create(
+        session = client.checkout.sessions.create(
             params={
                 "ui_mode": "embedded",
                 "line_items": [
@@ -67,7 +67,7 @@ async def session_status(session_id: str):
     client = get_client()
 
     try:
-        session = client.v1.checkout.sessions.retrieve(session_id)
+        session = client.checkout.sessions.retrieve(session_id)
 
         email = (
             session.customer_details.email
