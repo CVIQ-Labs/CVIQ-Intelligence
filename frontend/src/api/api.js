@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const BASE_URL = 'https://cv-reviewer-api.fly.dev'
+const BASE_URL = 'http://129.159.222.241'
 
 export const reviewCV = async (cvFile, jobDescription) => {
   const formData = new FormData()
@@ -8,6 +8,5 @@ export const reviewCV = async (cvFile, jobDescription) => {
   formData.append('job_description', jobDescription)
 
   const response = await axios.post(`${BASE_URL}/review`, formData)
-
   return response.data
 }

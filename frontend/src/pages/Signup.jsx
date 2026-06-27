@@ -1,17 +1,18 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../utils/supabase'
 import '../styles/Auth.css'
 
 function Signup() {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
-    username: '',
     email: '',
     password: '',
     confirmPassword: '',
   })
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
 
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
@@ -19,30 +20,67 @@ function Signup() {
   }
 
   const handleSubmit = async () => {
-    if (!formData.username.trim()) return setError({ title: 'Username required', message: 'Please choose a username.' })
     if (!formData.email.trim()) return setError({ title: 'Email required', message: 'Please enter your email address.' })
 
-    // Basic email format check — just looks for an @ and a dot after it
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
     if (!emailValid) return setError({ title: 'Invalid email', message: 'Please enter a valid email address.' })
 
     if (!formData.password) return setError({ title: 'Password required', message: 'Please choose a password.' })
     if (formData.password.length < 8) return setError({ title: 'Password too short', message: 'Your password must be at least 8 characters.' })
 
-    // Make sure the two password fields match before submitting
+    // Make sure the two password fields match
     if (formData.password !== formData.confirmPassword) return setError({ title: "Passwords don't match", message: 'Please make sure both passwords are the same.' })
 
     try {
       setLoading(true)
       setError(null)
-      // TODO: replace with real API call once Jamie's auth endpoint is live
-      // const response = await signupUser(formData)
-      // navigate('/upload')
+
+      // Sign up with Supabase — it creates the account and sends a confirmation email
+      const { data, error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+      })
+
+      if (authError) throw authError
+
+      // Supabase may require email confirmation depending on project settings —
+      // show a success message and let the user know to check their inbox
+      setSuccess(true)
     } catch (err) {
-      setError({ title: 'Signup failed', message: 'Something went wrong. Please try again.' })
+      setError({
+        title: 'Signup failed',
+        message: err.message || 'Something went wrong. Please try again.',
+      })
     } finally {
       setLoading(false)
     }
+  }
+
+  if (success) {
+    return (
+      <div className="auth-page">
+        <nav className="navbar">
+          <div className="nav-inner">
+            <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+              <div className="logo-mark">IQ</div>
+              <span className="logo-text">CV<span className="logo-accent">IQ</span></span>
+            </div>
+          </div>
+        </nav>
+        <div className="auth-container">
+          <div className="auth-card" style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '40px', marginBottom: '16px' }}>✉️</div>
+            <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', marginBottom: '12px' }}>Check your email</h1>
+            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '14px', lineHeight: 1.6, marginBottom: '24px' }}>
+              We've sent a confirmation link to <strong style={{ color: '#fff' }}>{formData.email}</strong>. Click it to activate your account then log in.
+            </p>
+            <button className="btn-primary" onClick={() => navigate('/login')}>
+              Go to login →
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -65,19 +103,6 @@ function Signup() {
           </div>
 
           <div className="auth-form">
-            <div className="field">
-              <label htmlFor="username">Username</label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                placeholder="Choose a username"
-                value={formData.username}
-                onChange={handleChange}
-                autoComplete="username"
-              />
-            </div>
-
             <div className="field">
               <label htmlFor="email">Email address</label>
               <input

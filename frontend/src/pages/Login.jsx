@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../utils/supabase'
 import '../styles/Auth.css'
 
 function Login() {
   const navigate = useNavigate()
-  const [formData, setFormData] = useState({ username: '', password: '' })
+  const [formData, setFormData] = useState({ email: '', password: '' })
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
 
@@ -14,18 +15,30 @@ function Login() {
   }
 
   const handleSubmit = async () => {
-    // Basic validation — check nothing is empty before sending
-    if (!formData.username.trim()) return setError({ title: 'Username required', message: 'Please enter your username.' })
+    if (!formData.email.trim()) return setError({ title: 'Email required', message: 'Please enter your email address.' })
     if (!formData.password) return setError({ title: 'Password required', message: 'Please enter your password.' })
 
     try {
       setLoading(true)
       setError(null)
-      // TODO: replace with real API call once Jamie's auth endpoint is live
-      // const response = await loginUser(formData.username, formData.password)
-      // navigate('/upload')
+
+      // Sign in with Supabase — it handles the session and JWT token automatically
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      })
+
+      if (authError) throw authError
+
+      // Once logged in, go straight to the upload page
+      navigate('/upload')
     } catch (err) {
-      setError({ title: 'Login failed', message: 'Incorrect username or password. Please try again.' })
+      setError({
+        title: 'Login failed',
+        message: err.message === 'Invalid login credentials'
+          ? 'Incorrect email or password. Please try again.'
+          : err.message || 'Something went wrong. Please try again.',
+      })
     } finally {
       setLoading(false)
     }
@@ -52,15 +65,15 @@ function Login() {
 
           <div className="auth-form">
             <div className="field">
-              <label htmlFor="username">Username</label>
+              <label htmlFor="email">Email address</label>
               <input
-                id="username"
-                name="username"
-                type="text"
-                placeholder="Enter your username"
-                value={formData.username}
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Enter your email"
+                value={formData.email}
                 onChange={handleChange}
-                autoComplete="username"
+                autoComplete="email"
               />
             </div>
 

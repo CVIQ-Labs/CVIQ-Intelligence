@@ -1,10 +1,6 @@
-const BASE_URL = 'https://cv-reviewer-api.fly.dev'
+const BASE_URL = 'http://129.159.222.241'
 
-// Calls the /download endpoint and triggers a file download in the browser.
-// Takes the original CV file (as base64), the review result, and the format
-// ('pdf' or 'docx') and streams the edited CV back as a downloadable file.
 export async function downloadEditedCV(cvFile, result, format) {
-  // Convert base64 back to a real File object so we can send it as FormData
   const binary = atob(cvFile.base64)
   const bytes = new Uint8Array(binary.length)
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
@@ -27,7 +23,6 @@ export async function downloadEditedCV(cvFile, result, format) {
     throw new Error(error.detail || 'Download failed. Please try again.')
   }
 
-  // Get the file content as a blob and trigger a browser download
   const fileBlob = await response.blob()
   const url = URL.createObjectURL(fileBlob)
   const a = document.createElement('a')
@@ -36,7 +31,5 @@ export async function downloadEditedCV(cvFile, result, format) {
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)
-
-  // Clean up the temporary URL to free memory
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }

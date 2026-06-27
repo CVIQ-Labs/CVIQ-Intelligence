@@ -1,59 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-// Placeholder testimonials 
-const PLACEHOLDER_TESTIMONIALS = [
-  {
-    id: 1,
-    name: 'Marcus Thompson',
-    role: 'Software Engineer Intern',
-    company: 'Goldman Sachs',
-    message: 'CVIQ completely transformed my CV. The keyword analysis showed me exactly what was missing for tech roles. Got my first internship offer within 2 weeks of applying the feedback.',
-    rating: 5,
-    avatar: 'M',
-    avatarColor: '#1d4ed8',
-  },
-  {
-    id: 2,
-    name: 'Priya Sharma',
-    role: 'Graduate Data Analyst',
-    company: 'Deloitte',
-    message: 'The recruiter score was a game changer. I went from a 4/10 to an 8/10 after one rewrite session. The bullet point suggestions were incredibly specific and actionable.',
-    rating: 5,
-    avatar: 'P',
-    avatarColor: '#0f6e56',
-  },
-  {
-    id: 3,
-    name: 'James Okafor',
-    role: 'DevOps Engineer',
-    company: 'KPMG',
-    message: 'I had no idea my CV was missing so many ATS keywords. After using CVIQ I started getting callbacks from companies I had applied to twice before with no response.',
-    rating: 5,
-    avatar: 'J',
-    avatarColor: '#6366f1',
-  },
-  {
-    id: 4,
-    name: 'Aisha Patel',
-    role: 'Machine Learning Engineer',
-    company: 'Amazon',
-    message: 'The AI rewrites saved me hours. Every suggested bullet followed the Action + Result format perfectly. Landed my grad role at Amazon — honestly could not have done it without CVIQ.',
-    rating: 5,
-    avatar: 'A',
-    avatarColor: '#f59e0b',
-  },
-  {
-    id: 5,
-    name: 'Tom Briggs',
-    role: 'Cloud Solutions Architect',
-    company: 'Accenture',
-    message: "What stood out was how role-specific the feedback was. It wasn't generic advice — it knew exactly what a cloud engineering CV needed and flagged every gap precisely.",
-    rating: 5,
-    avatar: 'T',
-    avatarColor: '#ec4899',
-  },
-]
+const BASE_URL = 'http://129.159.222.241'
 
 function StarRating({ rating }) {
   return (
@@ -66,6 +14,10 @@ function StarRating({ rating }) {
 }
 
 function TestimonialCard({ testimonial, isActive }) {
+  // Generate an avatar colour from the first letter of the name
+  const colours = ['#1d4ed8', '#0f6e56', '#6366f1', '#f59e0b', '#ec4899', '#ef4444', '#10b981']
+  const colourIndex = (testimonial.name?.charCodeAt(0) || 0) % colours.length
+
   return (
     <motion.div
       className={`testimonial-card ${isActive ? 'active' : ''}`}
@@ -73,35 +25,57 @@ function TestimonialCard({ testimonial, isActive }) {
       animate={{ opacity: isActive ? 1 : 0.45, scale: isActive ? 1 : 0.92, y: 0 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
     >
-      <StarRating rating={testimonial.rating} />
-      <p className="testimonial-message">"{testimonial.message}"</p>
+      <StarRating rating={5} />
+      <p className="testimonial-message">"{testimonial.content}"</p>
       <div className="testimonial-author">
-        <div className="testimonial-avatar" style={{ background: testimonial.avatarColor }}>
-          {testimonial.avatar}
+        <div className="testimonial-avatar" style={{ background: colours[colourIndex] }}>
+          {testimonial.name?.charAt(0).toUpperCase()}
         </div>
         <div className="testimonial-author-info">
           <span className="testimonial-name">{testimonial.name}</span>
-          <span className="testimonial-role">{testimonial.role} · {testimonial.company}</span>
+          {testimonial.role && <span className="testimonial-role">{testimonial.role}</span>}
         </div>
       </div>
     </motion.div>
   )
 }
 
-function SubmitForm({ onClose }) {
-  const [formData, setFormData] = useState({ name: '', role: '', company: '', message: '', rating: 5 })
+function SubmitForm({ onClose, onSubmitted }) {
+  const [formData, setFormData] = useState({ name: '', role: '', content: '' })
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   const handleChange = (e) => setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
 
   const handleSubmit = async () => {
-    if (!formData.name.trim() || !formData.message.trim()) return
+    if (!formData.name.trim()) return setError('Please enter your name.')
+    if (!formData.content.trim()) return setError('Please enter your testimonial.')
+
     try {
       setLoading(true)
-      // TODO: replace with real API call when Jamie's endpoint is ready
-      await new Promise(r => setTimeout(r, 800)) // simulate network delay for now
+      setError(null)
+
+      // POST to the real testimonials endpoint
+      const res = await fetch(`${BASE_URL}/testimonials`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          role: formData.role,
+          content: formData.content,
+        }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.detail || 'Submission failed.')
+      }
+
       setSubmitted(true)
+      onSubmitted() // refresh the testimonials list after submitting
+    } catch (err) {
+      setError(err.message || 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -129,35 +103,21 @@ function SubmitForm({ onClose }) {
             <input name="name" type="text" placeholder="e.g. Alex Johnson" value={formData.name} onChange={handleChange} />
           </div>
           <div className="field">
-            <label>Role</label>
-            <input name="role" type="text" placeholder="e.g. Software Engineer" value={formData.role} onChange={handleChange} />
+            <label>Role <span style={{ color: 'rgba(255,255,255,0.3)', fontWeight: 400 }}>(optional)</span></label>
+            <input name="role" type="text" placeholder="e.g. Software Engineer at Google" value={formData.role} onChange={handleChange} />
           </div>
-        </div>
-        <div className="field">
-          <label>Company</label>
-          <input name="company" type="text" placeholder="e.g. Google" value={formData.company} onChange={handleChange} />
         </div>
         <div className="field">
           <label>Your testimonial</label>
-          <textarea name="message" rows={4} placeholder="Tell us how CVIQ helped you..." value={formData.message} onChange={handleChange} />
-        </div>
-        <div className="field">
-          <label>Rating</label>
-          <div className="rating-selector">
-            {[1, 2, 3, 4, 5].map(i => (
-              <button
-                key={i}
-                className={`rating-star ${i <= formData.rating ? 'selected' : ''}`}
-                onClick={() => setFormData(prev => ({ ...prev, rating: i }))}
-                type="button"
-              >★</button>
-            ))}
-          </div>
+          <textarea name="content" rows={4} placeholder="Tell us how CVIQ helped you..." value={formData.content} onChange={handleChange} />
         </div>
       </div>
+
+      {error && <p style={{ color: '#fca5a5', fontSize: '13px', marginTop: '8px' }}>{error}</p>}
+
       <div className="testimonial-form-actions">
         <button className="btn-ghost-sm" onClick={onClose}>Cancel</button>
-        <button className="btn-dark" onClick={handleSubmit} disabled={loading || !formData.name.trim() || !formData.message.trim()}>
+        <button className="btn-dark" onClick={handleSubmit} disabled={loading || !formData.name.trim() || !formData.content.trim()}>
           {loading ? 'Submitting...' : 'Submit testimonial'}
         </button>
       </div>
@@ -166,47 +126,50 @@ function SubmitForm({ onClose }) {
 }
 
 function Testimonials() {
+  const [testimonials, setTestimonials] = useState([])
+  const [loading, setLoading] = useState(true)
   const [activeIndex, setActiveIndex] = useState(0)
   const [showForm, setShowForm] = useState(false)
   const intervalRef = useRef(null)
-  const total = PLACEHOLDER_TESTIMONIALS.length
 
-  // Resets the auto-advance timer — called any time the user manually navigates
+  const fetchTestimonials = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/testimonials`)
+      if (!res.ok) throw new Error('Failed to load')
+      const data = await res.json()
+      setTestimonials(data)
+    } catch {
+      // If the API fails, show nothing — don't crash the homepage
+      setTestimonials([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { fetchTestimonials() }, [])
+
+  const total = testimonials.length
+
   const resetTimer = () => {
     clearInterval(intervalRef.current)
-    if (!showForm) {
+    if (!showForm && total > 1) {
       intervalRef.current = setInterval(() => {
         setActiveIndex(prev => (prev + 1) % total)
       }, 5000)
     }
   }
 
-  // Auto-advance the carousel every 5 seconds, pauses when form is open
   useEffect(() => {
-    if (showForm) {
-      clearInterval(intervalRef.current)
-      return
-    }
+    if (showForm || total <= 1) { clearInterval(intervalRef.current); return }
     intervalRef.current = setInterval(() => {
       setActiveIndex(prev => (prev + 1) % total)
     }, 5000)
     return () => clearInterval(intervalRef.current)
-  }, [showForm])
+  }, [showForm, total])
 
-  const goTo = (index) => {
-    setActiveIndex(index)
-    resetTimer()
-  }
-
-  const goPrev = () => {
-    setActiveIndex(prev => (prev - 1 + total) % total)
-    resetTimer()
-  }
-
-  const goNext = () => {
-    setActiveIndex(prev => (prev + 1) % total)
-    resetTimer()
-  }
+  const goTo = (index) => { setActiveIndex(index); resetTimer() }
+  const goPrev = () => { setActiveIndex(prev => (prev - 1 + total) % total); resetTimer() }
+  const goNext = () => { setActiveIndex(prev => (prev + 1) % total); resetTimer() }
 
   return (
     <section className="testimonials-section" id="testimonials">
@@ -216,30 +179,51 @@ function Testimonials() {
 
       <AnimatePresence mode="wait">
         {showForm ? (
-          <SubmitForm key="form" onClose={() => setShowForm(false)} />
+          <SubmitForm
+            key="form"
+            onClose={() => setShowForm(false)}
+            onSubmitted={() => { fetchTestimonials(); setShowForm(false) }}
+          />
         ) : (
           <motion.div key="carousel" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <div className="testimonials-carousel">
-              {PLACEHOLDER_TESTIMONIALS.map((t, i) => (
-                <TestimonialCard key={t.id} testimonial={t} isActive={i === activeIndex} />
-              ))}
-            </div>
 
-            {/* Navigation row: prev arrow, dots, next arrow */}
-            <div className="testimonial-nav">
-              <button className="testimonial-arrow" onClick={goPrev} aria-label="Previous testimonial">←</button>
-              <div className="testimonial-dots">
-                {PLACEHOLDER_TESTIMONIALS.map((_, i) => (
-                  <button
-                    key={i}
-                    className={`testimonial-dot ${i === activeIndex ? 'active' : ''}`}
-                    onClick={() => goTo(i)}
-                    aria-label={`Go to testimonial ${i + 1}`}
-                  />
-                ))}
+            {loading && (
+              <div style={{ textAlign: 'center', padding: '48px 0', color: 'rgba(255,255,255,0.3)', fontSize: '14px' }}>
+                Loading testimonials...
               </div>
-              <button className="testimonial-arrow" onClick={goNext} aria-label="Next testimonial">→</button>
-            </div>
+            )}
+
+            {!loading && testimonials.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '48px 0', color: 'rgba(255,255,255,0.3)', fontSize: '14px' }}>
+                No testimonials yet — be the first to share your experience!
+              </div>
+            )}
+
+            {!loading && testimonials.length > 0 && (
+              <>
+                <div className="testimonials-carousel">
+                  {testimonials.map((t, i) => (
+                    <TestimonialCard key={t.id || i} testimonial={t} isActive={i === activeIndex} />
+                  ))}
+                </div>
+                {total > 1 && (
+                  <div className="testimonial-nav">
+                    <button className="testimonial-arrow" onClick={goPrev} aria-label="Previous">←</button>
+                    <div className="testimonial-dots">
+                      {testimonials.map((_, i) => (
+                        <button
+                          key={i}
+                          className={`testimonial-dot ${i === activeIndex ? 'active' : ''}`}
+                          onClick={() => goTo(i)}
+                          aria-label={`Go to testimonial ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                    <button className="testimonial-arrow" onClick={goNext} aria-label="Next">→</button>
+                  </div>
+                )}
+              </>
+            )}
 
             <div className="testimonial-cta">
               <button className="btn-outline-lg" onClick={() => setShowForm(true)}>
