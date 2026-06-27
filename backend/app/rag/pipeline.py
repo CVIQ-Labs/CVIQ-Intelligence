@@ -22,7 +22,7 @@ except Exception as e:
     logger.warning(f"Langfuse init failed: {e}")
 
 
-def run_review_pipeline(cv_text: str, job_description: str) -> dict:
+def run_review_pipeline(cv_text: str, job_description: str, tier: str = "paid") -> dict:
     t0 = time.perf_counter()
     trace = None
     try:
@@ -42,7 +42,7 @@ def run_review_pipeline(cv_text: str, job_description: str) -> dict:
 
     query = f"{cv_text[:1000]}\n\n{job_description[:500]}"
     context_chunks = retrieve_context(query, n_results=6, trace=trace)
-    result = generate_review(cv_text, job_description, context_chunks, trace=trace)
+    result = generate_review(cv_text, job_description, context_chunks, trace=trace, tier=tier)
 
     total_ms = (time.perf_counter() - t0) * 1000
     print(f"[pipeline] total_latency={total_ms:.0f}ms")

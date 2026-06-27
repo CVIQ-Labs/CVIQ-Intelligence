@@ -90,8 +90,10 @@ async def review_cv(
     _detect_pii(cv_text)
 
     # ── Pipeline ──────────────────────────────────────────────────────────────
+    # tier will come from Stripe subscription check once billing is implemented
+    tier = "paid"
     try:
-        raw_review = run_review_pipeline(cv_text, job_description)
+        raw_review = run_review_pipeline(cv_text, job_description, tier=tier)
     except CVReviewerError as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -1,11 +1,9 @@
 import json
 import time
-from openai import OpenAI
 from app.core.config import settings
+from app.core.llm import get_llm_client
 from app.core.exceptions import LLMError
 from app.rag.prompts import SYSTEM_PROMPT, build_review_prompt
-
-client = OpenAI(api_key=settings.openai_api_key)
 
 _COST_PER_INPUT_TOKEN = 0.15 / 1_000_000
 _COST_PER_OUTPUT_TOKEN = 0.60 / 1_000_000
@@ -43,7 +41,10 @@ def _check_output_gate(review: dict) -> dict:
     return review
 
 
-def generate_review(cv_text: str, job_description: str, context_chunks: list[str], trace=None) -> dict:
+def generate_review(cv_text: str, job_description: str, context_chunks: list[str], trace=None, tier: str = "paid") -> dict:
+    client, model = get_llm_client(tier)
+    is_openai = tier != "free"
+
     user_prompt = build_review_prompt(cv_text, job_description, context_chunks)
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
@@ -52,10 +53,10 @@ def generate_review(cv_text: str, job_description: str, context_chunks: list[str
 
     generation = None
     try:
-        if trace:
+        if trace and is_openai:
             generation = trace.generation(
                 name="gpt-review",
-                model=settings.openai_model,
+                model=model,
                 input=messages,
             )
     except Exception:
@@ -64,7 +65,7 @@ def generate_review(cv_text: str, job_description: str, context_chunks: list[str
     t0 = time.perf_counter()
     try:
         response = client.chat.completions.create(
-            model=settings.openai_model,
+            model=model,
             messages=messages,
             temperature=0.2,
             response_format={"type": "json_object"},
@@ -76,23 +77,31 @@ def generate_review(cv_text: str, job_description: str, context_chunks: list[str
                 generation.end(level="ERROR", status_message=str(e))
         except Exception:
             pass
-        raise LLMError(f"GPT call failed: {e}") from e
+        raise LLMError(f"LLM call failed: {e}") from e
 
     elapsed_ms = (time.perf_counter() - t0) * 1000
     usage = response.usage
-    cost = (usage.prompt_tokens * _COST_PER_INPUT_TOKEN) + (usage.completion_tokens * _COST_PER_OUTPUT_TOKEN)
-    print(
-        f"[llm] prompt={usage.prompt_tokens} completion={usage.completion_tokens} "
-        f"total={usage.total_tokens} cost=${cost:.4f} latency={elapsed_ms:.0f}ms"
-    )
 
-    if cost > _COST_ALERT_THRESHOLD_USD:
-        print(f"[alert] type=cost_spike cost=${cost:.4f} threshold=${_COST_ALERT_THRESHOLD_USD:.4f}")
-        try:
-            if trace:
-                trace.event(name="cost_spike", metadata={"cost_usd": round(cost, 6), "threshold_usd": _COST_ALERT_THRESHOLD_USD})
-        except Exception:
-            pass
+    if is_openai:
+        cost = (usage.prompt_tokens * _COST_PER_INPUT_TOKEN) + (usage.completion_tokens * _COST_PER_OUTPUT_TOKEN)
+        print(
+            f"[llm] provider=openai model={model} prompt={usage.prompt_tokens} completion={usage.completion_tokens} "
+            f"total={usage.total_tokens} cost=${cost:.4f} latency={elapsed_ms:.0f}ms"
+        )
+        if cost > _COST_ALERT_THRESHOLD_USD:
+            print(f"[alert] type=cost_spike cost=${cost:.4f} threshold=${_COST_ALERT_THRESHOLD_USD:.4f}")
+            try:
+                if trace:
+                    trace.event(name="cost_spike", metadata={"cost_usd": round(cost, 6), "threshold_usd": _COST_ALERT_THRESHOLD_USD})
+            except Exception:
+                pass
+    else:
+        cost = 0.0
+        print(
+            f"[llm] provider=ollama model={model} prompt={usage.prompt_tokens} completion={usage.completion_tokens} "
+            f"latency={elapsed_ms:.0f}ms"
+        )
+
     if elapsed_ms > _LATENCY_ALERT_THRESHOLD_MS:
         print(f"[alert] type=inference_latency_spike latency={elapsed_ms:.0f}ms threshold={_LATENCY_ALERT_THRESHOLD_MS}ms")
         try:
@@ -122,6 +131,6 @@ def generate_review(cv_text: str, job_description: str, context_chunks: list[str
     try:
         review = json.loads(raw)
     except json.JSONDecodeError as e:
-        raise LLMError(f"GPT returned invalid JSON: {e}\nRaw response: {raw}") from e
+        raise LLMError(f"LLM returned invalid JSON: {e}\nRaw response: {raw}") from e
 
     return _check_output_gate(review)

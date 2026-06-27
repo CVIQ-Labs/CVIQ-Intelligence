@@ -18,8 +18,8 @@ resource "oci_core_instance" "cv_reviewer" {
   shape               = "VM.Standard.A1.Flex"
 
   shape_config {
-    ocpus         = 4
-    memory_in_gbs = 24
+    ocpus         = 1
+    memory_in_gbs = 6
   }
 
   source_details {
@@ -37,18 +37,31 @@ resource "oci_core_instance" "cv_reviewer" {
     ssh_authorized_keys = file(var.ssh_public_key_path)
     user_data = base64encode(<<-EOT
       #!/bin/bash
+      set -e
       apt-get update -y
-      apt-get install -y ca-certificates curl gnupg
+      apt-get install -y ca-certificates curl gnupg debian-keyring debian-archive-keyring apt-transport-https
+
+      # Docker (arm64)
       install -m 0755 -d /etc/apt/keyrings
       curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
       chmod a+r /etc/apt/keyrings/docker.gpg
       echo "deb [arch=arm64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list
       apt-get update -y
-      apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin caddy
+      apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
       usermod -aG docker ubuntu
+      systemctl enable docker
+      systemctl start docker
+
+      # Caddy (from official Cloudsmith repo)
+      curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+      curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
+      apt-get update -y
+      apt-get install -y caddy
+      systemctl enable caddy
+      systemctl start caddy
+
+      # App data directory
       mkdir -p /app/data/chroma
-      systemctl enable docker caddy
-      systemctl start docker caddy
     EOT
     )
   }
