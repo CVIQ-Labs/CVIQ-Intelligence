@@ -1,4 +1,4 @@
-const BASE_URL = 'http://129.159.222.241'
+const BASE_URL = 'https://cvreview-api.duckdns.org'
 
 export async function downloadEditedCV(cvFile, result, format) {
   const binary = atob(cvFile.base64)
