@@ -488,7 +488,7 @@ export default function Home() {
             <a href="#team">Team</a>
             <a href="#pricing">Pricing</a>
           </div>
-          <p className="b-footer-copy">© 2026 CVIQ Inc. · CV Intelligence · Built with FastAPI, React & GPT-4o</p>
+          <p className="b-footer-copy">© 2026 CVIQ Inc. · CV Intelligence ·</p>
         </div>
       </footer>
     </div>
