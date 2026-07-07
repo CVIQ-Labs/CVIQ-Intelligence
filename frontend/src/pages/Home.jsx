@@ -269,7 +269,7 @@ export default function Home() {
             Stop losing jobs<br />to a <em>broken</em> CV.
           </h1>
           <p className="b-hero-sub">
-            75% of CVs never reach a human. CVIQ tells you exactly what's wrong and rewrites it for you — in seconds.
+            75% of CVs never reach a human. CVIQ tells you exactly what's wrong and rewrites it for you, in seconds.
           </p>
           <div className="b-hero-actions">
             <button className="b-btn-primary" onClick={() => navigate('/upload')}>
@@ -366,7 +366,7 @@ export default function Home() {
             <div className="b-hiw-text">
               <div className="b-hiw-step">Step 03</div>
               <h3 className="b-hiw-title">Get your review</h3>
-              <p className="b-hiw-body">Scores, keyword gaps, strengths, weaknesses, and AI-rewritten bullets — in seconds.</p>
+              <p className="b-hiw-body">Scores, keyword gaps, strengths, weaknesses, and AI-rewritten bullets, in seconds.</p>
             </div>
           </div>
 
@@ -385,9 +385,9 @@ export default function Home() {
             { title: 'Recruiter Feedback Score', body: 'A 0–10 score based on how a real recruiter would evaluate your CV, with colour-coded feedback bands.' },
             { title: 'ATS Compatibility Check', body: 'See your ATS score and exactly which keywords are missing based on the job description.' },
             { title: 'AI Bullet Rewrites', body: 'Every weak bullet gets rewritten in the Action + Impact format that recruiters look for.' },
-            { title: 'Download Your Improved CV', body: 'Get your tailored CV as a PDF or .docx — ready to send, with all improvements applied.' },
+            { title: 'Download Your Improved CV', body: 'Get your tailored CV as a PDF or .docx, ready to send, with all improvements applied.' },
             { title: 'CV Preview with Feedback', body: 'View your CV side-by-side with the feedback so you know exactly which lines need changing.' },
-            { title: 'Category Breakdown', body: 'Scores across 6 categories — impact, relevance, structure, clarity, ATS, and keywords.' },
+            { title: 'Category Breakdown', body: 'Scores across 6 categories: impact, relevance, structure, clarity, ATS, and keywords.' },
           ].map((f, i) => (
             <div key={i} className="b-feature-card reveal" style={{ transitionDelay: `${i * 0.07}s` }}>
               <div className="b-feature-icon">{f.icon}</div>
@@ -408,8 +408,8 @@ export default function Home() {
         </div>
         <div className="b-team-cards">
           {[
-            { name: 'Jamie Moore-Arthur', role: 'Product & Backend', colour: '#1d4ed8', initial: 'J', bio: 'Product lead and backend engineer. Built the AI review pipeline and RAG architecture powering CVIQ.' },
-            { name: 'Oluwaseyi Bello', role: 'Infrastructure & DevOps', colour: '#0f6e56', initial: 'S', bio: 'Infrastructure engineer. Manages the Oracle Cloud VM, CI/CD pipeline, and backend systems.' },
+            { name: 'Jamie Moore-Arthur', role: 'Product & Backend', colour: '#1d4ed8', initial: 'J', bio: 'Product lead and backend engineer. Designed the product vision, backend systems, and systems design for CVIQ.' },
+            { name: 'Oluwaseyi Bello', role: 'AI Engineering & Infrastructure', colour: '#0f6e56', initial: 'S', bio: 'Built the AI review pipeline and RAG architecture powering CVIQ. Manages the Oracle Cloud VM, CI/CD pipeline, and backend infrastructure.' },
             { name: 'Rochelle Smith', role: 'Frontend Engineer', colour: '#6366f1', initial: 'R', bio: 'Frontend engineer responsible for the product UI, design system, and user experience across the app.' },
             { name: 'Sade Smith', role: 'Frontend Engineer', colour: '#6366f1', initial: 'S', bio: 'Frontend engineer responsible for the product UI, design system, and user experience across the app.' },
           ].map((m, i) => (
