@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const BASE_URL = 'http://129.159.222.241'
+const BASE_URL = 'https://cvreview-api.duckdns.org'
 
 function StarRating({ rating }) {
   return (
