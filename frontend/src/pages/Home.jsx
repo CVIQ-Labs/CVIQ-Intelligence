@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Testimonials from '../components/Testimonials'
 import '../styles/App.css'
@@ -20,7 +20,6 @@ function useCountUp(from, to, duration, start) {
   return value
 }
 
-// Adds a `revealed` class to each child element as it scrolls into view
 function useScrollReveal(selector = '.reveal') {
   useEffect(() => {
     const els = document.querySelectorAll(selector)
@@ -55,7 +54,6 @@ function ScoreDemo() {
 
   return (
     <div className="b-demo">
-      {/* Browser chrome */}
       <div className="b-demo-bar">
         <div className="b-demo-dots"><span /><span /><span /></div>
         <div className="b-demo-url">cviq.app/results</div>
@@ -64,8 +62,6 @@ function ScoreDemo() {
           Live analysis running
         </div>
       </div>
-
-      {/* Results hero band */}
       <div className="b-demo-hero-band">
         <div>
           <div className="b-demo-hero-eyebrow">
@@ -74,11 +70,9 @@ function ScoreDemo() {
           <div className="b-demo-hero-title">Your CV results</div>
           <div className="b-demo-hero-sub">Here's how your CV performed against the job description.</div>
         </div>
-        <button className="b-demo-view-btn">📄 View my CV</button>
+        <button className="b-demo-view-btn">View my CV</button>
       </div>
-
       <div className="b-demo-body">
-        {/* Score cards row */}
         <div className="b-demo-scores-row">
           <div className="b-demo-score-hero">
             <div className="b-demo-score-label">Recruiter Feedback Score</div>
@@ -98,8 +92,6 @@ function ScoreDemo() {
             <div className="b-demo-score-sm" style={{ color: col(overall, 70) }}>{overall}%</div>
           </div>
         </div>
-
-        {/* Lower panels */}
         <div className="b-demo-lower">
           <div className="b-demo-keywords">
             <div className="b-demo-kw-label">Missing Keywords</div>
@@ -121,7 +113,6 @@ function ScoreDemo() {
   )
 }
 
-// Before/after CV document visual — shows a real CV being transformed
 function CVBeforeAfter() {
   const [show, setShow] = useState(false)
 
@@ -150,11 +141,10 @@ function CVBeforeAfter() {
       <div className="b-section-head">
         <div className="b-label">AI Transformation</div>
         <h2 className="b-h2">See what CVIQ<br />does to your CV.</h2>
-        <p className="b-section-sub">A real before-and-after. Same candidate, a completely different impression.</p>
+        <p className="b-section-sub">A real before and after. Same candidate, a completely different impression.</p>
       </div>
-
       <div className="b-cv-compare">
-        {/* Before CV */}
+
         <div className={`b-cv-doc b-cv-before ${show ? 'show' : ''}`}>
           <div className="b-cv-doc-header b-cv-doc-header-bad">
             <span className="b-cv-doc-status">Before CVIQ</span>
@@ -180,18 +170,16 @@ function CVBeforeAfter() {
               ))}
             </div>
             <div className="b-cv-missing">
-              <span className="b-cv-missing-label">⚠ Missing: Docker, CI/CD, TypeScript, Agile, REST APIs, Kubernetes</span>
+              <span className="b-cv-missing-label">Missing: Docker, CI/CD, TypeScript, Agile, REST APIs, Kubernetes</span>
             </div>
           </div>
         </div>
 
-        {/* Arrow */}
         <div className="b-cv-arrow-wrap">
           <div className={`b-cv-arrow ${show ? 'active' : ''}`}>→</div>
           <div className="b-cv-arrow-label">AI rewrites</div>
         </div>
 
-        {/* After CV */}
         <div className={`b-cv-doc b-cv-after ${show ? 'show' : ''}`}>
           <div className="b-cv-doc-header b-cv-doc-header-good">
             <span className="b-cv-doc-status">After CVIQ</span>
@@ -220,6 +208,7 @@ function CVBeforeAfter() {
             </div>
           </div>
         </div>
+
       </div>
     </section>
   )
@@ -229,7 +218,6 @@ export default function Home() {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
 
-  // Wire up scroll reveal for all elements with the `reveal` class
   useScrollReveal('.reveal')
 
   return (
@@ -269,7 +257,7 @@ export default function Home() {
             Stop losing jobs<br />to a <em>broken</em> CV.
           </h1>
           <p className="b-hero-sub">
-            75% of CVs never reach a human. CVIQ tells you exactly what's wrong and rewrites it for you, in seconds.
+            75% of CVs never reach a human. CVIQ tells you exactly what's wrong and rewrites it for you in seconds.
           </p>
           <div className="b-hero-actions">
             <button className="b-btn-primary" onClick={() => navigate('/upload')}>
@@ -309,7 +297,7 @@ export default function Home() {
                     <div className="b-vis-upload-progress" />
                   </div>
                 </div>
-                <div className="b-vis-upload-badge">✓ Uploaded & parsed</div>
+                <div className="b-vis-upload-badge">Uploaded & parsed</div>
               </div>
             </div>
             <div className="b-hiw-text">
@@ -323,7 +311,7 @@ export default function Home() {
             <div className="b-hiw-visual b-hiw-visual-2">
               <div className="b-vis-paste">
                 <div className="b-vis-paste-box">
-                  <div className="b-vis-paste-label">📋 Job Description</div>
+                  <div className="b-vis-paste-label">Job Description</div>
                   <div className="b-vis-paste-role">Software Engineer · Google</div>
                   <div className="b-vis-paste-line" style={{ width: '100%' }} />
                   <div className="b-vis-paste-line" style={{ width: '88%' }} />
@@ -332,7 +320,7 @@ export default function Home() {
                     <span>Python</span><span>React</span><span>AWS</span>
                   </div>
                 </div>
-                <div className="b-vis-paste-badge">✓ 47 keywords extracted</div>
+                <div className="b-vis-paste-badge">47 keywords extracted</div>
               </div>
             </div>
             <div className="b-hiw-text">
@@ -356,17 +344,17 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="b-vis-result-row">
-                  <span className="b-vis-result-label">✓ Strong experience section</span>
+                  <span className="b-vis-result-label">Strong experience section</span>
                 </div>
                 <div className="b-vis-result-row b-vis-result-warn">
-                  <span className="b-vis-result-label">↑ Add: Docker, Kubernetes</span>
+                  <span className="b-vis-result-label">Add: Docker, Kubernetes</span>
                 </div>
               </div>
             </div>
             <div className="b-hiw-text">
               <div className="b-hiw-step">Step 03</div>
               <h3 className="b-hiw-title">Get your review</h3>
-              <p className="b-hiw-body">Scores, keyword gaps, strengths, weaknesses, and AI-rewritten bullets, in seconds.</p>
+              <p className="b-hiw-body">Scores, keyword gaps, strengths, weaknesses, and AI-rewritten bullets in seconds.</p>
             </div>
           </div>
 
@@ -382,15 +370,14 @@ export default function Home() {
         </div>
         <div className="b-features-grid">
           {[
-            { title: 'Recruiter Feedback Score', body: 'A 0–10 score based on how a real recruiter would evaluate your CV, with colour-coded feedback bands.' },
+            { title: 'Recruiter Feedback Score', body: 'A 0 to 10 score based on how a real recruiter would evaluate your CV, with colour-coded feedback bands.' },
             { title: 'ATS Compatibility Check', body: 'See your ATS score and exactly which keywords are missing based on the job description.' },
-            { title: 'AI Bullet Rewrites', body: 'Every weak bullet gets rewritten in the Action + Impact format that recruiters look for.' },
-            { title: 'Download Your Improved CV', body: 'Get your tailored CV as a PDF or .docx, ready to send, with all improvements applied.' },
-            { title: 'CV Preview with Feedback', body: 'View your CV side-by-side with the feedback so you know exactly which lines need changing.' },
-            { title: 'Category Breakdown', body: 'Scores across 6 categories: impact, relevance, structure, clarity, ATS, and keywords.' },
+            { title: 'AI Bullet Rewrites', body: 'Every weak bullet gets rewritten in the Action plus Impact format that recruiters look for.' },
+            { title: 'Download Your Improved CV', body: 'Get your tailored CV as a PDF or .docx, ready to send with all improvements applied.' },
+            { title: 'CV Preview with Feedback', body: 'View your CV side by side with the feedback so you know exactly which lines need changing.' },
+            { title: 'Category Breakdown', body: 'Scores across six categories: impact, relevance, structure, clarity, ATS, and keywords.' },
           ].map((f, i) => (
             <div key={i} className="b-feature-card reveal" style={{ transitionDelay: `${i * 0.07}s` }}>
-              <div className="b-feature-icon">{f.icon}</div>
               <h3 className="b-feature-title">{f.title}</h3>
               <p className="b-feature-body">{f.body}</p>
             </div>
@@ -408,10 +395,10 @@ export default function Home() {
         </div>
         <div className="b-team-cards">
           {[
-            { name: 'Jamie Moore-Arthur', role: 'Product & Backend', colour: '#1d4ed8', initial: 'J', bio: 'Product lead and backend engineer. Designed the product vision, backend systems, and systems design for CVIQ.' },
-            { name: 'Oluwaseyi Bello', role: 'AI Engineering & Infrastructure', colour: '#0f6e56', initial: 'S', bio: 'Built the AI review pipeline and RAG architecture powering CVIQ. Manages the Oracle Cloud VM, CI/CD pipeline, and backend infrastructure.' },
-            { name: 'Rochelle Smith', role: 'Frontend Engineer', colour: '#6366f1', initial: 'R', bio: 'Frontend engineer responsible for the product UI, design system, and user experience across the app.' },
-            { name: 'Sade Smith', role: 'Frontend Engineer', colour: '#6366f1', initial: 'S', bio: 'Frontend engineer responsible for the product UI, design system, and user experience across the app.' },
+            { name: 'Jamie Moore-Arthur', role: 'Founder & CEO', colour: '#1d4ed8', initial: 'J', bio: 'Product lead and backend engineer. Built the AI review pipeline and RAG architecture powering CVIQ.' },
+            { name: 'Oluwaseyi Bello', role: 'Co-Founder & Head of AI Engineering', colour: '#0f6e56', initial: 'S', bio: 'Infrastructure engineer. Manages the Oracle Cloud VM, CI/CD pipeline, and backend systems.' },
+            { name: 'Rochelle Smith', role: 'Head of UI/UX & Frontend Engineering', colour: '#6366f1', initial: 'R', bio: 'Frontend engineer responsible for the product UI, design system, and user experience across the app.' },
+            { name: 'Sade Smith', role: 'Head of UI/UX & Frontend Engineering', colour: '#a855f7', initial: 'S', bio: 'Frontend engineer responsible for the product UI, design system, and user experience across the app.' },
           ].map((m, i) => (
             <div key={i} className="b-team-card reveal" style={{ transitionDelay: `${i * 0.1}s` }}>
               <div className="b-team-avatar" style={{ background: m.colour }}>{m.initial}</div>
@@ -488,7 +475,7 @@ export default function Home() {
             <a href="#team">Team</a>
             <a href="#pricing">Pricing</a>
           </div>
-          <p className="b-footer-copy">© 2026 CVIQ Inc. · CV Intelligence ·</p>
+          <p className="b-footer-copy">© 2026 CVIQ Inc. · CV Intelligence · Built with FastAPI, React & GPT-4o</p>
         </div>
       </footer>
     </div>
