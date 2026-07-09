@@ -10,10 +10,10 @@ _COST_PER_OUTPUT_TOKEN = 0.60 / 1_000_000
 _COST_ALERT_THRESHOLD_USD = 0.01   # alert if a single request exceeds 1 cent
 _LATENCY_ALERT_THRESHOLD_MS = 8_000  # alert if inference alone exceeds 8 s
 
-# Token budget: the review JSON (scores, keywords, bullets) uses ~220-260 tokens
-# in practice. 800 is a hard ceiling that prevents runaway output costs while
-# leaving enough headroom for verbose responses.
-_MAX_OUTPUT_TOKENS = 2000
+# Section 2 expanded the schema significantly (subscores, missing_points, line_feedback,
+# alternatives, summary_improvement). Full response now runs 3000-5000 tokens.
+# 6000 gives safe headroom without risking truncated JSON.
+_MAX_OUTPUT_TOKENS = 6000
 
 # Caching note: OpenAI automatic prompt caching applies to prefixes >1024 tokens.
 # The system prompt alone is well under that, and every user prompt is unique
