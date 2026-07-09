@@ -402,3 +402,4 @@ Built by [Seyi Bello](https://github.com/seyiabello), [Jamie Moore-Arthur](https
 - **Seyi** - AI/application layer: RAG pipeline, embeddings, vector store, review logic, API endpoints, infrastructure (Fly.io, Terraform, Kubernetes, Azure), CI/CD, security scanning
 - **Jamie** - Knowledge base content, ingestion pipeline, file upload, FastAPI contributions
 - **Rochelle** - Frontend: React UI, component design, upload flow, results display, Vercel deployment
+- **Sade** Frontend: React UI, component design, upload flow, results display, Vercel deployment
