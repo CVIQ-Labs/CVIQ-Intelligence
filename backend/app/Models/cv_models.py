@@ -3,7 +3,14 @@ from pydantic import BaseModel, Field
 
 class SuggestedBullet(BaseModel):
     original: str
-    improved: str
+    improved: str  # first alternative, kept for backward compat
+    alternatives: list[str] = Field(default_factory=list)  # 2-3 rewrite options
+
+
+class LineFeedback(BaseModel):
+    cv_line: str
+    issue: str
+    suggestion: str
 
 
 class CategoryScores(BaseModel):
@@ -20,6 +27,8 @@ class CategoryBreakdown(BaseModel):
     explanation: str
     what_is_weak: str
     how_to_improve: str
+    subscores: dict[str, int] = Field(default_factory=dict)
+    missing_points: list[str] = Field(default_factory=list)
 
 
 class CategoryBreakdowns(BaseModel):
@@ -39,9 +48,12 @@ class ReviewResponse(BaseModel):
     category_scores: CategoryScores
     category_breakdowns: CategoryBreakdowns
     recruiter_reasoning: str
+    recruiter_commentary: str
     role_alignment: str
     missing_keywords: list[str]
     strengths: list[str]
     weaknesses: list[str]
     section_recommendations: list[str]
     suggested_bullets: list[SuggestedBullet]
+    line_feedback: list[LineFeedback] = Field(default_factory=list)
+    summary_improvement: str = ""

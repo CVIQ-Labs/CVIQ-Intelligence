@@ -28,14 +28,43 @@ def validate_and_clean(raw: dict) -> dict:
     raw["section_recommendations"] = raw.get("section_recommendations") or []
     raw["suggested_bullets"] = raw.get("suggested_bullets") or []
 
-    # Ensure recruiter_reasoning is always a string
+    # Ensure string fields are always strings
     raw["recruiter_reasoning"] = raw.get("recruiter_reasoning") or ""
+    raw["recruiter_commentary"] = raw.get("recruiter_commentary") or ""
+    raw["summary_improvement"] = raw.get("summary_improvement") or ""
+
+    # Ensure list fields
+    raw["line_feedback"] = raw.get("line_feedback") or []
 
     # Ensure category_breakdowns has all 7 keys with valid structure
-    _blank_breakdown = {"explanation": "", "what_is_weak": "", "how_to_improve": ""}
-    breakdowns = raw.get("category_breakdowns") or {}
-    raw["category_breakdowns"] = {
-        k: breakdowns.get(k) or _blank_breakdown for k in _CATEGORY_KEYS
+    _blank_breakdown = {
+        "explanation": "",
+        "what_is_weak": "",
+        "how_to_improve": "",
+        "subscores": {},
+        "missing_points": [],
     }
+    breakdowns = raw.get("category_breakdowns") or {}
+    cleaned_breakdowns = {}
+    for k in _CATEGORY_KEYS:
+        bd = breakdowns.get(k) or {}
+        cleaned_breakdowns[k] = {
+            "explanation": bd.get("explanation") or "",
+            "what_is_weak": bd.get("what_is_weak") or "",
+            "how_to_improve": bd.get("how_to_improve") or "",
+            "subscores": bd.get("subscores") or {},
+            "missing_points": bd.get("missing_points") or [],
+        }
+    raw["category_breakdowns"] = cleaned_breakdowns
+
+    # Ensure suggested_bullets have alternatives field
+    bullets = raw.get("suggested_bullets") or []
+    for b in bullets:
+        if isinstance(b, dict):
+            if "alternatives" not in b:
+                b["alternatives"] = [b.get("improved", "")] if b.get("improved") else []
+            if "improved" not in b and b.get("alternatives"):
+                b["improved"] = b["alternatives"][0]
+    raw["suggested_bullets"] = bullets
 
     return raw
