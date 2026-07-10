@@ -1,44 +1,25 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { fade } from '../utils/animations'
 
-function KeywordList({ keywords }) {
-  const [copiedIndex, setCopiedIndex] = useState(null)
-
-  if (!keywords || keywords.length === 0) return null
-
-  const handleCopy = async (kw, index) => {
-    try {
-      await navigator.clipboard.writeText(kw)
-      setCopiedIndex(index)
-      setTimeout(() => setCopiedIndex(prev => (prev === index ? null : prev)), 1500)
-    } catch {
-      // Clipboard API can fail (permissions, insecure context) — fail silently,
-      // the tag just won't show the "copied" state
-    }
+export default function KeywordList({ keywords }) {
+  const [copied, setCopied] = useState(null)
+  if (!keywords?.length) return null
+  const copy = async (kw, i) => {
+    try { await navigator.clipboard.writeText(kw); setCopied(i); setTimeout(() => setCopied(p => p===i?null:p), 1400) } catch {}
   }
-
   return (
-    <div className="result-card">
-      <div className="result-card-header">
-        <div className="result-card-icon">🔑</div>
-        <span className="result-card-title">Missing keywords</span>
-        <span className="result-card-hint">Click a keyword to copy it</span>
+    <motion.section className="section" variants={fade}>
+      <div className="section-label">ATS Gaps</div>
+      <h2 className="section-h2">Missing keywords</h2>
+      <p className="section-sub">These terms appear in the job description but not in your CV. Click any keyword to copy it.</p>
+      <div className="keywords-cloud">
+        {keywords.map((kw, i) => (
+          <button key={kw} className={`keyword-pill ${copied===i?'keyword-pill-copied':''}`} onClick={() => copy(kw, i)}>
+            {copied===i ? <><span className="pill-check">✓</span> Copied</> : <><span className="pill-plus">+</span> {kw}</>}
+          </button>
+        ))}
       </div>
-      <div className="result-card-body">
-        <div className="keyword-tags">
-          {keywords.map((kw, i) => (
-            <button
-              className={`kw-tag kw-tag-button ${copiedIndex === i ? 'copied' : ''}`}
-              key={kw}
-              onClick={() => handleCopy(kw, i)}
-              type="button"
-            >
-              {copiedIndex === i ? `✓ Copied` : kw}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
+    </motion.section>
   )
 }
-
-export default KeywordList
