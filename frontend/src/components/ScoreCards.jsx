@@ -1,92 +1,147 @@
-function recruiterBand(score) {
-  if (score >= 8) return { label: 'Strong Application', color: '#1d9e75', verdict: 'A recruiter would likely shortlist this CV.' }
-  if (score >= 5) return { label: 'Competitive but requires improvement', color: '#f59e0b', verdict: 'A recruiter may shortlist this CV, but it could be stronger.' }
-  return { label: 'Significant optimisation required', color: '#ef4444', verdict: 'A recruiter is unlikely to shortlist this CV without changes.' }
-}
+import { motion } from 'framer-motion'
+import { fade } from '../utils/animations'
 
-// Finer-grained banding for 0-100 category scores so the amber zone doesn't
-// swallow everything from 55-79. Six steps instead of three.
-function categoryBand(score) {
-  if (score >= 90) return '#16a34a'
-  if (score >= 80) return '#1d9e75'
-  if (score >= 65) return '#84cc16'
-  if (score >= 50) return '#f59e0b'
-  if (score >= 35) return '#f97316'
+export function scoreColor(n, max = 100) {
+  const p = max === 10 ? n * 10 : n
+  if (p >= 80) return '#16a34a'
+  if (p >= 60) return '#d97706'
   return '#ef4444'
 }
 
-function ScoreCards({ overallScore, atsScore, recruiterScore, categoryScores }) {
-  const band = recruiterBand(recruiterScore)
-
-  const categories = [
-    { label: 'Technical Skills Match', value: categoryScores?.skills_match },
-    { label: 'Experience Relevance', value: categoryScores?.experience_relevance },
-    { label: 'Formatting & Readability', value: categoryScores?.structure_readability },
-    { label: 'Keyword Alignment', value: categoryScores?.ats_keyword_match },
-    { label: 'Bullet Point Quality', value: categoryScores?.bullet_point_quality },
-    { label: 'Role Alignment', value: categoryScores?.role_alignment },
-  ].filter(c => c.value !== undefined)
-
+export function Bar({ value, color, thin }) {
+  const c = color || scoreColor(value)
   return (
-    <div className="score-cards-stack">
-      {/* Recruiter-centric hero card — leads the section, most prominent */}
-      <div className="recruiter-hero-card" style={{ borderColor: `${band.color}40` }}>
-        <div className="recruiter-hero-top">
-          <div>
-            <div className="recruiter-hero-label">Recruiter Feedback Score</div>
-            <div className="recruiter-hero-num" style={{ color: band.color }}>{recruiterScore}<span className="recruiter-hero-denom">/10</span></div>
-          </div>
-          <span
-            className="recruiter-hero-badge"
-            style={{ color: band.color, background: `${band.color}1a`, border: `1px solid ${band.color}40` }}
-          >
-            {band.label}
-          </span>
-        </div>
-        <div className="score-item-bar" style={{ height: '6px', marginTop: '14px' }}>
-          <div className="score-item-fill" style={{ width: `${recruiterScore * 10}%`, background: band.color }} />
-        </div>
-        <p className="recruiter-hero-verdict">{band.verdict}</p>
-      </div>
-
-      {/* Two-column grid: Overall Score + ATS Score only */}
-      <div className="score-breakdown score-breakdown-2col">
-        <div className="score-item">
-          <div className="score-item-label">Overall Score</div>
-          <div className="score-item-num">{overallScore}%</div>
-          <div className="score-item-bar"><div className="score-item-fill" style={{ width: `${overallScore}%` }} /></div>
-        </div>
-        <div className="score-item">
-          <div className="score-item-label">ATS Score</div>
-          <div className="score-item-num" style={{ color: '#5dcaa5' }}>{atsScore}%</div>
-          <div className="score-item-bar"><div className="score-item-fill" style={{ width: `${atsScore}%`, background: '#5dcaa5' }} /></div>
-        </div>
-      </div>
-
-      {categories.length > 0 && (
-        <div className="result-card">
-          <div className="result-card-header">
-            <div className="result-card-icon">📊</div>
-            <span className="result-card-title">Category breakdown</span>
-          </div>
-          <div className="result-card-body">
-            <div className="score-breakdown score-breakdown-3col">
-              {categories.map(c => {
-                const color = categoryBand(c.value)
-                return (
-                  <div className="score-item" key={c.label}>
-                    <div className="score-item-label">{c.label}</div>
-                    <div className="score-item-num" style={{ fontSize: '22px', color }}>{c.value}%</div>
-                    <div className="score-item-bar"><div className="score-item-fill" style={{ width: `${c.value}%`, background: color }} /></div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      )}
+    <div className={`bar-track ${thin ? 'bar-thin' : ''}`}>
+      <div className="bar-fill" style={{ width: `${Math.min(value, 100)}%`, background: c }} />
     </div>
   )
 }
 
-export default ScoreCards
+const CAT_LABELS = {
+  role_alignment: 'Role Alignment',
+  skills_match: 'Skills Match',
+  experience_relevance: 'Experience',
+  ats_keyword_match: 'ATS Keywords',
+  bullet_point_quality: 'Bullet Quality',
+  structure_readability: 'Structure',
+  missing_evidence: 'Evidence',
+}
+
+export function Sidebar({ result, cvFile, onOpenCV, onOpenChat, openCat, setOpenCat }) {
+  const rc = scoreColor(result.recruiter_score, 10)
+  const categories = Object.entries(CAT_LABELS).map(([k, l]) => ({
+    key: k, label: l,
+    value: result.category_scores?.[k],
+    breakdown: result.category_breakdowns?.[k],
+  })).filter(c => c.value !== undefined)
+
+  return (
+    <aside className="sidebar">
+      <div className="sidebar-scores">
+        <div className="sidebar-score-label">Recruiter Score</div>
+        <div className="sidebar-score-big" style={{ color: rc }}>{result.recruiter_score}<span className="sidebar-score-denom">/10</span></div>
+        <Bar value={result.recruiter_score * 10} color={rc} thin />
+        <div className="sidebar-sub-scores">
+          <div className="sidebar-sub">
+            <div className="sidebar-sub-num" style={{ color: scoreColor(result.overall_score) }}>{result.overall_score}%</div>
+            <div className="sidebar-sub-label">Overall</div>
+          </div>
+          <div className="sidebar-sub">
+            <div className="sidebar-sub-num" style={{ color: scoreColor(result.ats_score) }}>{result.ats_score}%</div>
+            <div className="sidebar-sub-label">ATS</div>
+          </div>
+        </div>
+      </div>
+      <div className="sidebar-divider" />
+      <div className="sidebar-cats">
+        <div className="sidebar-section-label">Category Scores</div>
+        <p className="sidebar-section-hint">Tap a category to see why it scored this way and how to improve it.</p>
+        {categories.map(c => {
+          const color = scoreColor(c.value)
+          const isOpen = openCat === c.key
+          return (
+            <div key={c.key} className="sidebar-cat-block">
+              <button
+                className={`sidebar-cat sidebar-cat-lg ${isOpen ? 'open' : ''}`}
+                onClick={() => setOpenCat(isOpen ? null : c.key)}
+                aria-expanded={isOpen}
+              >
+                <span className="sidebar-cat-chevron">▸</span>
+                <span className="sidebar-cat-name">{c.label}</span>
+                <span className="sidebar-cat-score" style={{ color }}>{c.value}%</span>
+              </button>
+              <Bar value={c.value} color={color} thin />
+              <div className={`sidebar-cat-drill-wrap ${isOpen ? 'open' : ''}`}>
+                <div className="sidebar-cat-drill-inner">
+                  {c.breakdown && (
+                    <div className="sidebar-cat-drill">
+                      {c.breakdown.explanation && <p className="drill-text">{c.breakdown.explanation}</p>}
+                      {c.breakdown.how_to_improve && (
+                        <div className="drill-action">
+                          <span className="drill-action-label">How to improve</span>
+                          <p className="drill-text">{c.breakdown.how_to_improve}</p>
+                        </div>
+                      )}
+                      {c.breakdown.subscores && Object.entries(c.breakdown.subscores).map(([k, v]) => (
+                        <div key={k} className="drill-sub">
+                          <div className="drill-sub-row">
+                            <span>{k.replace(/_/g,' ').replace(/\b\w/g,x=>x.toUpperCase())}</span>
+                            <span style={{ color: scoreColor(v), fontWeight: 700 }}>{v}%</span>
+                          </div>
+                          <Bar value={v} thin />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+      <div className="sidebar-divider" />
+      <div className="sidebar-actions">
+        {cvFile && <button className="sidebar-btn" onClick={onOpenCV}>View my CV</button>}
+        <button className="sidebar-btn sidebar-btn-primary" onClick={onOpenChat}>Ask CVIQ</button>
+      </div>
+    </aside>
+  )
+}
+
+export function Hero({ result }) {
+  const rc = scoreColor(result.recruiter_score, 10)
+  const band = result.recruiter_score >= 8 ? 'Likely to be shortlisted' : result.recruiter_score >= 5 ? 'Competitive — could be stronger' : 'Significant improvements needed'
+  return (
+    <motion.div className="hero" variants={fade}>
+      <div className="hero-top">
+        <div className="hero-left">
+          <div className="hero-badge"><span className="hero-badge-dot" /> Review complete</div>
+          <h1 className="hero-h1">Your CV has been reviewed.</h1>
+          <p className="hero-sub">Here's what we found against the job description.</p>
+        </div>
+        <div className="hero-score-main">
+          <div className="hero-score-label">Recruiter Score</div>
+          <div className="hero-score-num" style={{ color: rc }}>{result.recruiter_score}<span className="hero-score-max">/10</span></div>
+          <div className="hero-score-verdict">{band}</div>
+        </div>
+      </div>
+      <div className="hero-score-secondary">
+        <div className="hero-score-item">
+          <div className="hero-score-item-num" style={{ color: scoreColor(result.overall_score) }}>{result.overall_score}%</div>
+          <div className="hero-score-item-label">Overall</div>
+          <Bar value={result.overall_score} thin />
+        </div>
+        <div className="hero-score-item">
+          <div className="hero-score-item-num" style={{ color: scoreColor(result.ats_score) }}>{result.ats_score}%</div>
+          <div className="hero-score-item-label">ATS</div>
+          <Bar value={result.ats_score} thin />
+        </div>
+        <div className="hero-score-item">
+          <div className="hero-score-item-num" style={{ color: scoreColor(result.category_scores?.role_alignment || 0) }}>{result.category_scores?.role_alignment || 0}%</div>
+          <div className="hero-score-item-label">Role Match</div>
+          <Bar value={result.category_scores?.role_alignment || 0} thin />
+        </div>
+      </div>
+    </motion.div>
+  )
+}
