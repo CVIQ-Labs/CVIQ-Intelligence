@@ -32,7 +32,13 @@ export async function chatWithCV({ message, cvText, jobDescription, history }) {
   if (!res.ok) throw new Error('Chat failed')
   return res.json()
 }
-
+@@
+ 10|   const response = await axios.post(`${BASE_URL}/review`, formData)
+ 11|   return response.data
+ 12| }
++|
++// If code elsewhere expects chatWithCV, export an alias to keep compatibility
++export { reviewCV as chatWithCV }
 export async function rewriteBullet({ bullet, jobDescription }) {
   const res = await fetch(`${BASE_URL}/rewrite-bullet`, {
     method: 'POST',
