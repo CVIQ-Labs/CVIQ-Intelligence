@@ -1,212 +1,147 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import ScoreCards from '../components/ScoreCards'
-import ResultPanel from '../components/ResultPanel'
+import CVModal from '../components/CVModal'
+import { Sidebar, Hero } from '../components/ScoreCards'
 import KeywordList from '../components/KeywordList'
 import BulletRewrites from '../components/BulletRewrites'
 import SectionRecommendations from '../components/SectionRecommendations'
-import CVModal from '../components/CVModal'
+import { ActionPlan, RecruiterView, SW, LineFeedback, Summary, ATSDeep } from '../components/ExtraComponents'
+import ResultPanel from '../components/ResultPanel'
+import { stagger } from '../utils/animations'
 import { extractCvText, filterTrulyMissing } from '../utils/filterKeywords'
-import { downloadEditedCV } from '../utils/downloadCV'
 import '../styles/Results.css'
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.18 } },
-}
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 36, scale: 0.98 },
-  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.55, ease: [0.21, 0.47, 0.32, 0.98] } },
-}
 
 const RESULT_KEY = 'cviq:last-result'
 const FILE_KEY = 'cviq:last-cv-file'
+const JD_KEY = 'cviq:last-jd'
 
-function Results() {
+export default function Results() {
   const location = useLocation()
   const navigate = useNavigate()
-  const [showCVModal, setShowCVModal] = useState(false)
-  const [downloadingFormat, setDownloadingFormat] = useState(null) // 'pdf' | 'docx' | null
-  const [downloadError, setDownloadError] = useState(null)
+  const [showCV, setShowCV] = useState(false)
+  const [chatOpen, setChatOpen] = useState(false)
+  const [openCat, setOpenCat] = useState(null)
 
+  const [result] = useState(() => { const n=location.state?.result; if(n) return n; try{return JSON.parse(sessionStorage.getItem(RESULT_KEY)||'null')}catch{return null} })
+  const [cvFile] = useState(() => { const n=location.state?.cvFile; if(n) return n; try{return JSON.parse(sessionStorage.getItem(FILE_KEY)||'null')}catch{return null} })
+  const [jobDescription] = useState(() => { const n=location.state?.jobDescription; if(n) return n; try{return sessionStorage.getItem(JD_KEY)||''}catch{return ''} })
+  const [cvText, setCvText] = useState('')
+  const [filteredKeywords, setFilteredKeywords] = useState(result?.missing_keywords||[])
 
-  const [result, setResult] = useState(() => {
-    const fromNav = location.state?.result
-    if (fromNav) return fromNav
-    try {
-      const stored = sessionStorage.getItem(RESULT_KEY)
-      return stored ? JSON.parse(stored) : null
-    } catch { return null }
-  })
-
-  const [cvFile, setCvFile] = useState(() => {
-    const fromNav = location.state?.cvFile
-    if (fromNav) return fromNav
-    try {
-      const stored = sessionStorage.getItem(FILE_KEY)
-      return stored ? JSON.parse(stored) : null
-    } catch { return null }
-  })
-
-  // The backend sometimes flags keywords that are already in the CV —
-  // we extract the CV text and filter those out so the keyword list is accurate
-  const [filteredKeywords, setFilteredKeywords] = useState(result?.missing_keywords || [])
+  const keywordsRef = useRef(null)
+  const bulletsRef = useRef(null)
+  const summaryRef = useRef(null)
 
   useEffect(() => {
-    async function verifyKeywords() {
-      if (!cvFile || !result?.missing_keywords?.length) return
-      try {
-        const cvText = await extractCvText(cvFile.base64, cvFile.type)
-        setFilteredKeywords(filterTrulyMissing(result.missing_keywords, cvText))
-      } catch {
-        setFilteredKeywords(result.missing_keywords)
-      }
+    async function run() {
+      if (!cvFile) return
+      try { const text = await extractCvText(cvFile.base64, cvFile.type); setCvText(text); if(result?.missing_keywords?.length) setFilteredKeywords(filterTrulyMissing(result.missing_keywords, text)) } catch {}
     }
-    verifyKeywords()
+    run()
   }, [cvFile, result])
 
-
-  useEffect(() => {
-    if (result) {
-      try { sessionStorage.setItem(RESULT_KEY, JSON.stringify(result)) } catch {}
-    }
-  }, [result])
-
-  useEffect(() => {
-    if (cvFile) {
-      try { sessionStorage.setItem(FILE_KEY, JSON.stringify(cvFile)) } catch {}
-    }
-  }, [cvFile])
-
- 
-  useEffect(() => {
-    if (!result) navigate('/')
-  }, [result, navigate])
-
-  const handleDownload = async (format) => {
-    if (!cvFile) return
-    try {
-      setDownloadingFormat(format)
-      setDownloadError(null)
-      await downloadEditedCV(cvFile, result, format)
-    } catch (err) {
-      setDownloadError(err.message || 'Download failed. Please try again.')
-    } finally {
-      setDownloadingFormat(null)
-    }
-  }
-
+  useEffect(() => { if(result){try{sessionStorage.setItem(RESULT_KEY,JSON.stringify(result))}catch{}} }, [result])
+  useEffect(() => { if(cvFile){try{sessionStorage.setItem(FILE_KEY,JSON.stringify(cvFile))}catch{}} }, [cvFile])
+  useEffect(() => { if(!result) navigate('/') }, [result, navigate])
   if (!result) return null
 
+  const scrollTo = (section) => {
+    const map = { keywords: keywordsRef, bullets: bulletsRef, summary: summaryRef }
+    map[section]?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  // Presence checks — decided here in JS so the grid can give a lone
+  // surviving card the full row width instead of leaving a blank gap
+  // next to it (relying on CSS `:empty` alone doesn't resize siblings).
+  const hasRecruiterView = !!(result.recruiter_reasoning || result.recruiter_commentary)
+  const hasSW = !!(result.strengths?.length || result.weaknesses?.length)
+  const hasKeywords = filteredKeywords?.length > 0
+  const hasSummary = !!result.summary_improvement
+  const hasSectionRecs = result.section_recommendations?.length > 0
+  const hasATSDeep = true // ATSDeep always renders (has its own "run scan" state)
+
+  const halfOrFull = (thisOne, otherOne) => `dash-cell ${thisOne && otherOne ? 'dash-half' : thisOne ? 'dash-full' : ''}`
+
   return (
-    <div className="results-page">
-      <nav className="navbar">
-        <div className="nav-inner">
-          <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <div className="logo-mark">IQ</div>
-            <span className="logo-text">CV<span className="logo-accent">IQ</span></span>
+    <div className="rp">
+      <nav className="rp-nav">
+        <div className="rp-nav-inner">
+          <div className="rp-logo" onClick={() => navigate('/')}>CV<span className="rp-logo-iq">IQ</span></div>
+          <div className="rp-nav-right">
+            <button className="rp-nav-ghost" onClick={() => setChatOpen(true)}>Ask CVIQ</button>
+            <button className="rp-nav-ghost" onClick={() => navigate('/upload')}>Review another CV</button>
           </div>
-          <button className="back-btn" onClick={() => navigate('/upload')}>← Review another CV</button>
         </div>
       </nav>
 
-      <div className="results-hero">
-        <div>
-          <div className="results-eyebrow">
-            <span className="results-eyebrow-dot" /> Review complete
-          </div>
-          <h1>Your CV results</h1>
-          <p className="results-hero-sub">Here's how your CV performed against the job description.</p>
-        </div>
+      <div className="rp-layout">
+        <Sidebar result={result} cvFile={cvFile} onOpenCV={() => setShowCV(true)} onOpenChat={() => setChatOpen(true)} openCat={openCat} setOpenCat={setOpenCat} />
 
-        {/* Action buttons — only show if we have the CV file */}
-        {cvFile && (
-          <div className="results-hero-actions">
-            <button className="btn-view-cv" onClick={() => setShowCVModal(true)}>
-              📄 View my CV
-            </button>
-            <button
-              className="btn-download"
-              onClick={() => handleDownload('docx')}
-              disabled={!!downloadingFormat}
-            >
-              {downloadingFormat === 'docx' ? 'Downloading...' : '⬇ Download .docx'}
-            </button>
-            <button
-              className="btn-download"
-              onClick={() => handleDownload('pdf')}
-              disabled={!!downloadingFormat}
-            >
-              {downloadingFormat === 'pdf' ? 'Downloading...' : '⬇ Download PDF'}
-            </button>
-          </div>
-        )}
+        <motion.main className="rp-main" initial="hidden" animate="show" variants={stagger}>
+          <Hero result={result} />
 
-        {/* Show an error if the download fails */}
-        {downloadError && (
-          <div className="download-error">{downloadError}</div>
-        )}
+          <div className="dashboard-grid">
+            <div className="dash-cell dash-full">
+              <ActionPlan result={result} filteredKeywords={filteredKeywords} onScrollTo={scrollTo} />
+            </div>
+
+            {hasRecruiterView && (
+              <div className={halfOrFull(hasRecruiterView, hasSW)}>
+                <RecruiterView reasoning={result.recruiter_reasoning} commentary={result.recruiter_commentary} />
+              </div>
+            )}
+            {hasSW && (
+              <div className={halfOrFull(hasSW, hasRecruiterView)}>
+                <SW strengths={result.strengths} weaknesses={result.weaknesses} />
+              </div>
+            )}
+
+            {hasKeywords && (
+              <div className={halfOrFull(hasKeywords, hasSummary)} ref={keywordsRef}>
+                <KeywordList keywords={filteredKeywords} />
+              </div>
+            )}
+            {hasSummary && (
+              <div className={halfOrFull(hasSummary, hasKeywords)} ref={summaryRef}>
+                <Summary summaryImprovement={result.summary_improvement} />
+              </div>
+            )}
+
+            <div className="dash-cell dash-full" ref={bulletsRef}>
+              <BulletRewrites bullets={result.suggested_bullets} jobDescription={jobDescription} />
+            </div>
+
+            <div className="dash-cell dash-full">
+              <LineFeedback lineFeedback={result.line_feedback} />
+            </div>
+
+            {hasSectionRecs && (
+              <div className={halfOrFull(hasSectionRecs, hasATSDeep)}>
+                <SectionRecommendations recommendations={result.section_recommendations} />
+              </div>
+            )}
+            <div className={halfOrFull(hasATSDeep, hasSectionRecs)}>
+              <ATSDeep cvFile={cvFile} jobDescription={jobDescription} />
+            </div>
+          </div>
+
+          <div className="rp-bottom">
+            <p className="rp-bottom-text">Applied the changes? Upload your updated CV to track your improvement.</p>
+            <button className="rp-bottom-btn" onClick={() => navigate('/upload')}>Review another CV</button>
+          </div>
+        </motion.main>
       </div>
 
-      <motion.div
-        className="results-main"
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-      >
-        <motion.div variants={itemVariants}>
-          <ScoreCards
-            overallScore={result.overall_score}
-            atsScore={result.ats_score}
-            recruiterScore={result.recruiter_score}
-            categoryScores={result.category_scores}
-          />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <ResultPanel strengths={result.strengths} weaknesses={result.weaknesses} />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <KeywordList keywords={filteredKeywords} />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <BulletRewrites bullets={result.suggested_bullets} />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <SectionRecommendations recommendations={result.section_recommendations} />
-        </motion.div>
-        <motion.div className="results-cta" variants={itemVariants}>
-          <div>
-            <h3>Want to improve your score?</h3>
-            <p>Apply the feedback above and re-upload your updated CV to track your progress.</p>
-          </div>
-          <button className="btn-white" onClick={() => navigate('/upload')}>Review another CV →</button>
-        </motion.div>
-      </motion.div>
-
-      <footer className="footer">
-        <div className="footer-inner">
-          <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <div className="logo-mark">IQ</div>
-            <span className="logo-text">CV<span className="logo-accent">IQ</span></span>
-          </div>
-          <p className="footer-text">Built with FastAPI, React & GPT-4o · © 2026 CVIQ</p>
+      <footer className="rp-footer">
+        <div className="rp-footer-inner">
+          <div className="rp-logo" onClick={() => navigate('/')}>CV<span className="rp-logo-iq">IQ</span></div>
+          <p className="rp-footer-copy">© 2026 CVIQ Inc. · CV Intelligence Platform</p>
         </div>
       </footer>
 
-      {showCVModal && cvFile && (
-        <CVModal
-          fileBase64={cvFile.base64}
-          fileType={cvFile.type}
-          fileName={cvFile.name}
-          onClose={() => setShowCVModal(false)}
-          missingKeywords={filteredKeywords}
-          weakBullets={result.suggested_bullets || []}
-        />
-      )}
+      {showCV && cvFile && <CVModal fileBase64={cvFile.base64} fileType={cvFile.type} fileName={cvFile.name} onClose={() => setShowCV(false)} missingKeywords={filteredKeywords} weakBullets={result.suggested_bullets || []} />}
+      <ResultPanel cvText={cvText} jobDescription={jobDescription} open={chatOpen} onClose={() => setChatOpen(false)} />
     </div>
   )
 }
-
-export default Results
