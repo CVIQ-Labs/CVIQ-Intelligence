@@ -13,7 +13,7 @@ const STAGES = [
 // Total estimated duration for a full simulated pass. Tuned to roughly
 // match typical response time — real completion always wins the race
 // (see markComplete), this is just what the UI shows while waiting.
-const ESTIMATED_TOTAL_MS = 14000
+const ESTIMATED_TOTAL_MS = 50000
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
