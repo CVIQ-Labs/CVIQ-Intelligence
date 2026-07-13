@@ -1180,3 +1180,18 @@
   margin-bottom: 16px;
   line-height: 1.5;
 }
+/* ── Free tier banner ────────────────────────────────── */
+.free-tier-banner { background: #fffbeb; border-bottom: 1px solid #fde68a; padding: 12px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 13px; color: #92400e; font-weight: 500; flex-wrap: wrap; }
+.free-tier-banner button { background: #0f172a; color: #fff; border: none; padding: 7px 16px; border-radius: 100px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; transition: background 0.15s; }
+.free-tier-banner button:hover { background: #1e293b; }
+.rp-pro-badge { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; font-size: 10px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; padding: 3px 9px; border-radius: 100px; box-shadow: 0 2px 6px rgba(37,99,235,0.3); }
+.locked-wrap { position: relative; border-radius: var(--radius); overflow: hidden; }
+.locked-blur { filter: blur(4px); pointer-events: none; user-select: none; opacity: 0.5; }
+.locked-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.7); backdrop-filter: blur(2px); border-radius: var(--radius); border: 1px solid var(--border); }
+.pro-gate { text-align: center; padding: 32px 24px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.pro-gate-icon { font-size: 28px; margin-bottom: 4px; }
+.pro-gate-title { font-size: 16px; font-weight: 700; color: var(--dark); }
+.pro-gate-sub { font-size: 13px; color: var(--text-dim); line-height: 1.5; max-width: 260px; }
+.pro-gate-btn { margin-top: 8px; background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%); color: #fff; border: none; padding: 11px 22px; border-radius: 100px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s; box-shadow: 0 1px 0 0 #1e40af, 0 4px 12px rgba(37,99,235,0.4); }
+.pro-gate-btn:hover { transform: translateY(-1px); background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%); }
+.chat-gate { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
