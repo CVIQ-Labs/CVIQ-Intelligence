@@ -12,7 +12,7 @@ const STAGES = [
   { label: 'ATS Evaluation', weight: 0.25 },
   { label: 'Recruiter Feedback Generation', weight: 0.3 },
 ]
-const ESTIMATED_TOTAL_MS = 14000
+const ESTIMATED_TOTAL_MS = 60000
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
