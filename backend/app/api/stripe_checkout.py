@@ -11,7 +11,7 @@ STRIPE_SECRET = os.getenv("STRIPE_SECRET_KEY")
 PRICE_ID = os.getenv("STRIPE_PRICE_ID")
 YOUR_DOMAIN = os.getenv(
     "YOUR_DOMAIN",
-    "http://129.159.222.241"
+    "https://cviq27.vercel.app"
 )
 
 
@@ -40,10 +40,7 @@ async def create_checkout_session(user: Optional[dict] = Depends(get_current_use
             "ui_mode": "embedded",
             "line_items": [{"price": PRICE_ID, "quantity": 1}],
             "mode": "subscription",
-            "return_url": (
-                f"{YOUR_DOMAIN}/return.html"
-                "?session_id={{CHECKOUT_SESSION_ID}}"
-            ),
+            "return_url": f"{YOUR_DOMAIN}/return?session_id={{CHECKOUT_SESSION_ID}}",
         }
         if user:
             params["client_reference_id"] = user["id"]
