@@ -422,8 +422,8 @@ export default function Home() {
         </div>
         <div className="b-team-cards">
           {[
-            { name: 'Jamie Moore-Arthur', role: 'Founder & CEO', colour: '#1d4ed8', initial: 'J', bio: 'Product & Infrastructure engineer. Manages Infrastructure, CI/CD pipeline, and backend systems.' },
-            { name: 'Oluwaseyi Bello', role: 'Co-Founder & Head of AI Engineering', colour: '#0f6e56', initial: 'S', bio: 'AI engineer. Built the AI review pipeline and RAG architecture powering CVIQ.' },
+            { name: 'Jamie Moore-Arthur', role: 'Founder & CEO', colour: '#1d4ed8', initial: 'J', bio: 'Product engineer. Manages backend systems, knowledge base content, and infrastructure support.' },
+            { name: 'Oluwaseyi Bello', role: 'Co-Founder & Lead AI Platform Engineer', colour: '#0f6e56', initial: 'S', bio: 'Built the full AI platform including the RAG pipeline, embeddings, vector store, and all API endpoints. Also built and owns the entire infrastructure from scratch including Docker, Terraform, Kubernetes, Oracle Cloud deployment, and the CI/CD pipeline.' },
             { name: 'Rochelle Smith', role: 'Head of UI/UX & Frontend Engineering', colour: '#6366f1', initial: 'R', bio: 'Frontend engineer responsible for the product UI, design system, and user experience across the app.' },
             { name: 'Sade Smith', role: 'Head of UI/UX & Frontend Engineering', colour: '#a855f7', initial: 'S', bio: 'Frontend engineer responsible for the product UI, design system, and user experience across the app.' },
           ].map((m, i) => (
