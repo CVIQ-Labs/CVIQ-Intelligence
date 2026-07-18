@@ -1,6 +1,6 @@
-# CVIQ — AI-Powered CV Intelligence Platform
+# CVIQ - AI-Powered CV Intelligence Platform
 
-An AI-powered CV review platform that analyses your resume against a real job description and returns structured, actionable feedback. Built with a RAG pipeline, semantic search, and GPT-4o to give feedback grounded in real hiring criteria — not generic advice.
+An AI-powered CV review platform that analyses your resume against a real job description and returns structured, actionable feedback. Built with a RAG pipeline, semantic search, and GPT-4o to give feedback grounded in real hiring criteria, not generic advice.
 
 [![CI](https://github.com/CVIQ-Labs/CVIQ-Intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/CVIQ-Labs/CVIQ-Intelligence/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat&logo=python&logoColor=white)
@@ -122,7 +122,7 @@ OPENAI_API_KEY=sk-... python tests/eval/run_eval.py
 
 ### Prompt versioning
 
-System prompts live as versioned text files (`prompts/system_v1.0.0.txt`) and are loaded at runtime. The active version is set via `PROMPT_VERSION` and attached to every Langfuse trace — prompt changes can be correlated with score regressions without redeploying.
+System prompts live as versioned text files (`prompts/system_v1.0.0.txt`) and are loaded at runtime. The active version is set via `PROMPT_VERSION` and attached to every Langfuse trace. Prompt changes can be correlated with score regressions without redeploying.
 
 ### Relevance threshold
 
@@ -146,7 +146,7 @@ Every CV submitted is scanned by [Presidio](https://microsoft.github.io/presidio
 
 ### Chunk metadata
 
-Every ChromaDB chunk carries a source filename, SHA-256 document hash, chunk index, and ingestion timestamp — enabling targeted deletes when documents change and a full audit trail for retrieved content.
+Every ChromaDB chunk carries a source filename, SHA-256 document hash, chunk index, and ingestion timestamp. This enables targeted deletes when documents change and a full audit trail for retrieved content.
 
 ---
 
@@ -227,7 +227,7 @@ JSON response back to frontend
 Stripe webhooks --> /stripe/webhook --> Supabase user_profiles (is_pro, subscription_id)
 ```
 
-The frontend and backend are deployed independently. The React app on Vercel calls the FastAPI backend on Oracle Cloud directly from the browser. Authentication is handled by Supabase — the frontend passes a JWT with every request, the backend verifies it and gates Pro features accordingly.
+The frontend and backend are deployed independently. The React app on Vercel calls the FastAPI backend on Oracle Cloud directly from the browser. Authentication is handled by Supabase. The frontend passes a JWT with every request, the backend verifies it and gates Pro features accordingly.
 
 ---
 
@@ -256,10 +256,10 @@ Every push to `main` runs three automated security checks that block deployment 
 
 ### Secrets management
 
-- `.env` is in `.gitignore` — never committed
+- `.env` is in `.gitignore`, never committed
 - `.env.example` documents required variable names without values
-- On the server, secrets are injected via `~/app.env` — never baked into the image
-- `CORS_ORIGINS` is a comma-separated env var parsed at runtime — no hardcoded origins in code
+- On the server, secrets are injected via `~/app.env`, never baked into the image
+- `CORS_ORIGINS` is a comma-separated env var parsed at runtime, no hardcoded origins in code
 
 ---
 
