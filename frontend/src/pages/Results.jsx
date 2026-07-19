@@ -63,7 +63,7 @@ export default function Results() {
   const [cvFile] = useState(() => {
     const n = location.state?.cvFile
     if (n) return n
-    try { return JSON.parse(sessionStorage.getItem(FILE_KEY) || 'null') } catch { return null }
+    try { return JSON.parse(localStorage.getItem(FILE_KEY) || 'null') } catch { return null }
   })
   const [jobDescription] = useState(() => {
     const n = location.state?.jobDescription
@@ -98,7 +98,7 @@ export default function Results() {
   }, [cvFile, result])
 
   useEffect(() => { if (result) { try { sessionStorage.setItem(RESULT_KEY, JSON.stringify(result)) } catch {} } }, [result])
-  useEffect(() => { if (cvFile) { try { sessionStorage.setItem(FILE_KEY, JSON.stringify(cvFile)) } catch {} } }, [cvFile])
+  useEffect(() => { if (cvFile) { try { localStorage.setItem(FILE_KEY, JSON.stringify(cvFile)) } catch {} } }, [cvFile])
   useEffect(() => { if (!authLoading && !user) navigate('/login') }, [user, authLoading, navigate])
   useEffect(() => { if (!result) navigate('/') }, [result, navigate])
 
@@ -142,20 +142,27 @@ export default function Results() {
         <div className="rp-nav-inner">
           <div className="rp-logo" onClick={() => navigate('/')}>CV<span className="rp-logo-iq">IQ</span></div>
           <div className="rp-nav-right">
-            <button className="rp-nav-ghost" onClick={() => navigate('/settings')}>Settings</button>
             {isPro && <span className="rp-pro-badge">Pro</span>}
             <button className="rp-nav-ghost" onClick={() => setChatOpen(true)}>Ask CVIQ</button>
             <button className="rp-nav-ghost" onClick={() => navigate('/upload')}>Review another CV</button>
+            <button className="rp-nav-ghost" onClick={() => navigate('/settings')}>Settings</button>
             <button className="rp-nav-ghost" onClick={async () => { await supabase.auth.signOut(); navigate('/') }}>Sign out</button>
           </div>
         </div>
       </nav>
 
       <div className="rp-layout">
-        <Sidebar result={result} cvFile={cvFile} onOpenCV={() => setShowCV(true)} onOpenChat={() => setChatOpen(true)} openCat={openCat} setOpenCat={setOpenCat} />
-
         <motion.main className="rp-main" initial="hidden" animate="show" variants={stagger}>
           <Hero result={result} />
+
+          <Sidebar
+            result={result}
+            cvFile={cvFile}
+            onOpenCV={() => setShowCV(true)}
+            onOpenChat={() => setChatOpen(true)}
+            openCat={openCat}
+            setOpenCat={setOpenCat}
+          />
 
           <div className="dashboard-grid">
             <div className="dash-cell dash-full">
@@ -230,8 +237,8 @@ export default function Results() {
         </div>
       </footer>
 
-      {showCV && cvFile && isPro && (
-        <CVModal fileBase64={cvFile.base64} fileType={cvFile.type} fileName={cvFile.name} onClose={() => setShowCV(false)} missingKeywords={filteredKeywords} weakBullets={result.suggested_bullets || []} />
+      {showCV && cvFile && (
+        <CVModal fileBase64={cvFile.base64} fileType={cvFile.type} fileName={cvFile.name} onClose={() => setShowCV(false)} missingKeywords={filteredKeywords} weakBullets={result.suggested_bullets || []} userId={user?.id} />
       )}
 
       {isPro && (

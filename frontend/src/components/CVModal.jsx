@@ -4,10 +4,6 @@ import { exportEditedDocx, exportEditedPdf } from '../utils/exportEditedCV'
 let mammoth = null
 import('mammoth').then(m => { mammoth = m.default || m })
 
-const VERSION_KEY = 'cviq:cv-versions'
-const DRAFT_KEY = 'cviq:cv-draft'
-const APPLIED_BULLETS_KEY = 'cviq:applied-bullets'
-const APPLIED_KEYWORDS_KEY = 'cviq:applied-keywords'
 const AUTO_SAVE_INTERVAL = 1000
 
 function formatTime(ts) {
@@ -15,15 +11,22 @@ function formatTime(ts) {
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
 }
 
-function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = [], weakBullets = [] }) {
+function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = [], weakBullets = [], userId }) {
+  // ── Per-user sessionStorage keys ─────────────────────────────────────────
+  const uid = userId || 'guest'
+  const VERSION_KEY = `cviq:cv-versions:${uid}`
+  const DRAFT_KEY = `cviq:cv-draft:${uid}`
+  const APPLIED_BULLETS_KEY = `cviq:applied-bullets:${uid}`
+  const APPLIED_KEYWORDS_KEY = `cviq:applied-keywords:${uid}`
+
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [copiedIndex, setCopiedIndex] = useState(null)
   const [appliedKeywords, setAppliedKeywords] = useState(() => {
-    try { return new Set(JSON.parse(sessionStorage.getItem(APPLIED_KEYWORDS_KEY) || '[]')) } catch { return new Set() }
+    try { return new Set(JSON.parse(sessionStorage.getItem(`cviq:applied-keywords:${userId || 'guest'}`) || '[]')) } catch { return new Set() }
   })
   const [appliedBullets, setAppliedBullets] = useState(() => {
-    try { return new Set(JSON.parse(sessionStorage.getItem(APPLIED_BULLETS_KEY) || '[]')) } catch { return new Set() }
+    try { return new Set(JSON.parse(sessionStorage.getItem(`cviq:applied-bullets:${userId || 'guest'}`) || '[]')) } catch { return new Set() }
   })
   const [dirty, setDirty] = useState(false)
   const [exporting, setExporting] = useState(null)
@@ -47,7 +50,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
       const saved = JSON.parse(sessionStorage.getItem(VERSION_KEY) || '[]')
       setVersions(saved)
     } catch {}
-  }, [])
+  }, [VERSION_KEY])
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -160,7 +163,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     editorRef.current.innerHTML = prev
     setBubble(null)
     setDirty(true)
-    setTimeout(highlightWeakLines, 50)
+    setTimeout(() => { highlightWeakLines(); recalculateApplied() }, 50)
   }
 
   const handleRedo = () => {
@@ -171,15 +174,15 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     editorRef.current.innerHTML = next
     setBubble(null)
     setDirty(true)
-    setTimeout(highlightWeakLines, 50)
+    setTimeout(() => { highlightWeakLines(); recalculateApplied() }, 50)
   }
 
-  // ── Auto-save: draft every 5s, named version every 30s ───────────────────
+  // ── Auto-save: draft every 1s, named version every 30s ───────────────────
   useEffect(() => {
     autoSaveRef.current = setInterval(() => {
       if (!dirty || !editorRef.current) return
       saveDraft()
-      autoSaveCountRef.current += 5
+      autoSaveCountRef.current += 1
       if (autoSaveCountRef.current >= 30) {
         saveVersion('Auto-save')
         autoSaveCountRef.current = 0
@@ -216,20 +219,15 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
 
   const recalculateApplied = () => {
     if (!editorRef.current) return
-    const content = editorRef.current.innerHTML
-    const contentLower = content.toLowerCase()
+    const contentLower = editorRef.current.innerHTML.toLowerCase()
 
-    // A bullet is "applied" if its original text is no longer in the editor
-    // (meaning it was replaced with the improved version)
     const newAppliedBullets = new Set()
     weakBullets.forEach((b, i) => {
-      const originalPresent = contentLower.includes(normalize(b.original))
-      if (!originalPresent) newAppliedBullets.add(i)
+      if (!contentLower.includes(normalize(b.original))) newAppliedBullets.add(i)
     })
     setAppliedBullets(newAppliedBullets)
     try { sessionStorage.setItem(APPLIED_BULLETS_KEY, JSON.stringify([...newAppliedBullets])) } catch {}
 
-    // A keyword is "applied" if it now appears in the editor
     const newAppliedKeywords = new Set()
     missingKeywords.forEach((kw, i) => {
       if (contentLower.includes(kw.toLowerCase())) newAppliedKeywords.add(i)
@@ -288,7 +286,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
       return next
     })
     setBubble(null)
-  }, [bubble, weakBullets])
+  }, [bubble, weakBullets, APPLIED_BULLETS_KEY])
 
   const handleDismissBubble = useCallback(() => setBubble(null), [])
 
