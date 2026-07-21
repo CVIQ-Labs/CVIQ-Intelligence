@@ -393,7 +393,7 @@ export default function Home() {
       <section className="b-section b-features reveal" id="features">
         <div className="b-section-head">
           <div className="b-label">What you get</div>
-          <h2 className="b-h2">From upload to<br />offer-ready.</h2>
+          <h2 className="b-h2">From upload to<br />offer ready.</h2>
           <p className="b-section-sub">Every tool you need to compete for the role.</p>
         </div>
         <div className="b-features-grid">
@@ -509,7 +509,7 @@ export default function Home() {
             <a href="#team">Team</a>
             <a href="#pricing">Pricing</a>
           </div>
-          <p className="b-footer-copy">© 2026 CVIQ Inc. · CV Intelligence · Built with FastAPI, React & GPT-4o</p>
+          <p className="b-footer-copy">© 2026 CVIQ Inc. · CV Intelligence ·</p>
         </div>
       </footer>
     </div>
