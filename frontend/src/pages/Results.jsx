@@ -12,6 +12,7 @@ import { stagger } from '../utils/animations'
 import { extractCvText, filterTrulyMissing } from '../utils/filterKeywords'
 import { useAuth } from '../utils/useAuth'
 import { supabase } from '../utils/supabase'
+import cviqLogo from '../assets/cviq-logo.jpg'
 import '../styles/Results.css'
 
 const RESULT_KEY = 'cviq:last-result'
@@ -140,7 +141,9 @@ export default function Results() {
 
       <nav className="rp-nav">
         <div className="rp-nav-inner">
-          <div className="rp-logo" onClick={() => navigate('/')}>CV<span className="rp-logo-iq">IQ</span></div>
+          <div className="rp-logo" onClick={() => navigate('/')}>
+            <img src={cviqLogo} alt="CVIQ" className="rp-logo-img" />
+          </div>
           <div className="rp-nav-right">
             {isPro && <span className="rp-pro-badge">Pro</span>}
             <button className="rp-nav-ghost" onClick={() => setChatOpen(true)}>Ask CVIQ</button>
@@ -232,7 +235,9 @@ export default function Results() {
 
       <footer className="rp-footer">
         <div className="rp-footer-inner">
-          <div className="rp-logo" onClick={() => navigate('/')}>CV<span className="rp-logo-iq">IQ</span></div>
+          <div className="rp-logo" onClick={() => navigate('/')}>
+            <img src={cviqLogo} alt="CVIQ" className="rp-logo-img" />
+          </div>
           <p className="rp-footer-copy">© 2026 CVIQ Inc. · CV Intelligence Platform</p>
         </div>
       </footer>

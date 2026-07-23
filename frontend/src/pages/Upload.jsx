@@ -4,6 +4,7 @@ import { useDropzone } from 'react-dropzone'
 import { reviewCV } from '../api/api'
 import { useAuth } from '../utils/useAuth'
 import { supabase } from '../utils/supabase'
+import cviqLogo from '../assets/cviq-logo.jpg'
 import '../styles/Upload.css'
 
 const STAGES = [
@@ -140,7 +141,7 @@ export default function Upload() {
         <nav className="up-nav">
           <div className="up-nav-inner">
             <div className="up-logo" onClick={() => navigate('/')}>
-              <span className="up-logo-text">CV<span className="up-logo-accent">IQ</span></span>
+              <img src={cviqLogo} alt="CVIQ" className="up-logo-img" />
             </div>
           </div>
         </nav>
@@ -183,7 +184,7 @@ export default function Upload() {
       <nav className="up-nav">
         <div className="up-nav-inner">
           <div className="up-logo" onClick={() => navigate('/')}>
-            <span className="up-logo-text">CV<span className="up-logo-accent">IQ</span></span>
+            <img src={cviqLogo} alt="CVIQ" className="up-logo-img" />
           </div>
           <div className="up-nav-right">
             <button className="up-back" onClick={() => navigate('/settings')}>Settings</button>
@@ -254,7 +255,7 @@ export default function Upload() {
       <footer className="up-footer">
         <div className="up-footer-inner">
           <div className="up-logo" onClick={() => navigate('/')}>
-            <span className="up-logo-text">CV<span className="up-logo-accent">IQ</span></span>
+            <img src={cviqLogo} alt="CVIQ" className="up-logo-img" />
           </div>
           <p className="up-footer-copy">© 2026 CVIQ Inc. · CV Intelligence Platform</p>
         </div>

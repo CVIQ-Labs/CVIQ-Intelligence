@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Testimonials from '../components/Testimonials'
+import cviqLogo from '../assets/cviq-logo.jpg'
 import { useAuth } from '../utils/useAuth'
 import { supabase } from '../utils/supabase'
 import '../styles/App.css'
@@ -245,7 +246,7 @@ export default function Home() {
       <nav className="b-nav">
         <div className="b-nav-inner">
           <div className="b-logo" onClick={() => navigate('/')}>
-            <span className="b-logo-text">CV<span className="b-logo-accent">IQ</span></span>
+            <img src={cviqLogo} alt="CVIQ" className="b-logo-img" />
           </div>
           <div className={`b-nav-links ${menuOpen ? 'open' : ''}`}>
             <a href="#how-it-works">How it works</a>
@@ -392,7 +393,7 @@ export default function Home() {
       <section className="b-section b-features reveal" id="features">
         <div className="b-section-head">
           <div className="b-label">What you get</div>
-          <h2 className="b-h2">From upload to<br />offer ready.</h2>
+          <h2 className="b-h2">From upload to<br />offer-ready.</h2>
           <p className="b-section-sub">Every tool you need to compete for the role.</p>
         </div>
         <div className="b-features-grid">
@@ -478,7 +479,7 @@ export default function Home() {
       <footer className="b-footer">
         <div className="b-footer-inner">
           <div className="b-logo" onClick={() => navigate('/')}>
-            <span className="b-logo-text">CV<span className="b-logo-accent">IQ</span></span>
+            <img src={cviqLogo} alt="CVIQ" className="b-logo-img" />
           </div>
           <div className="b-footer-links">
             <a href="#how-it-works">How it works</a>

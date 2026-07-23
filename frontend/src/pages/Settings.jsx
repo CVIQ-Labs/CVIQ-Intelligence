@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../utils/supabase'
 import { useAuth } from '../utils/useAuth'
 import { useTheme } from '../utils/useTheme'
+import cviqLogo from '../assets/cviq-logo.jpg'
 import '../styles/Settings.css'
 
 const BASE_URL = 'https://cvreview-api.duckdns.org'
@@ -83,7 +84,7 @@ export default function Settings() {
       <nav className="settings-nav">
         <div className="settings-nav-inner">
           <div className="settings-logo" onClick={() => navigate('/')}>
-            CV<span className="settings-logo-accent">IQ</span>
+            <img src={cviqLogo} alt="CVIQ" className="settings-logo-img" />
           </div>
           <div className="settings-nav-right">
             <button className="settings-nav-btn" onClick={() => navigate(-1)}>← Back</button>

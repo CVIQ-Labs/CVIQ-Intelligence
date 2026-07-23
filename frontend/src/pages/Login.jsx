@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { supabase } from '../utils/supabase'
+import cviqLogo from '../assets/cviq-logo.jpg'
 import '../styles/Auth.css'
 
 export default function Login() {
@@ -54,9 +55,7 @@ export default function Login() {
       <nav className="auth-nav">
         <div className="auth-nav-inner">
           <div className="auth-logo" onClick={() => navigate('/')}>
-            <span className="auth-logo-text">
-              CV<span className="auth-logo-accent">IQ</span>
-            </span>
+            <img src={cviqLogo} alt="CVIQ" className="auth-logo-img" />
           </div>
           <Link to="/signup" className="auth-nav-link">
             Create account
@@ -132,9 +131,7 @@ export default function Login() {
       <footer className="auth-page-footer">
         <div className="auth-page-footer-inner">
           <div className="auth-logo" onClick={() => navigate('/')}>
-            <span className="auth-logo-text">
-              CV<span className="auth-logo-accent">IQ</span>
-            </span>
+            <img src={cviqLogo} alt="CVIQ" className="auth-logo-img" />
           </div>
           <p className="auth-page-footer-copy">
             © 2026 CVIQ Inc. · CV Intelligence Platform

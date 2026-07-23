@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getSessionStatus } from '../api/stripe'
+import cviqLogo from '../assets/cviq-logo.jpg'
 import '../styles/Return.css'
 
 export default function Return() {
@@ -46,6 +47,7 @@ export default function Return() {
   if (state === 'error') {
     return (
       <div className="return-page">
+        <img src={cviqLogo} alt="CVIQ" className="return-logo-img" style={{ marginBottom: 24 }} onClick={() => navigate('/')} />
         <p className="return-title">We couldn't confirm your payment</p>
         <p className="return-message">{message}</p>
         <button className="return-btn" onClick={() => navigate('/pricing')}>Back to pricing</button>
@@ -55,6 +57,7 @@ export default function Return() {
 
   return (
     <div className="return-page">
+      <img src={cviqLogo} alt="CVIQ" className="return-logo-img" style={{ marginBottom: 24 }} onClick={() => navigate('/')} />
       <div className="return-spinner" />
       <p className="return-title">Confirming your payment…</p>
     </div>
