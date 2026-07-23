@@ -46,25 +46,23 @@ def run_review_pipeline(cv_text: str, job_description: str, tier: str = "paid") 
     query = f"{cv_text[:1000]}\n\n{job_description[:500]}"
     context_chunks, is_weak = retrieve_context(query, n_results=6, trace=trace)
 
-    # Extract company name cheaply — drives both the trigger and metadata retrieval
+    # Extract company + role — drives both the trigger and metadata retrieval
     meta = extract_company_and_role(job_description)
     company = meta.get("company")
+    role = meta.get("role")
 
-    company_in_kb = bool(company and already_researched(company))
+    company_in_kb = bool(company and already_researched(company, role))
     should_research = is_weak or (company and not company_in_kb)
 
     if should_research:
-        print(f"[pipeline] research trigger: is_weak={is_weak} company={company} in_kb={company_in_kb}")
+        print(f"[pipeline] research trigger: is_weak={is_weak} company={company} role={role} in_kb={company_in_kb}")
         research_chunks = run_research_agent(job_description)
         if research_chunks:
-            # Fresh research chunks first — most specific context at the top
             context_chunks = research_chunks + context_chunks
     elif company_in_kb:
-        # Company already in KB: surface its chunks via metadata filter, not just cosine distance
-        company_chunks = retrieve_company_chunks(company, n_results=3)
+        company_chunks = retrieve_company_chunks(company, role, n_results=3)
         if company_chunks:
-            print(f"[pipeline] metadata retrieval: {len(company_chunks)} chunks for {company}")
-            # Company-specific chunks first, keep 3 general chunks for broader advice
+            print(f"[pipeline] metadata retrieval: {len(company_chunks)} chunks for {company} / {role}")
             context_chunks = company_chunks + context_chunks[:3]
 
     result = generate_review(cv_text, job_description, context_chunks, trace=trace, tier=tier)

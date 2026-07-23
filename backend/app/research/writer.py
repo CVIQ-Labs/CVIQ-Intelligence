@@ -8,16 +8,18 @@ from app.vectorstore.chroma import get_collection, add_documents
 KNOWLEDGE_BASE_COLLECTION = "knowledge_base"
 
 
-def already_researched(company: str) -> bool:
-    """Return True if we already have research chunks for this company in the KB."""
+def already_researched(company: str, role: str | None = None) -> bool:
+    """Return True if we already have research chunks for this company+role in the KB."""
     if not company:
         return False
     try:
         collection = get_collection(KNOWLEDGE_BASE_COLLECTION)
-        results = collection.get(
-            where={"company": {"$eq": company.lower()}},
-            limit=1,
+        where = (
+            {"$and": [{"company": {"$eq": company.lower()}}, {"role": {"$eq": role.lower()}}]}
+            if role
+            else {"company": {"$eq": company.lower()}}
         )
+        results = collection.get(where=where, limit=1)
         return len(results["ids"]) > 0
     except Exception:
         return False

@@ -6,15 +6,16 @@ KNOWLEDGE_BASE_COLLECTION = "knowledge_base"
 RELEVANCE_THRESHOLD = 0.8
 
 
-def retrieve_company_chunks(company: str, n_results: int = 3) -> list[str]:
-    """Return KB chunks written by the research agent for a specific company."""
+def retrieve_company_chunks(company: str, role: str | None = None, n_results: int = 3) -> list[str]:
+    """Return KB chunks for a specific company+role written by the research agent."""
     try:
         collection = get_collection(KNOWLEDGE_BASE_COLLECTION)
-        results = collection.get(
-            where={"company": {"$eq": company.lower()}},
-            limit=n_results,
-            include=["documents"],
+        where = (
+            {"$and": [{"company": {"$eq": company.lower()}}, {"role": {"$eq": role.lower()}}]}
+            if role
+            else {"company": {"$eq": company.lower()}}
         )
+        results = collection.get(where=where, limit=n_results, include=["documents"])
         return results["documents"] or []
     except Exception as e:
         print(f"[retrieval] company metadata fetch failed: {e}")
