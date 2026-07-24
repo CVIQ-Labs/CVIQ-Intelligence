@@ -5,7 +5,8 @@ import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe
 import { createCheckoutSession } from '../api/stripe'
 import { supabase } from '../utils/supabase'
 import { useAuth } from '../utils/useAuth'
-import cviqLogo from '../assets/cviq-logo.jpg'
+import cviqLogoBlue from '../assets/cviq-icon-blue.png'
+import cviqLogoWhite from '../assets/cviq-icon-white.png'
 import '../styles/Pricing.css'
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
@@ -78,7 +79,8 @@ export default function Pricing() {
       <nav className="pricing-nav">
         <div className="pricing-nav-inner">
           <div className="pricing-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogo} alt="CVIQ" className="pricing-logo-img" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="pricing-logo-img cviq-logo-light" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="pricing-logo-img cviq-logo-dark" />
           </div>
           <div className="pricing-nav-right">
             <button className="pricing-nav-btn" onClick={() => navigate(-1)}>← Back</button>

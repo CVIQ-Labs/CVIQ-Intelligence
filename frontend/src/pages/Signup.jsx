@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../utils/supabase'
-import cviqLogo from '../assets/cviq-logo.jpg'
+import cviqLogoBlue from '../assets/cviq-icon-blue.png'
+import cviqLogoWhite from '../assets/cviq-icon-white.png'
 import '../styles/Auth.css'
 
 const INTENDED_PLAN_KEY = 'cviq:intended-plan'
@@ -42,7 +43,8 @@ export default function Signup() {
         <nav className="auth-nav">
           <div className="auth-nav-inner">
             <div className="auth-logo" onClick={() => navigate('/')}>
-              <img src={cviqLogo} alt="CVIQ" className="auth-logo-img" />
+              <img src={cviqLogoBlue} alt="CVIQ" className="auth-logo-img cviq-logo-light" />
+              <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" />
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
               <button className="auth-nav-link" onClick={() => navigate('/')}>← Back to home</button>
@@ -130,7 +132,8 @@ export default function Signup() {
         <footer className="auth-page-footer">
           <div className="auth-page-footer-inner">
             <div className="auth-logo" onClick={() => navigate('/')}>
-              <img src={cviqLogo} alt="CVIQ" className="auth-logo-img" />
+              <img src={cviqLogoBlue} alt="CVIQ" className="auth-logo-img cviq-logo-light" />
+              <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" />
             </div>
             <p className="auth-page-footer-copy">© 2026 CVIQ Inc. · CV Intelligence Platform</p>
           </div>
@@ -144,7 +147,8 @@ export default function Signup() {
       <nav className="auth-nav">
         <div className="auth-nav-inner">
           <div className="auth-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogo} alt="CVIQ" className="auth-logo-img" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="auth-logo-img cviq-logo-light" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" />
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
             <button className="auth-nav-link" onClick={() => navigate(-1)}>← Back</button>
@@ -181,7 +185,8 @@ export default function Signup() {
       <footer className="auth-page-footer">
         <div className="auth-page-footer-inner">
           <div className="auth-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogo} alt="CVIQ" className="auth-logo-img" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="auth-logo-img cviq-logo-light" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" />
           </div>
           <p className="auth-page-footer-copy">© 2026 CVIQ Inc. · CV Intelligence Platform</p>
         </div>

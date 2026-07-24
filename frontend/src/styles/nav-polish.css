@@ -42,13 +42,13 @@
 }
 
 /* ── Logo image — single source of truth for sizing.
-   The source graphic is a square (1:1). We keep that original shape by
-   fixing both height AND width equally, then use object-fit: cover so the
-   hexagon+wordmark centre of the image fills the square without distorting
-   it into an oval/stretched version. !important is used deliberately here:
-   this asset has caused sizing regressions a few times already, so this
-   guards against any other rule (inline style, page CSS, browser default)
-   overriding it. ── */
+   These are transparent icon-only PNGs (not a square JPG with a baked-in
+   background), so we fix HEIGHT only and let width scale naturally via the
+   image's real aspect ratio — object-fit: cover would crop a non-square
+   transparent icon, which we don't want here. !important is used
+   deliberately: this asset has caused sizing regressions a few times
+   already, so this guards against any other rule (inline style, page CSS,
+   browser default) overriding it. ── */
 .b-logo-img,
 .up-logo-img,
 .auth-logo-img,
@@ -56,11 +56,9 @@
 .pricing-logo-img,
 .rp-logo-img,
 .return-logo-img {
-  height: 36px !important;
-  width: 36px !important;
-  object-fit: cover !important;
-  object-position: center !important;
-  border-radius: 8px;
+  height: 34px !important;
+  width: auto !important;
+  object-fit: contain !important;
   display: block;
   flex-shrink: 0;
   cursor: pointer;
@@ -74,10 +72,17 @@
   .pricing-logo-img,
   .rp-logo-img,
   .return-logo-img {
-    height: 28px !important;
-    width: 28px !important;
+    height: 26px !important;
   }
 }
+
+/* ── Logo colour by theme — blue icon on light backgrounds, white icon on
+   dark backgrounds. Both images are rendered in the DOM at all times and
+   CSS toggles which one is visible, so there's no flash/swap delay and no
+   JS theme-detection needed on a per-page basis. ── */
+.cviq-logo-dark { display: none !important; }
+[data-theme="dark"] .cviq-logo-light { display: none !important; }
+[data-theme="dark"] .cviq-logo-dark { display: block !important; }
 
 /* ── Shared nav structure ────────────────────────────── */
 .b-nav,

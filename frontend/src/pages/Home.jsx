@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Testimonials from '../components/Testimonials'
-import cviqLogo from '../assets/cviq-logo.jpg'
+import cviqLogoBlue from '../assets/cviq-icon-blue.png'
+import cviqLogoWhite from '../assets/cviq-icon-white.png'
 import { useAuth } from '../utils/useAuth'
 import { supabase } from '../utils/supabase'
 import '../styles/App.css'
@@ -246,7 +247,8 @@ export default function Home() {
       <nav className="b-nav">
         <div className="b-nav-inner">
           <div className="b-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogo} alt="CVIQ" className="b-logo-img" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="b-logo-img cviq-logo-light" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="b-logo-img cviq-logo-dark" />
           </div>
           <div className={`b-nav-links ${menuOpen ? 'open' : ''}`}>
             <a href="#how-it-works">How it works</a>
@@ -486,7 +488,8 @@ export default function Home() {
       <footer className="b-footer">
         <div className="b-footer-inner">
           <div className="b-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogo} alt="CVIQ" className="b-logo-img" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="b-logo-img cviq-logo-light" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="b-logo-img cviq-logo-dark" />
           </div>
           <div className="b-footer-links">
             <a href="#how-it-works">How it works</a>

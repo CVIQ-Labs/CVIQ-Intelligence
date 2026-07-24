@@ -4,7 +4,8 @@ import { useDropzone } from 'react-dropzone'
 import { reviewCV } from '../api/api'
 import { useAuth } from '../utils/useAuth'
 import { supabase } from '../utils/supabase'
-import cviqLogo from '../assets/cviq-logo.jpg'
+import cviqLogoBlue from '../assets/cviq-icon-blue.png'
+import cviqLogoWhite from '../assets/cviq-icon-white.png'
 import '../styles/Upload.css'
 
 const STAGES = [
@@ -14,6 +15,11 @@ const STAGES = [
   { label: 'Recruiter Feedback Generation', weight: 0.3 },
 ]
 const ESTIMATED_TOTAL_MS = 60000
+
+// Reviews are paused site-wide ahead of the private beta launch on Aug 7, 2026
+// (first 200 students, via the waitlist). Applies to everyone, including
+// existing/Pro users. Flip this to false once the beta is live.
+const REVIEWS_PAUSED = true
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -55,6 +61,7 @@ export default function Upload() {
 
   // ── Auth gate ─────────────────────────────────────────────────────────────
   useEffect(() => {
+    if (REVIEWS_PAUSED) return
     if (!authLoading && !user) {
       navigate('/login', { state: { from: '/upload' } })
     }
@@ -135,13 +142,40 @@ export default function Upload() {
 
   if (authLoading) return null
 
+  if (REVIEWS_PAUSED) {
+    return (
+      <div className="up-page">
+        <nav className="up-nav">
+          <div className="up-nav-inner">
+            <div className="up-logo" onClick={() => navigate('/')}>
+              <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" />
+              <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" />
+            </div>
+          </div>
+        </nav>
+        <div className="up-loading-wrap">
+          <div className="up-eyebrow">Coming soon</div>
+          <h2 className="up-loading-h2">CV reviews are paused for now</h2>
+          <p className="up-loading-sub">
+            We're getting ready to launch our private beta on August 7th for our first 200 students.
+            Join the waitlist to be one of them.
+          </p>
+          <button className="up-btn-submit" onClick={() => navigate('/waitlist', { state: { source: 'upload_paused' } })}>
+            Join the waitlist →
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   if (loading) {
     return (
       <div className="up-page">
         <nav className="up-nav">
           <div className="up-nav-inner">
             <div className="up-logo" onClick={() => navigate('/')}>
-              <img src={cviqLogo} alt="CVIQ" className="up-logo-img" />
+              <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" />
+              <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" />
             </div>
           </div>
         </nav>
@@ -184,7 +218,8 @@ export default function Upload() {
       <nav className="up-nav">
         <div className="up-nav-inner">
           <div className="up-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogo} alt="CVIQ" className="up-logo-img" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" />
           </div>
           <div className="up-nav-right">
             <button className="up-back" onClick={() => navigate('/settings')}>Settings</button>
@@ -255,7 +290,8 @@ export default function Upload() {
       <footer className="up-footer">
         <div className="up-footer-inner">
           <div className="up-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogo} alt="CVIQ" className="up-logo-img" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" />
           </div>
           <p className="up-footer-copy">© 2026 CVIQ Inc. · CV Intelligence Platform</p>
         </div>

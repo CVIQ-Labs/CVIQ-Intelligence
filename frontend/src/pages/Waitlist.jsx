@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import cviqLogo from '../assets/cviq-logo.jpg'
+import cviqLogoBlue from '../assets/cviq-icon-blue.png'
+import cviqLogoWhite from '../assets/cviq-icon-white.png'
 import '../styles/Auth.css'
 
 const WAITLIST_URL = 'https://api.getcviq.com/waitlist'
@@ -66,7 +67,8 @@ export default function Waitlist() {
       <nav className="auth-nav">
         <div className="auth-nav-inner">
           <div className="auth-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogo} alt="CVIQ" className="auth-logo-img" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="auth-logo-img cviq-logo-light" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" />
           </div>
           <button className="auth-nav-link" onClick={() => navigate('/')}>← Back to home</button>
         </div>
@@ -123,7 +125,8 @@ export default function Waitlist() {
       <footer className="auth-page-footer">
         <div className="auth-page-footer-inner">
           <div className="auth-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogo} alt="CVIQ" className="auth-logo-img" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="auth-logo-img cviq-logo-light" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" />
           </div>
           <p className="auth-page-footer-copy">© 2026 CVIQ Inc. · CV Intelligence Platform</p>
         </div>
@@ -131,4 +134,3 @@ export default function Waitlist() {
     </div>
   )
 }
-
