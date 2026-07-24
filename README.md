@@ -1,12 +1,13 @@
 # CVIQ - AI-Powered CV Intelligence Platform
 
-An AI-powered CV review platform that analyses your resume against a real job description and returns structured, actionable feedback. Built with a RAG pipeline, semantic search, and GPT-4o to give feedback grounded in real hiring criteria, not generic advice.
+An AI-powered CV review platform that analyses your resume against a real job description and returns structured, actionable feedback. Built with a RAG pipeline, semantic search, a self-improving research agent, and GPT-4o to give feedback grounded in real hiring criteria, not generic advice.
 
 [![CI](https://github.com/CVIQ-Labs/CVIQ-Intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/CVIQ-Labs/CVIQ-Intelligence/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.136-009688?style=flat&logo=fastapi&logoColor=white)
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=white)
 ![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o-412991?style=flat&logo=openai&logoColor=white)
+![Claude](https://img.shields.io/badge/Anthropic-Claude_Haiku-D97706?style=flat)
 ![Docker](https://img.shields.io/badge/Docker-Containerised-2496ED?style=flat&logo=docker&logoColor=white)
 ![Oracle Cloud](https://img.shields.io/badge/Backend-Oracle_Cloud-F80000?style=flat&logo=oracle&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Frontend-Vercel-000000?style=flat&logo=vercel&logoColor=white)
@@ -31,7 +32,7 @@ An AI-powered CV review platform that analyses your resume against a real job de
 
 ## What it does
 
-Upload a CV (PDF or DOCX) and paste a job description. The system returns a structured review with scores, keyword gaps, strengths, weaknesses, AI-rewritten bullets, and line-by-line feedback.
+Upload a CV (PDF or DOCX) and paste a job description. The system returns a structured review with scores, keyword gaps, strengths, weaknesses, AI-rewritten bullets, and line-by-line feedback. For roles at companies not yet in the knowledge base, a research agent automatically fetches company-specific context from the web before the review runs.
 
 **Free tier:**
 - ATS score and keyword gap analysis
@@ -53,7 +54,7 @@ Upload a CV (PDF or DOCX) and paste a job description. The system returns a stru
 
 ## How it works
 
-The system uses a RAG pipeline to ground every piece of feedback in a curated knowledge base rather than relying on the model's general knowledge alone.
+The system uses a RAG pipeline to ground every piece of feedback in a curated knowledge base. When the knowledge base lacks company-specific context, a research agent fetches it automatically and writes it back for future requests.
 
 ```
 CV (PDF/DOCX)  +  Job Description (text)
@@ -65,8 +66,23 @@ CV (PDF/DOCX)  +  Job Description (text)
   Chunking + Embedding (OpenAI text-embedding-3-small)
         |
         v
-  ChromaDB Semantic Search
-  (retrieves relevant rubric, ATS rules, bullet examples)
+  Extract company + role from JD (Claude Haiku)
+        |
+        +-- Company already in KB? --> Metadata-filtered retrieval (company + role)
+        |
+        +-- Company NOT in KB? --> Research Agent
+        |         |
+        |         v
+        |   Tavily web search (tech stack, culture, interview process)
+        |         |
+        |         v
+        |   Claude Haiku summarises into KB chunks
+        |         |
+        |         v
+        |   Write to ChromaDB (background thread, non-blocking)
+        |         |
+        |         v
+        |   Inject fresh chunks into current review context
         |
         v
   GPT-4o (CV + JD + retrieved context)
@@ -85,6 +101,24 @@ CV (PDF/DOCX)  +  Job Description (text)
 - ATS guidelines (keyword strategy, formatting rules, score thresholds)
 - Strong bullet point examples (before/after rewrites with structure rules)
 - Role matching criteria (tech stack requirements by role across 7 job families)
+- Company-specific research chunks written by the research agent at runtime
+
+---
+
+## Research Agent
+
+The knowledge base holds general CV advice but has no company-specific information out of the box. For a Monzo Data Engineer or a Stripe Backend Engineer role, general advice alone produces a weaker review.
+
+The research agent fills that gap automatically. On every review request, Claude Haiku extracts the company name and role from the job description. If that company/role combination is not in the knowledge base, the agent fires:
+
+1. **Search** - Tavily runs two queries: one for the company's tech stack and role requirements, one for their engineering culture and interview process
+2. **Summarise** - Claude Haiku condenses the results into 3-5 structured knowledge base paragraphs
+3. **Write** - chunks are embedded and written to ChromaDB in a background thread (non-blocking)
+4. **Inject** - fresh chunks are prepended to the review context immediately so the current request benefits straight away
+
+On repeat requests for the same company/role, the search is skipped entirely. Instead, a metadata-filtered query pulls the existing chunks directly rather than relying on cosine similarity to surface them among general KB content.
+
+The first review for a new company/role adds roughly 8-10 seconds. All subsequent reviews for that combination are unaffected.
 
 ---
 
@@ -124,9 +158,9 @@ OPENAI_API_KEY=sk-... python tests/eval/run_eval.py
 
 System prompts live as versioned text files (`prompts/system_v1.0.0.txt`) and are loaded at runtime. The active version is set via `PROMPT_VERSION` and attached to every Langfuse trace. Prompt changes can be correlated with score regressions without redeploying.
 
-### Relevance threshold
+### Relevance threshold and research trigger
 
-Before any chunks reach the LLM, a cosine distance filter drops retrievals with distance > 0.8. Weak matches are logged in the Langfuse span so you can see exactly what the retriever discarded and why.
+Before any chunks reach the LLM, a cosine distance filter drops retrievals with distance > 0.8. The pipeline also extracts the company and role from the JD on every request (Claude Haiku, ~$0.00004) and fires the research agent if that combination is not yet in the knowledge base. Weak retrieval alone no longer controls the trigger since general KB content can pass the threshold even when company-specific context is missing.
 
 ### Token and cost logging
 
@@ -146,7 +180,7 @@ Every CV submitted is scanned by [Presidio](https://microsoft.github.io/presidio
 
 ### Chunk metadata
 
-Every ChromaDB chunk carries a source filename, SHA-256 document hash, chunk index, and ingestion timestamp. This enables targeted deletes when documents change and a full audit trail for retrieved content.
+Every ChromaDB chunk carries a source filename, SHA-256 document hash, chunk index, and ingestion timestamp. Research agent chunks additionally carry company, role, and ingestion timestamp metadata to enable targeted metadata-filtered retrieval and deduplication.
 
 ---
 
@@ -176,12 +210,15 @@ Every ChromaDB chunk carries a source filename, SHA-256 document hash, chunk ind
 | [python-multipart](https://multipart.fastapiexpert.com/) | File upload handling |
 | [Supabase Python](https://supabase.com/docs/reference/python) | Auth verification and user management |
 | [Stripe Python](https://stripe.com/docs/api?lang=python) | Subscription billing |
+| [Resend](https://resend.com/) | Transactional email (waitlist confirmations) |
 
 ### AI and NLP
 | Technology | Purpose |
 |---|---|
 | [OpenAI GPT-4o](https://platform.openai.com/docs/models) | Review generation |
 | [OpenAI text-embedding-3-small](https://platform.openai.com/docs/guides/embeddings) | Semantic embeddings |
+| [Claude Haiku](https://www.anthropic.com/claude) | Company/role extraction and research summarisation |
+| [Tavily](https://tavily.com/) | Web search for the research agent |
 | [ChromaDB](https://www.trychroma.com/) | Local vector store |
 | [Langfuse](https://langfuse.com/) | LLM observability |
 | [Ragas](https://ragas.io/) | RAG evaluation |
@@ -193,7 +230,7 @@ Every ChromaDB chunk carries a source filename, SHA-256 document hash, chunk ind
 | [Docker](https://www.docker.com/) | Containerisation |
 | [Oracle Cloud A1 Flex](https://www.oracle.com/cloud/compute/arm/) | Backend hosting (2 OCPU / 12GB RAM, ARM, always-on free tier) |
 | [Caddy](https://caddyserver.com/) | Reverse proxy and automatic HTTPS |
-| [Supabase](https://supabase.com/) | Auth, user profiles, RLS |
+| [Supabase](https://supabase.com/) | Auth, user profiles, waitlist, RLS |
 | [Stripe](https://stripe.com/) | Subscription billing and webhooks |
 | [Vercel](https://vercel.com/) | Frontend hosting |
 | [Terraform](https://www.terraform.io/) | Azure infrastructure as code (AKS, ACR, Key Vault, storage) |
@@ -217,7 +254,9 @@ FastAPI Backend (Oracle Cloud A1 Flex - ARM, always-on)
       |
       |-- pypdf / python-docx extracts CV text
       |-- Presidio scans for PII
-      |-- ChromaDB retrieves relevant knowledge base chunks
+      |-- Claude Haiku extracts company + role from JD
+      |-- Research agent fetches and writes company context if missing
+      |-- ChromaDB retrieves knowledge base chunks (metadata-filtered or cosine)
       |-- GPT-4o generates structured review
       |-- Supabase verifies JWT and checks Pro tier
       |
@@ -225,6 +264,7 @@ FastAPI Backend (Oracle Cloud A1 Flex - ARM, always-on)
 JSON response back to frontend
 
 Stripe webhooks --> /stripe/webhook --> Supabase user_profiles (is_pro, subscription_id)
+Research agent --> Tavily search --> Claude Haiku --> ChromaDB (background thread)
 ```
 
 The frontend and backend are deployed independently. The React app on Vercel calls the FastAPI backend on Oracle Cloud directly from the browser. Authentication is handled by Supabase. The frontend passes a JWT with every request, the backend verifies it and gates Pro features accordingly.
@@ -249,6 +289,7 @@ Every push to `main` runs three automated security checks that block deployment 
 
 - Migrated from `PyPDF2` (deprecated, CVE-2023-36464) to `pypdf` which patches 25+ DoS vulnerabilities in PDF parsing
 - Bumped `pypdf` from `6.12.0` to `6.13.3` across three rounds of newly disclosed CVEs
+- Bumped `pypdf` from `6.13.3` to `6.14.2` to patch CVE-2026-59935, CVE-2026-59936, CVE-2026-59937, CVE-2026-59938
 - Upgraded `python-multipart` to patch path traversal (CVE-2026-24486) and DoS (CVE-2026-40347)
 - Upgraded `python-dotenv` to patch symlink file overwrite (CVE-2026-28684)
 - Upgraded `FastAPI` to pull in `starlette 1.2.1`, patching DoS via malformed Range headers (CVE-2025-62727)
@@ -277,6 +318,7 @@ Every push to `main` runs three automated security checks that block deployment 
 | `POST` | `/chat` | Required (Pro) | AI chat against CV and job description |
 | `POST` | `/ats-preview` | Required | Detailed ATS breakdown |
 | `GET` | `/testimonials` | None | Fetch testimonials |
+| `POST` | `/waitlist` | None | Join the waitlist - stores email in Supabase and sends confirmation via Resend |
 
 Full interactive documentation: [api.getcviq.com/docs](https://api.getcviq.com/docs)
 
@@ -351,12 +393,13 @@ The AKS workflows are manual-only and will not trigger automatically. They are r
 CVIQ-Intelligence/
 ├── backend/
 │   ├── app/
-│   │   ├── api/            # FastAPI routers (health, upload, review, auth, stripe, account, chat, ats_preview)
+│   │   ├── api/            # FastAPI routers (health, upload, review, auth, stripe, account, chat, ats_preview, waitlist)
 │   │   ├── core/           # Config, auth, exceptions
 │   │   ├── ingestion/      # PDF/DOCX parsing, text loading, chunking
 │   │   ├── embeddings/     # OpenAI embedding wrapper
 │   │   ├── vectorstore/    # ChromaDB integration
 │   │   ├── rag/            # Pipeline, retriever, generator, prompts
+│   │   ├── research/       # Research agent (extractor, Tavily search, Haiku summariser, KB writer)
 │   │   ├── review/         # Rubric weights, scorer/validator, CV builder
 │   │   └── Models/         # Pydantic response models
 │   ├── knowledge_base/     # CV rubric, ATS guidelines, bullet examples, role criteria
@@ -372,7 +415,7 @@ CVIQ-Intelligence/
 │   ├── src/
 │   │   ├── api/            # Axios API client
 │   │   ├── components/     # ScoreCards, KeywordList, BulletRewrites, ResultPanel, CVModal
-│   │   ├── pages/          # Home, Upload, Results, Pricing, Login, Signup, Return
+│   │   ├── pages/          # Home, Upload, Results, Pricing, Login, Signup, Return, Settings
 │   │   ├── utils/          # useAuth hook, supabase client, animations
 │   │   └── styles/         # CSS per page
 │   ├── vercel.json         # SPA routing rewrite rule
@@ -399,10 +442,13 @@ CVIQ-Intelligence/
 - [x] Pro feature gating (bullet rewrites, line feedback, ATS deep, AI chat)
 - [x] Custom domain (getcviq.com)
 - [x] Account deletion endpoint (GDPR)
+- [x] Resend transactional email (waitlist confirmations, bypasses Supabase rate limit)
+- [x] Research agent (Tavily + Claude Haiku, company/role-scoped KB cache, metadata retrieval)
+- [x] Waitlist endpoint with Supabase storage and email confirmation
 - [ ] Settings page with account management (frontend)
-- [ ] Resend transactional email (remove Supabase rate limit)
 - [ ] Prometheus metrics endpoint (`/metrics`) - request latency, score distributions, error rates
 - [ ] Grafana dashboard - visualise metrics from Prometheus
+- [ ] Migrate research agent to MCP-based agentic tool use (depending on production results)
 - [ ] Migrate to Azure AKS when funded (Terraform + Kubernetes manifests already in place)
 
 ---
@@ -411,7 +457,7 @@ CVIQ-Intelligence/
 
 Built by [Seyi Bello](https://github.com/seyiabello), [Jamie Moore-Arthur](https://github.com/jamiemoorearthur), [Rochelle Smith](https://github.com/rochellejjsmith), and Sade Smith.
 
-- **Seyi** - Co-Founder and Lead AI Platform Engineer. Built the full AI platform including the RAG pipeline, embeddings, vector store, review logic, and all API endpoints. Also built and owns the entire infrastructure from scratch including Docker containerisation, Terraform IaC, Kubernetes manifests, Oracle Cloud deployment, Caddy reverse proxy, GitHub Actions CI/CD, and all security scanning.
+- **Seyi** - Co-Founder and Lead AI Platform Engineer. Built the full AI platform including the RAG pipeline, research agent, embeddings, vector store, review logic, and all API endpoints. Also built and owns the entire infrastructure from scratch including Docker containerisation, Terraform IaC, Kubernetes manifests, Oracle Cloud deployment, Caddy reverse proxy, GitHub Actions CI/CD, and all security scanning.
 - **Jamie** - Knowledge base content, ingestion pipeline, file upload, infrastructure support, DNS and domain management
 - **Rochelle** - Frontend: React UI, component design, upload flow, results display, design system, Vercel deployment
 - **Sade** - Frontend: React UI, component design, upload flow, results display
