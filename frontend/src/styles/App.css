@@ -4,17 +4,18 @@
 body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
 .b-page { background: #fff; min-height: 100vh; overflow-x: hidden; }
 
-/* ── Blobs ───────────────────────────────────────────── */
+/* â”€â”€ Blobs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .b-blob { position: absolute; pointer-events: none; border-radius: 50%; z-index: 0; }
 .b-blob-hero { width: 900px; height: 700px; top: 60px; left: 50%; transform: translateX(-50%); background: radial-gradient(ellipse at 50% 35%, rgba(56,189,248,0.75) 0%, rgba(96,165,250,0.55) 25%, rgba(147,197,253,0.3) 55%, transparent 75%); filter: blur(40px); }
 .b-blob-right { width: 500px; height: 500px; right: -80px; top: 50%; transform: translateY(-50%); background: radial-gradient(ellipse at center, rgba(56,189,248,0.6) 0%, rgba(96,165,250,0.35) 45%, transparent 70%); filter: blur(50px); }
 .b-blob-left { width: 500px; height: 500px; left: -80px; top: 50%; transform: translateY(-50%); background: radial-gradient(ellipse at center, rgba(56,189,248,0.6) 0%, rgba(96,165,250,0.35) 45%, transparent 70%); filter: blur(50px); }
 .b-blob-centre { width: 800px; height: 500px; left: 50%; top: 50%; transform: translate(-50%,-50%); background: radial-gradient(ellipse at center, rgba(56,189,248,0.5) 0%, rgba(99,161,255,0.3) 40%, transparent 70%); filter: blur(50px); }
 
-/* ── Nav ───────────────────────────────────────────────  */
+/* â”€â”€ Nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€  */
 .b-nav-inner { width: 100%; display: flex; align-items: center; justify-content: space-between; }
 .b-logo { display: flex; align-items: center; cursor: pointer; }
-.b-logo-accent { color: #2563eb; }
+.b-logo-accent { color: #2563eb; } */
+.b-logo-img { height: 40px; width: auto; border-radius: 8px; display: block; }
 .b-nav-links { display: flex; gap: 36px; position: absolute; left: 50%; transform: translateX(-50%); }
 .b-nav-links a:hover { color: #0a1628; }
 .b-nav-right { display: flex; gap: 10px; align-items: center; }
@@ -22,7 +23,7 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-burger span { display: block; width: 22px; height: 2px; background: #0a1628; border-radius: 2px; }
 
 
-/* ── Hero ─────────────────────────────────────────────── */
+/* â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .b-hero { position: relative; padding: 90px 72px 0; text-align: center; overflow: hidden; display: flex; flex-direction: column; align-items: center; }
 .b-hero-text { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
 .b-eyebrow { display: inline-flex; align-items: center; gap: 7px; background: #f8faff; color: #4b6cb7; padding: 6px 16px; border-radius: 100px; font-size: 13px; font-weight: 600; margin-bottom: 32px; border: 1px solid #dbeafe; }
@@ -40,7 +41,7 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-btn-secondary:active { transform: translateY(1px); }
 .b-hero-ui { position: relative; z-index: 1; width: 100%; max-width: 1000px; margin: 0 auto; }
 
-/* ── Score Demo ──────────────────────────────────────── */
+/* â”€â”€ Score Demo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .b-demo { background: #fff; border: 1px solid rgba(226,232,240,0.8); border-radius: 20px; overflow: hidden; box-shadow: 0 40px 100px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.02); }
 .b-demo-bar { background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 13px 20px; display: flex; align-items: center; gap: 12px; }
 .b-demo-dots { display: flex; gap: 6px; }
@@ -66,7 +67,7 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-demo-score-denom { font-size: 16px; color: #94a3b8; font-weight: 400; letter-spacing: 0; }
 .b-demo-score-sm { font-size: 26px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
 .b-demo-track { height: 5px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-top: 10px; }
-.b-demo-fill { height: 100%; width: 100%; border-radius: 3px; transform-origin: left; transform: scaleX(var(--fill, 0)); transition: transform 1.4s cubic-bezier(0.16,1,0.3,1); }
+.b-demo-fill { height: 100%; border-radius: 3px; transition: width 1.4s cubic-bezier(0.16,1,0.3,1); }
 .b-demo-lower { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 0 28px 24px; }
 .b-demo-keywords { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; }
 .b-demo-kw-label { font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
@@ -78,14 +79,14 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-demo-arrow { font-size: 11px; color: #94a3b8; text-align: center; font-weight: 500; }
 .b-demo-after { font-size: 12px; color: #16a34a; line-height: 1.5; border-left: 2px solid #16a34a; padding-left: 10px; font-weight: 500; }
 
-/* ── Section shared ──────────────────────────────────── */
+/* â”€â”€ Section shared â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .b-section { position: relative; padding: 112px 72px; overflow: hidden; }
 .b-section-head { text-align: center; margin-bottom: 72px; }
-.b-label { display: inline-flex; align-items: center; gap: 6px; background: #f8faff; color: #4b6cb7; padding: 5px 14px; border-radius: 100px; font-size: 12px; font-weight: 600; margin-bottom: 18px; border: 1px solid #dbeafe; }
+.b-label { display: inline-flex; align-items: center; gap: 6px; background: #f8faff; color: #4b6cb7; padding: 5px 14px; border-radius: 100px; font-size: 12px; font-weight: 700; margin-bottom: 18px; border: 1px solid #dbeafe; }
 .b-h2 { font-family: 'Instrument Serif', Georgia, serif; font-size: 58px; font-weight: 400; letter-spacing: -2px; line-height: 1.05; color: #0a1628; margin-bottom: 14px; }
 .b-section-sub { font-size: 17px; color: #6b7280; max-width: 460px; margin: 0 auto; line-height: 1.65; }
 
-/* ── CV Before/After ─────────────────────────────────── */
+/* â”€â”€ CV Before/After â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .b-cv-transform { background: #f8fafc; border-top: 1px solid #e5e7eb; }
 .b-cv-compare { display: grid; grid-template-columns: 1fr auto 1fr; gap: 32px; align-items: start; position: relative; z-index: 1; }
 .b-cv-doc { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.07); transition: transform 0.6s cubic-bezier(0.16,1,0.3,1), box-shadow 0.6s; }
@@ -124,7 +125,7 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-cv-arrow-label { font-size: 11px; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0; transition: opacity 0.8s 0.3s; }
 .b-cv-arrow.active + .b-cv-arrow-label { opacity: 1; }
 
-/* ── How it works ────────────────────────────────────── */
+/* â”€â”€ How it works â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .b-hiw { background: #fff; }
 .b-hiw-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; position: relative; z-index: 1; }
 .b-hiw-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 20px; overflow: hidden; transition: all 0.25s; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
@@ -163,7 +164,7 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-hiw-title { font-size: 19px; font-weight: 700; color: #0a1628; margin-bottom: 10px; letter-spacing: -0.3px; }
 .b-hiw-body { font-size: 14px; color: #6b7280; line-height: 1.7; }
 
-/* ── Features ────────────────────────────────────────── */
+/* â”€â”€ Features â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .b-features { background: #f8fafc; border-top: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; }
 .b-features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #e5e7eb; border-radius: 20px; overflow: hidden; }
 .b-feature-card { background: #fff; padding: 36px; transition: background 0.15s; }
@@ -172,7 +173,41 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-feature-title { font-size: 16px; font-weight: 700; color: #0a1628; margin-bottom: 10px; }
 .b-feature-body { font-size: 14px; color: #6b7280; line-height: 1.7; }
 
-/* ── Pricing ─────────────────────────────────────────── */
+/* â”€â”€ Waitlist CTA (inline within Pricing section) â”€â”€â”€â”€â”€â”€â”€ */
+.b-pricing-waitlist {
+  max-width: 820px;
+  margin: 36px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 20px 28px;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  border-radius: 16px;
+  text-align: center;
+}
+.b-pricing-waitlist-text {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #1e3a8a;
+}
+.b-pricing-waitlist-btn {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  padding: 0;
+  transition: color 0.15s;
+}
+.b-pricing-waitlist-btn:hover { color: #1d4ed8; text-decoration: underline; }
+
+/* â”€â”€ Pricing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .b-pricing { background: #f8fafc; border-top: 1px solid #e5e7eb; }
 .b-pricing-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 820px; margin: 0 auto; position: relative; z-index: 1; }
 .b-pricing-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 24px; padding: 40px; position: relative; box-shadow: 0 4px 16px rgba(0,0,0,0.05); }
@@ -188,9 +223,9 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-pricing-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
 .b-pricing-yes, .b-pricing-no { font-size: 14px; padding-left: 24px; position: relative; line-height: 1.4; }
 .b-pricing-yes { color: #374151; }
-.b-pricing-yes::before { content: '✓'; position: absolute; left: 0; color: #16a34a; font-weight: 800; font-size: 13px; }
+.b-pricing-yes::before { content: 'âœ“'; position: absolute; left: 0; color: #16a34a; font-weight: 800; font-size: 13px; }
 .b-pricing-no { color: #d1d5db; }
-.b-pricing-no::before { content: '✕'; position: absolute; left: 0; color: #d1d5db; font-size: 13px; }
+.b-pricing-no::before { content: 'âœ•'; position: absolute; left: 0; color: #d1d5db; font-size: 13px; }
 .b-pricing-pro .b-pricing-yes { color: rgba(255,255,255,0.85); }
 .b-pricing-pro .b-pricing-yes::before { color: #4ade80; }
 .b-pricing-pro .b-pricing-no { color: rgba(255,255,255,0.2); }
@@ -202,13 +237,13 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-btn-primary-full:hover { background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%); }
 .b-btn-primary-full:active { transform: translateY(1px); box-shadow: none; }
 
-/* ── Final CTA ───────────────────────────────────────── */
+/* â”€â”€ Final CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .b-cta { position: relative; padding: 140px 72px; text-align: center; background: #fff; border-top: 1px solid #e5e7eb; overflow: hidden; }
 .b-cta-h2 { font-family: 'Instrument Serif', serif; font-size: 68px; font-weight: 400; letter-spacing: -3px; color: #0a1628; margin-bottom: 18px; line-height: 1.0; position: relative; z-index: 1; }
 .b-cta-h2 em { font-style: italic; color: #2563eb; }
 .b-cta-sub { font-size: 17px; color: #6b7280; margin-bottom: 36px; position: relative; z-index: 1; }
 
-/* ── Footer ──────────────────────────────────────────── */
+/* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .b-footer { background: #f8fafc; border-top: 1px solid #e5e7eb; padding: 36px 72px; }
 .b-footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
 .b-footer-links { display: flex; gap: 28px; }
@@ -216,11 +251,11 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-footer-links a:hover { color: #0a1628; }
 .b-footer-copy { font-size: 12px; color: #cbd5e1; }
 
-/* ── Scroll reveal ───────────────────────────────────── */
+/* â”€â”€ Scroll reveal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s cubic-bezier(0.16,1,0.3,1), transform 0.65s cubic-bezier(0.16,1,0.3,1); }
 .reveal.revealed { opacity: 1; transform: none; }
 
-/* ── Responsive ──────────────────────────────────────── */
+/* â”€â”€ Responsive â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 @media (max-width: 1100px) {
   .b-nav, .b-hero, .b-section, .b-cta, .b-footer { padding-left: 40px; padding-right: 40px; }
   .b-page .testimonials-section { padding-left: 40px; padding-right: 40px; }
@@ -236,6 +271,7 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
   .b-hiw-cards, .b-features-grid { grid-template-columns: 1fr; }
   .b-features-grid { gap: 0; }
   .b-pricing-cards { grid-template-columns: 1fr; max-width: 440px; }
+  .b-pricing-waitlist { flex-direction: column; gap: 10px; }
   .b-demo-scores-row { grid-template-columns: 1fr; }
   .b-demo-lower { grid-template-columns: 1fr; }
   .b-cv-compare { grid-template-columns: 1fr; }
@@ -255,7 +291,7 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
   .b-cta-h2 { font-size: 44px; letter-spacing: -2px; }
 }
 
-/* ── Signup plan grid (Free / Pro) ───────────────────── */
+/* â”€â”€ Signup plan grid (Free / Pro) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .signup-plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
 @media (max-width: 600px) {

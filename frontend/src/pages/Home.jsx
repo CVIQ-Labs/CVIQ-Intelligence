@@ -84,7 +84,7 @@ function ScoreDemo() {
               {recruiter}<span className="b-demo-score-denom">/10</span>
             </div>
             <div className="b-demo-track">
-              <div className="b-demo-fill" style={{ '--fill': recruiter / 10, background: col(recruiter, 7) }} />
+              <div className="b-demo-fill" style={{ width: `${recruiter * 10}%`, background: col(recruiter, 7) }} />
             </div>
           </div>
           <div className="b-demo-score-cell">
@@ -282,7 +282,7 @@ export default function Home() {
             CV Intelligence · AI-Powered CV Reviews
           </div>
           <h1 className="b-h1">
-            Stop losing jobs<br />to a <em>broken</em> CV.
+            Smarter CV's.<br />Zero Stress. <em>Real Results</em>
           </h1>
           <p className="b-hero-sub">
             75% of CVs never reach a human. CVIQ tells you exactly what's wrong and rewrites it for you in seconds.
@@ -460,6 +460,13 @@ export default function Home() {
       </button>
     </div>
   </div>
+
+  <div className="b-pricing-waitlist">
+    <span className="b-pricing-waitlist-text">Want early access to new features?</span>
+    <button className="b-pricing-waitlist-btn" onClick={() => navigate('/waitlist')}>
+      Join the waitlist →
+    </button>
+  </div>
 </section>
 
       {/* ── Testimonials ── */}
@@ -486,7 +493,7 @@ export default function Home() {
             <a href="#features">Features</a>
             <a href="#pricing">Pricing</a>
           </div>
-          <p className="b-footer-copy">© 2026 CVIQ Inc. · CV Intelligence ·</p>
+          <p className="b-footer-copy">© 2026 CVIQ Inc. · CV Intelligence · Built with FastAPI, React & GPT-4o</p>
         </div>
       </footer>
     </div>

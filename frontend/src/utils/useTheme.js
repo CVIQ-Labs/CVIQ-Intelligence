@@ -9,8 +9,9 @@ export function useTheme() {
       const stored = localStorage.getItem(THEME_KEY)
       if (stored === 'dark' || stored === 'light') return stored
     } catch {}
-    // 2. Fall back to system preference
-    if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) return 'dark'
+    // 2. Default to light mode — we intentionally do NOT check the system/OS
+    //    preference here. The site should always load in light mode unless
+    //    the user has explicitly chosen dark mode themselves.
     return 'light'
   })
 
@@ -19,18 +20,10 @@ export function useTheme() {
     document.documentElement.setAttribute('data-theme', theme)
   }, [theme])
 
-  // Listen for system preference changes (only if user hasn't set a preference)
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)')
-    const handler = (e) => {
-      try {
-        const stored = localStorage.getItem(THEME_KEY)
-        if (!stored) setTheme(e.matches ? 'dark' : 'light')
-      } catch {}
-    }
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
-  }, [])
+  // NOTE: we intentionally do NOT listen for system/OS theme-preference
+  // changes here. Dark mode is opt-in only, via explicit user action
+  // (toggleTheme / setTheme below) — it should never change automatically
+  // because the user's phone or OS switched to dark mode.
 
   const toggleTheme = () => {
     setTheme(prev => {
