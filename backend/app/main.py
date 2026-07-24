@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import health, review, upload, knowledge_base, download, auth, testimonials, stripe_checkout, stripe_webhook, ats_preview, chat, account
+from app.api import health, review, upload, knowledge_base, download, auth, testimonials, stripe_checkout, stripe_webhook, ats_preview, chat, account, waitlist
 from app.core.config import settings
 from app.ingestion.kb_loader import load_knowledge_base
 
@@ -35,6 +35,7 @@ app.include_router(stripe_webhook.router)
 app.include_router(ats_preview.router)
 app.include_router(chat.router)
 app.include_router(account.router)
+app.include_router(waitlist.router)
 
 @app.get("/")
 def root():

@@ -23,6 +23,8 @@ class Settings(BaseSettings):
 
     stripe_webhook_secret: str = ""
 
+    resend_api_key: str = ""
+
     # Research agent
     tavily_api_key: str = ""
     anthropic_api_key: str = ""
