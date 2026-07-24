@@ -4,6 +4,16 @@ import '../styles/testimonials.css'
 const BASE_URL = 'https://cvreview-api.duckdns.org'
 const COLOURS = ['#1d4ed8','#0f6e56','#6366f1','#f59e0b','#ec4899','#ef4444','#10b981']
 
+// Testimonial submissions are turned off for now (ahead of the private beta
+// launch on Aug 7, 2026). This only hides the "Share your experience" CTA
+// and form — flip back to true to re-enable.
+const ALLOW_TESTIMONIAL_SUBMISSIONS = false
+
+// The whole section stays visible but blurred, with a "Coming soon" overlay
+// on top, ahead of the Aug 7, 2026 beta launch — rather than disappearing
+// entirely. Flip to false to remove the cover and show it normally again.
+const TESTIMONIALS_COMING_SOON = true
+
 function getColour(name) {
   return COLOURS[(name?.charCodeAt(0) || 0) % COLOURS.length]
 }
@@ -148,7 +158,7 @@ export default function Testimonials() {
     ? [{ t: testimonials[0], pos: 'center' }]
     : []
 
-  return (
+  if (!TESTIMONIALS_COMING_SOON) return (
     <section className="t-section">
       {/* Background accent */}
       <div className="t-bg-accent" />
@@ -192,15 +202,100 @@ export default function Testimonials() {
         </div>
       )}
 
-      {showForm
-        ? <SubmitForm onClose={() => setShowForm(false)} onDone={() => { fetch_(); setShowForm(false) }} />
-        : (
-          <div className="t-cta">
-            <p className="t-cta-text">Did CVIQ help you land a role?</p>
-            <button className="t-share-btn" onClick={() => setShowForm(true)}>Share your experience →</button>
+      {ALLOW_TESTIMONIAL_SUBMISSIONS && (
+        showForm
+          ? <SubmitForm onClose={() => setShowForm(false)} onDone={() => { fetch_(); setShowForm(false) }} />
+          : (
+            <div className="t-cta">
+              <p className="t-cta-text">Did CVIQ help you land a role?</p>
+              <button className="t-share-btn" onClick={() => setShowForm(true)}>Share your experience →</button>
+            </div>
+          )
+      )}
+    </section>
+  )
+
+  return (
+    <section className="t-section" style={{ position: 'relative' }}>
+
+      {/* ── Coming soon overlay ── */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        zIndex: 5,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'rgba(255,255,255,0.5)',
+      }}>
+        <div style={{
+          background: '#fff',
+          border: '1px solid #e5e7eb',
+          borderRadius: 18,
+          padding: '22px 36px',
+          textAlign: 'center',
+          boxShadow: '0 12px 36px rgba(10,22,40,0.12)',
+        }}>
+          <div style={{
+            fontSize: 12,
+            fontWeight: 700,
+            color: '#2563eb',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            marginBottom: 8,
+          }}>
+            Coming soon
           </div>
-        )
-      }
+          <p style={{ fontSize: 15.5, fontWeight: 600, color: '#0a1628', margin: 0 }}>
+            This feature will be accessible soon
+          </p>
+        </div>
+      </div>
+
+      {/* ── Blurred, non-interactive content behind the overlay ── */}
+      <div style={{ filter: 'blur(7px)', pointerEvents: 'none', userSelect: 'none' }}>
+        {/* Background accent */}
+        <div className="t-bg-accent" />
+
+        <div className="t-header">
+          <div className="t-eyebrow">Success stories</div>
+          <h2 className="t-h2">Helping people land roles</h2>
+          <p className="t-sub">Real feedback from job seekers who used CVIQ to get hired.</p>
+        </div>
+
+        {loading && <p className="t-status">Loading...</p>}
+        {!loading && total === 0 && <p className="t-status">No testimonials yet — be the first!</p>}
+
+        {!loading && total > 0 && (
+          <div className="t-stage">
+            {total > 1 && (
+              <button className="t-arrow t-arrow-left" aria-label="Previous" tabIndex={-1}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+            )}
+
+            <div className="t-cards-wrap">
+              {positions.map(({ t, pos }) => (
+                <TestimonialCard key={`${t.id || t.name}-${pos}`} t={t} position={pos} />
+              ))}
+            </div>
+
+            {total > 1 && (
+              <button className="t-arrow t-arrow-right" aria-label="Next" tabIndex={-1}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+            )}
+          </div>
+        )}
+
+        {!loading && total > 1 && (
+          <div className="t-dots">
+            {testimonials.map((_, i) => (
+              <button key={i} className={`t-dot ${i === active ? 'active' : ''}`} aria-label={`Go to ${i + 1}`} tabIndex={-1} />
+            ))}
+          </div>
+        )}
+      </div>
     </section>
   )
 }

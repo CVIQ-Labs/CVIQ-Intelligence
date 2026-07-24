@@ -463,7 +463,7 @@ export default function Home() {
 
   <div className="b-pricing-waitlist">
     <span className="b-pricing-waitlist-text">Want early access to new features?</span>
-    <button className="b-pricing-waitlist-btn" onClick={() => navigate('/waitlist')}>
+    <button className="b-pricing-waitlist-btn" onClick={() => navigate('/waitlist', { state: { source: 'pricing' } })}>
       Join the waitlist →
     </button>
   </div>

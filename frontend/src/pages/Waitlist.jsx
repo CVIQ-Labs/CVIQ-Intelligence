@@ -1,41 +1,61 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import cviqLogo from '../assets/cviq-logo.jpg'
 import '../styles/Auth.css'
 
-const BASE_URL = 'https://cvreview-api.duckdns.org'
+const WAITLIST_URL = 'https://api.getcviq.com/waitlist'
 
 export default function Waitlist() {
   const navigate = useNavigate()
+  const location = useLocation()
+  // Which page/CTA sent the user here — defaults to 'waitlist_page' if someone
+  // lands here directly (e.g. a bookmarked/shared link) rather than via a CTA
+  // that set this in navigation state.
+  const source = location.state?.source || 'waitlist_page'
+
   const [email, setEmail] = useState('')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [successMessage, setSuccessMessage] = useState("You're on the list")
 
-  // NOTE: /waitlist does not exist on the backend yet — this is stubbed
-  // to match the same fetch pattern used elsewhere (e.g. Settings.jsx).
-  // Once the endpoint is built, this URL/method should be the only thing
-  // that needs to change.
   const handleJoin = async () => {
-    if (!email.trim()) return setError('Please enter your email address.')
+    const trimmed = email.trim()
+    if (!trimmed) return setError('Please enter your email address.')
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailPattern.test(email.trim())) return setError('Please enter a valid email address.')
+    if (!emailPattern.test(trimmed)) return setError('Please enter a valid email address.')
 
     try {
       setLoading(true)
       setError(null)
-      const res = await fetch(`${BASE_URL}/waitlist`, {
+
+      const res = await fetch(WAITLIST_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({ email: trimmed, source }),
       })
-      if (res.ok) {
+
+      if (res.status === 201) {
+        const data = await res.json().catch(() => ({}))
+        // Both "registered" and "already_registered" are shown as success —
+        // we never surface an error for an already-registered email, so
+        // there's no way to tell from the UI whether an address was already
+        // on the list.
+        setSuccessMessage(
+          data.status === 'already_registered'
+            ? "You're already on the list"
+            : "You're on the list"
+        )
         setSuccess(true)
+      } else if (res.status === 422) {
+        setError('Please enter a valid email address.')
+      } else if (res.status === 503) {
+        setError('Something went wrong on our end. Please try again shortly.')
       } else {
         setError('Something went wrong. Please try again.')
       }
     } catch {
-      setError('Something went wrong. Please try again.')
+      setError("We couldn't reach the server. Check your connection and try again.")
     } finally {
       setLoading(false)
     }
@@ -56,10 +76,10 @@ export default function Waitlist() {
         <div className="auth-card">
           {success ? (
             <>
-              <div className="auth-eyebrow">You're on the list</div>
-              <h1 className="auth-h1">Thanks for joining!</h1>
+              <div className="auth-eyebrow">Early access</div>
+              <h1 className="auth-h1">{successMessage}</h1>
               <p className="auth-sub">
-                We'll email <strong>{email}</strong> as soon as your spot opens up. In the meantime, feel free to try CVIQ for free.
+                We'll email <strong>{email.trim()}</strong> as soon as your spot opens up — keep an eye on your inbox for a confirmation. In the meantime, feel free to try CVIQ for free.
               </p>
               <button className="auth-btn-submit" onClick={() => navigate('/signup')}>
                 Get started free →
@@ -82,8 +102,9 @@ export default function Waitlist() {
                     placeholder="you@example.com"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleJoin()}
+                    onKeyDown={e => e.key === 'Enter' && !loading && handleJoin()}
                     autoComplete="email"
+                    disabled={loading}
                   />
                 </div>
                 {error && <div className="auth-error">{error}</div>}
@@ -110,3 +131,4 @@ export default function Waitlist() {
     </div>
   )
 }
+
