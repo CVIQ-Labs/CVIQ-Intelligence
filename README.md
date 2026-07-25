@@ -458,6 +458,6 @@ CVIQ-Intelligence/
 Built by [Seyi Bello](https://github.com/seyiabello), [Jamie Moore-Arthur](https://github.com/jamiemoorearthur), [Rochelle Smith](https://github.com/rochellejjsmith), and Sade Smith.
 
 - **Seyi** - Co-Founder and Lead AI Platform Engineer. Built the full AI platform including the RAG pipeline, research agent, embeddings, vector store, review logic, and all API endpoints. Also built and owns the entire infrastructure from scratch including Docker containerisation, Terraform IaC, Kubernetes manifests, Oracle Cloud deployment, Caddy reverse proxy, GitHub Actions CI/CD, and all security scanning.
-- **Jamie** - Knowledge base content, ingestion pipeline, file upload, infrastructure support, DNS and domain management
-- **Rochelle** - Frontend: React UI, component design, upload flow, results display, design system, Vercel deployment
-- **Sade** - Frontend: React UI, component design, upload flow, results display
+- **Jamie** - Founder and CEO. Knowledge base content, ingestion pipeline, file upload, infrastructure support, DNS and domain management
+- **Rochelle** - Head of UI/UX and Front-End Engineering. Frontend: React UI, component design, upload flow, results display, design system, Vercel deployment
+- **Sade** -Head of UI/UX and Front-End Engineering. Frontend: React UI, component design, upload flow, results display
