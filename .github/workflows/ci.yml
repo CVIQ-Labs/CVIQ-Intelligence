@@ -2,12 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, staging, dev]
   pull_request:
-    branches: [main]
+    branches: [main, staging, dev]
 
 jobs:
-  test:
+  test-backend:
     runs-on: ubuntu-latest
 
     steps:
@@ -49,9 +49,87 @@ jobs:
           severity: CRITICAL,HIGH
           ignore-unfixed: true
 
+  test-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Lint
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+  deploy-staging-backend:
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend]
+    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+
+    steps:
+      - name: Deploy to Oracle VM (staging)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 129.159.222.241
+          username: ubuntu
+          key: ${{ secrets.ORACLE_SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/Resume-Review-Engine && git fetch origin && git reset --hard origin/staging
+            cd backend && docker build -t cv-reviewer-staging .
+            docker stop cv-reviewer-staging || true
+            docker rm cv-reviewer-staging || true
+            docker run -d --name cv-reviewer-staging --restart unless-stopped \
+              -p 8001:8000 \
+              -v /app/data/chroma-staging:/app/data/chroma \
+              --env-file ~/app-staging.env \
+              cv-reviewer-staging
+
+      - name: Smoke test staging
+        run: |
+          for i in $(seq 1 12); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://staging.api.getcviq.com/health)
+            if [ "$STATUS" = "200" ]; then
+              echo "Staging health check passed (attempt $i)"
+              exit 0
+            fi
+            echo "Attempt $i/12: got HTTP $STATUS - retrying in 5s"
+            sleep 5
+          done
+          echo "Staging smoke test failed"
+          exit 1
+
+  deploy-staging-frontend:
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend]
+    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Deploy to Vercel (staging preview)
+        working-directory: frontend
+        run: npx vercel --yes --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
   deploy-backend:
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test-backend, test-frontend]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
@@ -88,7 +166,7 @@ jobs:
 
   deploy-frontend:
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test-backend, test-frontend]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
@@ -98,7 +176,7 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Deploy to Vercel
+      - name: Deploy to Vercel (production)
         working-directory: frontend
         run: npx vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
         env:
