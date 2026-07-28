@@ -20,7 +20,11 @@ const RESULT_KEY = 'cviq:last-result'
 const FILE_KEY = 'cviq:last-cv-file'
 const JD_KEY = 'cviq:last-jd'
 
-
+// Reviews are paused site-wide ahead of the private beta launch on Aug 7, 2026
+// (first 200 students, via the waitlist). Applies to everyone, including
+// existing/Pro users, so a cached/previously-generated result can't be viewed
+// either. Flip this to false once the beta is live. Keep in sync with the
+// same flag in Upload.jsx.
 const REVIEWS_PAUSED = false
 
 function ProGate({ feature }) {
@@ -32,6 +36,7 @@ function ProGate({ feature }) {
       <p className="pro-gate-sub">Upgrade to unlock this and all other Pro features.</p>
       <button className="pro-gate-btn" onClick={() => {
         try { localStorage.setItem('cviq:upgrade-return', '/results') } catch {
+          // localStorage may be unavailable (e.g. private browsing) — ignore
         }
         navigate('/pricing')
       }}>
@@ -59,6 +64,7 @@ function FreeBanner({ isPro, navigate }) {
       <span>You're on the free plan — some features are locked.</span>
       <button onClick={() => {
         try { localStorage.setItem('cviq:upgrade-return', '/results') } catch {
+          // localStorage may be unavailable (e.g. private browsing) — ignore
         }
         navigate('/pricing')
       }}>Upgrade to Pro →</button>
@@ -123,8 +129,10 @@ export default function Results() {
   }, [cvFile, result])
 
   useEffect(() => { if (result) { try { sessionStorage.setItem(RESULT_KEY, JSON.stringify(result)) } catch {
+      // sessionStorage may be unavailable (e.g. private browsing) — ignore
     } } }, [result])
   useEffect(() => { if (cvFile) { try { localStorage.setItem(FILE_KEY, JSON.stringify(cvFile)) } catch {
+      // localStorage may be unavailable (e.g. private browsing) — ignore
     } } }, [cvFile])
   useEffect(() => { if (!REVIEWS_PAUSED && !authLoading && !user) navigate('/login') }, [user, authLoading, navigate])
   useEffect(() => { if (!REVIEWS_PAUSED && !result) navigate('/') }, [result, navigate])
