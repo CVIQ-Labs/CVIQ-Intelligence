@@ -44,7 +44,7 @@
 .up-footer { background: #f8fafc; border-top: 1px solid #e5e7eb; padding: 24px 72px; }
 .up-footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .up-footer-copy { font-size: 12px; color: #cbd5e1; }
-@media (max-width: 768px) { .up-nav { padding: 0 24px; } .up-container { padding: 48px 20px 40px; } .up-h1 { font-size: 40px; } .up-footer { padding: 20px 24px; } }
+@media (max-width: 768px) { .up-container { padding: 48px 20px 40px; } .up-h1 { font-size: 40px; } .up-footer { padding: 20px 24px; } }
 @media (max-width: 480px) { .up-h1 { font-size: 32px; letter-spacing: -1px; } }
 
 

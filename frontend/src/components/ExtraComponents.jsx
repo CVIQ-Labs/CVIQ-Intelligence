@@ -110,6 +110,15 @@ export function LineFeedback({ lineFeedback }) {
 export function Summary({ summaryImprovement }) {
   const [copied, setCopied] = useState(false)
   if (!summaryImprovement) return null
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(summaryImprovement)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1400)
+    } catch {
+      // Clipboard write failed (e.g. permissions) — silently ignore
+    }
+  }
   return (
     <motion.section className="section" variants={fade}>
       <div className="section-label">Profile</div>
@@ -118,7 +127,7 @@ export function Summary({ summaryImprovement }) {
       <div className="summary-doc">
         <div className="summary-doc-header">
           <span className="summary-doc-title">Professional Summary</span>
-          <button className={`summary-copy ${copied?'copied':''}`} onClick={async()=>{ try { await navigator.clipboard.writeText(summaryImprovement); setCopied(true); setTimeout(()=>setCopied(false),1400) } catch {} }}>
+          <button className={`summary-copy ${copied?'copied':''}`} onClick={handleCopy}>
             {copied ? '✓ Copied' : 'Copy'}
           </button>
         </div>

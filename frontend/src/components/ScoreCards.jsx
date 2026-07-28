@@ -1,12 +1,6 @@
 import { motion } from 'framer-motion'
 import { fade } from '../utils/animations'
-
-export function scoreColor(n, max = 100) {
-  const p = max === 10 ? n * 10 : n
-  if (p >= 80) return '#16a34a'
-  if (p >= 60) return '#d97706'
-  return '#ef4444'
-}
+import { scoreColor } from '../utils/scoreColor'
 
 export function Bar({ value, color, thin }) {
   const c = color || scoreColor(value)
@@ -37,69 +31,78 @@ export function Sidebar({ result, cvFile, onOpenCV, onOpenChat, openCat, setOpen
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-scores">
-        <div className="sidebar-score-label">Recruiter Score</div>
-        <div className="sidebar-score-big" style={{ color: rc }}>{result.recruiter_score}<span className="sidebar-score-denom">/10</span></div>
-        <Bar value={result.recruiter_score * 10} color={rc} thin />
-        <div className="sidebar-sub-scores">
-          <div className="sidebar-sub">
-            <div className="sidebar-sub-num" style={{ color: scoreColor(result.overall_score) }}>{result.overall_score}%</div>
-            <div className="sidebar-sub-label">Overall</div>
-          </div>
-          <div className="sidebar-sub">
-            <div className="sidebar-sub-num" style={{ color: scoreColor(result.ats_score) }}>{result.ats_score}%</div>
-            <div className="sidebar-sub-label">ATS</div>
+      {/* Scrollable region — scores + category list. If this content is
+          taller than the sidebar's max-height, THIS scrolls internally,
+          not the whole sidebar — so the action buttons below never get
+          clipped or hidden behind an easy-to-miss nested scrollbar. */}
+      <div className="sidebar-scroll">
+        <div className="sidebar-scores">
+          <div className="sidebar-score-label">Recruiter Score</div>
+          <div className="sidebar-score-big" style={{ color: rc }}>{result.recruiter_score}<span className="sidebar-score-denom">/10</span></div>
+          <Bar value={result.recruiter_score * 10} color={rc} thin />
+          <div className="sidebar-sub-scores">
+            <div className="sidebar-sub">
+              <div className="sidebar-sub-num" style={{ color: scoreColor(result.overall_score) }}>{result.overall_score}%</div>
+              <div className="sidebar-sub-label">Overall</div>
+            </div>
+            <div className="sidebar-sub">
+              <div className="sidebar-sub-num" style={{ color: scoreColor(result.ats_score) }}>{result.ats_score}%</div>
+              <div className="sidebar-sub-label">ATS</div>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="sidebar-divider" />
-      <div className="sidebar-cats">
-        <div className="sidebar-section-label">Category Scores</div>
-        <p className="sidebar-section-hint">Tap a category to see why it scored this way and how to improve it.</p>
-        {categories.map(c => {
-          const color = scoreColor(c.value)
-          const isOpen = openCat === c.key
-          return (
-            <div key={c.key} className="sidebar-cat-block">
-              <button
-                className={`sidebar-cat sidebar-cat-lg ${isOpen ? 'open' : ''}`}
-                onClick={() => setOpenCat(isOpen ? null : c.key)}
-                aria-expanded={isOpen}
-              >
-                <span className="sidebar-cat-chevron">▸</span>
-                <span className="sidebar-cat-name">{c.label}</span>
-                <span className="sidebar-cat-score" style={{ color }}>{c.value}%</span>
-              </button>
-              <Bar value={c.value} color={color} thin />
-              <div className={`sidebar-cat-drill-wrap ${isOpen ? 'open' : ''}`}>
-                <div className="sidebar-cat-drill-inner">
-                  {c.breakdown && (
-                    <div className="sidebar-cat-drill">
-                      {c.breakdown.explanation && <p className="drill-text">{c.breakdown.explanation}</p>}
-                      {c.breakdown.how_to_improve && (
-                        <div className="drill-action">
-                          <span className="drill-action-label">How to improve</span>
-                          <p className="drill-text">{c.breakdown.how_to_improve}</p>
-                        </div>
-                      )}
-                      {c.breakdown.subscores && Object.entries(c.breakdown.subscores).map(([k, v]) => (
-                        <div key={k} className="drill-sub">
-                          <div className="drill-sub-row">
-                            <span>{k.replace(/_/g,' ').replace(/\b\w/g,x=>x.toUpperCase())}</span>
-                            <span style={{ color: scoreColor(v), fontWeight: 700 }}>{v}%</span>
+        <div className="sidebar-divider" />
+        <div className="sidebar-cats">
+          <div className="sidebar-section-label">Category Scores</div>
+          <p className="sidebar-section-hint">Tap a category to see why it scored this way and how to improve it.</p>
+          {categories.map(c => {
+            const color = scoreColor(c.value)
+            const isOpen = openCat === c.key
+            return (
+              <div key={c.key} className="sidebar-cat-block">
+                <button
+                  className={`sidebar-cat sidebar-cat-lg ${isOpen ? 'open' : ''}`}
+                  onClick={() => setOpenCat(isOpen ? null : c.key)}
+                  aria-expanded={isOpen}
+                >
+                  <span className="sidebar-cat-chevron">▸</span>
+                  <span className="sidebar-cat-name">{c.label}</span>
+                  <span className="sidebar-cat-score" style={{ color }}>{c.value}%</span>
+                </button>
+                <Bar value={c.value} color={color} thin />
+                <div className={`sidebar-cat-drill-wrap ${isOpen ? 'open' : ''}`}>
+                  <div className="sidebar-cat-drill-inner">
+                    {c.breakdown && (
+                      <div className="sidebar-cat-drill">
+                        {c.breakdown.explanation && <p className="drill-text">{c.breakdown.explanation}</p>}
+                        {c.breakdown.how_to_improve && (
+                          <div className="drill-action">
+                            <span className="drill-action-label">How to improve</span>
+                            <p className="drill-text">{c.breakdown.how_to_improve}</p>
                           </div>
-                          <Bar value={v} thin />
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                        )}
+                        {c.breakdown.subscores && Object.entries(c.breakdown.subscores).map(([k, v]) => (
+                          <div key={k} className="drill-sub">
+                            <div className="drill-sub-row">
+                              <span>{k.replace(/_/g,' ').replace(/\b\w/g,x=>x.toUpperCase())}</span>
+                              <span style={{ color: scoreColor(v), fontWeight: 700 }}>{v}%</span>
+                            </div>
+                            <Bar value={v} thin />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          )
-        })}
+            )
+          })}
+        </div>
       </div>
-      <div className="sidebar-divider" />
+
+      {/* Pinned footer — always visible, never part of the scrollable
+          region above, regardless of how long the category list gets. */}
+      <div className="sidebar-divider sidebar-divider-footer" />
       <div className="sidebar-actions">
         {cvFile && <button className="sidebar-btn" onClick={onOpenCV}>View my CV</button>}
         <button className="sidebar-btn sidebar-btn-primary" onClick={onOpenChat}>Ask CVIQ</button>

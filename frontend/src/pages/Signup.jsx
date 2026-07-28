@@ -15,6 +15,7 @@ export default function Signup() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [planChoice, setPlanChoice] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const handleSignup = async () => {
     if (!email.trim() || !password.trim()) return setError('Please enter your email and a password.')
@@ -34,7 +35,9 @@ export default function Signup() {
 
   const choosePlan = (plan) => {
     setPlanChoice(plan)
-    try { localStorage.setItem(INTENDED_PLAN_KEY, plan) } catch {}
+    try { localStorage.setItem(INTENDED_PLAN_KEY, plan) } catch {
+      // localStorage may be unavailable (e.g. private browsing) — ignore
+    }
   }
 
   if (success) {
@@ -46,10 +49,14 @@ export default function Signup() {
               <img src={cviqLogoBlue} alt="CVIQ" className="auth-logo-img cviq-logo-light" />
               <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" />
             </div>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button className="auth-nav-link" onClick={() => navigate('/')}>← Back to home</button>
-              <Link to="/login" className="auth-nav-link">Sign in</Link>
+            <div className={`auth-nav-right ${menuOpen ? 'open' : ''}`}>
+              <button className="auth-nav-link" onClick={() => { setMenuOpen(false); navigate('/waitlist', { state: { source: 'nav' } }) }}>Join waitlist</button>
+              <button className="auth-nav-link" onClick={() => { setMenuOpen(false); navigate('/') }}>← Back to home</button>
+              <Link to="/login" className="auth-nav-link" onClick={() => setMenuOpen(false)}>Sign in</Link>
             </div>
+            <button className="auth-burger" onClick={() => setMenuOpen(m => !m)} aria-label="Menu">
+              <span /><span /><span />
+            </button>
           </div>
         </nav>
 
@@ -117,6 +124,33 @@ export default function Signup() {
                   {planChoice === 'pro' ? '✓ Selected' : 'Select Pro — £15/mo'}
                 </div>
               </button>
+
+              {/* Pro Annual */}
+              <button
+                className={`signup-plan-card signup-plan-card-annual ${planChoice === 'pro-annual' ? 'selected' : ''}`}
+                onClick={() => choosePlan('pro-annual')}
+              >
+                <div className="signup-plan-popular signup-plan-popular-green">Best value</div>
+                <div className="signup-plan-top">
+                  <div>
+                    <div className="signup-plan-name">Pro Annual</div>
+                    <div className="signup-plan-billed">£100/yr — £8.33/mo billed annually</div>
+                  </div>
+                  <div className="signup-plan-saving-pill">Save 45%</div>
+                </div>
+                <ul className="signup-plan-features">
+                  <li>Everything in Pro</li>
+                  <li>AI bullet rewrites</li>
+                  <li>Line-by-line feedback</li>
+                  <li>CV editor with suggestions</li>
+                  <li>Unlimited Ask CVIQ chat</li>
+                  <li>AI profile summary rewrite</li>
+                  <li>Detailed ATS deep scan</li>
+                </ul>
+                <div className={`signup-plan-select-btn signup-plan-select-btn-annual ${planChoice === 'pro-annual' ? 'selected' : ''}`}>
+                  {planChoice === 'pro-annual' ? '✓ Selected' : 'Select Pro Annual — £100/yr'}
+                </div>
+              </button>
             </div>
 
             {planChoice && (
@@ -150,15 +184,19 @@ export default function Signup() {
             <img src={cviqLogoBlue} alt="CVIQ" className="auth-logo-img cviq-logo-light" />
             <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" />
           </div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <button className="auth-nav-link" onClick={() => navigate(-1)}>← Back</button>
-            <Link to="/login" className="auth-nav-link">Sign in</Link>
+          <div className={`auth-nav-right ${menuOpen ? 'open' : ''}`}>
+            <button className="auth-nav-link" onClick={() => { setMenuOpen(false); navigate('/waitlist', { state: { source: 'nav' } }) }}>Join waitlist</button>
+            <button className="auth-nav-link" onClick={() => { setMenuOpen(false); navigate(-1) }}>← Back</button>
+            <Link to="/login" className="auth-nav-link" onClick={() => setMenuOpen(false)}>Sign in</Link>
           </div>
+          <button className="auth-burger" onClick={() => setMenuOpen(m => !m)} aria-label="Menu">
+            <span /><span /><span />
+          </button>
         </div>
       </nav>
 
       <div className="auth-container">
-        <div className="auth-card">
+        <div className="auth-card signup-card-tight">
           <div className="auth-eyebrow">Get started free</div>
           <h1 className="auth-h1">Create your account</h1>
           <p className="auth-sub">Start analysing your CV in under 60 seconds. No credit card required.</p>
@@ -176,6 +214,12 @@ export default function Signup() {
               {loading ? 'Creating account...' : 'Create free account'}
             </button>
           </div>
+
+          <div className="signup-trust-row">
+            <span className="signup-trust-item"><span className="signup-trust-check">✓</span>GDPR compliant</span>
+            <span className="signup-trust-item"><span className="signup-trust-check">✓</span>Your CV stays private</span>
+          </div>
+
           <div className="auth-footer-text">
             Already have an account? <Link to="/login">Sign in</Link>
           </div>

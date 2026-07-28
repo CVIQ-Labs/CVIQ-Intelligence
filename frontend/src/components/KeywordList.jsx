@@ -6,7 +6,13 @@ export default function KeywordList({ keywords }) {
   const [copied, setCopied] = useState(null)
   if (!keywords?.length) return null
   const copy = async (kw, i) => {
-    try { await navigator.clipboard.writeText(kw); setCopied(i); setTimeout(() => setCopied(p => p===i?null:p), 1400) } catch {}
+    try {
+      await navigator.clipboard.writeText(kw)
+      setCopied(i)
+      setTimeout(() => setCopied(p => p===i?null:p), 1400)
+    } catch {
+      // Clipboard write failed (e.g. permissions) — silently ignore
+    }
   }
   return (
     <motion.section className="section" variants={fade}>

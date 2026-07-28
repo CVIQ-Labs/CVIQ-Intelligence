@@ -3,6 +3,7 @@
 .auth-page { background: #fff; min-height: 100vh; display: flex; flex-direction: column; font-family: 'Inter', -apple-system, sans-serif; color: #0a1628; -webkit-font-smoothing: antialiased; }
 .auth-nav-inner { width: 100%; display: flex; align-items: center; justify-content: space-between; }
 .auth-logo { cursor: pointer; display: flex; align-items: center; }
+.auth-logo-img { height: 40px; width: auto; border-radius: 8px; display: block; }
 .auth-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 60px 24px; }
 .auth-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 24px; padding: 48px; width: 100%; max-width: 440px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
 .auth-eyebrow { font-size: 11px; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
@@ -28,7 +29,7 @@
 .auth-page-footer { background: #f8fafc; border-top: 1px solid #e5e7eb; padding: 20px 72px; }
 .auth-page-footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .auth-page-footer-copy { font-size: 12px; color: #cbd5e1; }
-@media (max-width: 600px) { .auth-nav { padding: 0 20px; } .auth-card { padding: 32px 20px; } .auth-page-footer { padding: 16px 20px; } .auth-h1 { font-size: 30px; } }
+@media (max-width: 600px) { .auth-card { padding: 32px 20px; } .auth-page-footer { padding: 16px 20px; } .auth-h1 { font-size: 30px; } }
 
 /* ==========================================================================
    Post-signup success page additions — append to Auth.css
@@ -138,7 +139,7 @@
     
     .signup-plan-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 16px;
       width: 100%;
     }
@@ -194,6 +195,23 @@
     [data-theme="dark"] .signup-plan-card-pro.selected {
       background: linear-gradient(150deg, #0d1a2e 0%, #111827 50%);
     }
+
+    /* Annual card */
+    .signup-plan-card-annual {
+      background: linear-gradient(150deg, #f0fdf4 0%, #fff 50%);
+    }
+
+    [data-theme="dark"] .signup-plan-card-annual {
+      background: linear-gradient(150deg, #052e16 0%, #111827 50%);
+    }
+
+    .signup-plan-card-annual.selected {
+      background: linear-gradient(150deg, #dcfce7 0%, #fff 60%);
+    }
+
+    [data-theme="dark"] .signup-plan-card-annual.selected {
+      background: linear-gradient(150deg, #052e16 0%, #111827 50%);
+    }
     
     /* Popular badge */
     .signup-plan-popular {
@@ -208,6 +226,37 @@
       border-radius: 999px;
       letter-spacing: 0.3px;
       white-space: nowrap;
+    }
+
+    .signup-plan-popular-green {
+      background: linear-gradient(135deg, #059669, #047857);
+    }
+
+    .signup-plan-billed {
+      font-size: 11.5px;
+      color: #64748b;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    [data-theme="dark"] .signup-plan-billed { color: #94a3b8; }
+
+    .signup-plan-saving-pill {
+      font-size: 11px;
+      font-weight: 700;
+      color: #16a34a;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      padding: 3px 9px;
+      border-radius: 999px;
+      white-space: nowrap;
+      align-self: flex-start;
+    }
+
+    [data-theme="dark"] .signup-plan-saving-pill {
+      background: #052e16;
+      border-color: #166534;
+      color: #4ade80;
     }
     
     .signup-plan-top {
@@ -286,7 +335,7 @@
       margin-top: 4px;
     }
     
-    .signup-plan-card:not(.signup-plan-card-pro):hover .signup-plan-select-btn {
+    .signup-plan-card:not(.signup-plan-card-pro):not(.signup-plan-card-annual):hover .signup-plan-select-btn {
       border-color: #2563eb;
       color: #2563eb;
       background: #fff;
@@ -308,6 +357,17 @@
     .signup-plan-select-btn-pro.selected {
       background: linear-gradient(180deg, #3b82f6, #1d4ed8);
     }
+
+    .signup-plan-select-btn-annual {
+      background: linear-gradient(180deg, #16a34a, #15803d);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 1px 0 #14532d, 0 3px 8px rgba(22,163,74,0.35);
+    }
+
+    .signup-plan-select-btn-annual.selected {
+      background: linear-gradient(180deg, #16a34a, #15803d);
+    }
     
     [data-theme="dark"] .signup-plan-select-btn {
       background: #1a2235;
@@ -315,7 +375,7 @@
       color: #94a3b8;
     }
     
-    [data-theme="dark"] .signup-plan-card:not(.signup-plan-card-pro):hover .signup-plan-select-btn {
+    [data-theme="dark"] .signup-plan-card:not(.signup-plan-card-pro):not(.signup-plan-card-annual):hover .signup-plan-select-btn {
       border-color: #3b82f6;
       color: #60a5fa;
       background: #1a2235;
@@ -352,3 +412,87 @@
       .signup-plan-grid { grid-template-columns: 1fr; }
       .signup-plan-card-pro { margin-top: 12px; }
     }
+
+    /* ==========================================================================
+   Forgot-password link (Login page) 
+   ========================================================================== */
+
+.auth-label-row {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 12px;
+ }
+ 
+ .auth-forgot-link {
+   font-size: 12.5px;
+   font-weight: 600;
+   color: #2563eb;
+   text-decoration: none;
+ }
+ 
+ .auth-forgot-link:hover {
+   text-decoration: underline;
+ }
+ 
+ [data-theme="dark"] .auth-forgot-link { color: #60a5fa; }
+
+ /* ==========================================================================
+   Signup page cleanup — tighter spacing + trust badges
+   
+   ========================================================================== */
+
+
+.auth-card.signup-card-tight {
+   padding: 40px;
+ }
+ .auth-card.signup-card-tight .auth-eyebrow {
+   margin-bottom: 10px;
+ }
+ .auth-card.signup-card-tight .auth-sub {
+   margin-bottom: 28px;
+ }
+ .auth-card.signup-card-tight .auth-form {
+   gap: 14px;
+ }
+ 
+ @media (max-width: 600px) {
+   .auth-card.signup-card-tight {
+     padding: 28px 20px;
+   }
+ }
+ 
+ /* Trust badges row */
+ .signup-trust-row {
+   display: flex;
+   flex-wrap: wrap;
+   justify-content: center;
+   gap: 8px 18px;
+   margin-top: 20px;
+   padding-top: 18px;
+   border-top: 1px solid #f1f5f9;
+ }
+ 
+ [data-theme="dark"] .signup-trust-row {
+   border-top-color: #1e2d45;
+ }
+ 
+ .signup-trust-item {
+   display: inline-flex;
+   align-items: center;
+   gap: 5px;
+   font-size: 12px;
+   font-weight: 500;
+   color: #64748b;
+   white-space: nowrap;
+ }
+ 
+ [data-theme="dark"] .signup-trust-item {
+   color: #94a3b8;
+ }
+ 
+ .signup-trust-check {
+   color: #16a34a;
+   font-weight: 700;
+   font-size: 11px;
+ }
