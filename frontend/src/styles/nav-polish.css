@@ -8,6 +8,7 @@
   --nav-height: 64px;
   --nav-px: 56px;
   --nav-bg: rgba(255,255,255,0.9);
+  --nav-dropdown-bg: #ffffff;
   --nav-border: rgba(0,0,0,0.07);
   --nav-shadow: 0 1px 0 rgba(0,0,0,0.04);
   --nav-text: #475569;
@@ -19,6 +20,7 @@
 
 [data-theme="dark"] {
   --nav-bg: rgba(10,15,26,0.92);
+  --nav-dropdown-bg: #0a0f1a;
   --nav-border: rgba(255,255,255,0.07);
   --nav-shadow: 0 1px 0 rgba(255,255,255,0.03);
   --nav-text: #94a3b8;
@@ -41,14 +43,7 @@
   line-height: 0;
 }
 
-/* ── Logo image — single source of truth for sizing.
-   These are transparent icon-only PNGs (not a square JPG with a baked-in
-   background), so we fix HEIGHT only and let width scale naturally via the
-   image's real aspect ratio — object-fit: cover would crop a non-square
-   transparent icon, which we don't want here. !important is used
-   deliberately: this asset has caused sizing regressions a few times
-   already, so this guards against any other rule (inline style, page CSS,
-   browser default) overriding it. ── */
+/* ── Logo image —  */
 .b-logo-img,
 .up-logo-img,
 .auth-logo-img,
@@ -88,21 +83,7 @@
 .b-nav,
 .up-nav,
 .auth-nav,
-.pricing-nav {
-  height: var(--nav-height);
-  padding: 0 var(--nav-px);
-  background: var(--nav-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--nav-border);
-  box-shadow: var(--nav-shadow);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-}
-
+.pricing-nav,
 .settings-nav {
   height: var(--nav-height);
   padding: 0 var(--nav-px);
@@ -125,7 +106,7 @@
   justify-content: space-between;
 }
 
-/* ── Results nav ─────────────────────────────────────── */
+/* ── Results nav */
 .rp-nav {
   height: var(--nav-height);
   background: var(--nav-bg);
@@ -133,6 +114,9 @@
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--nav-border);
   box-shadow: var(--nav-shadow);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .rp-nav-inner {
@@ -166,14 +150,65 @@
   flex-shrink: 0;
 }
 
+/* ── Auth-family pages (Login/Signup/Waitlist/ForgotPassword) — shared
+   */
+.auth-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
 /* ── Home nav links ──────────────────────────────────── */
 .b-nav-inner {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
   gap: 16px;
 }
+
+
+.b-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Shared mobile burger button — every page ─────────
+   */
+.b-burger,
+.auth-burger,
+.up-burger,
+.pricing-burger,
+.settings-burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+}
+.b-burger span,
+.auth-burger span,
+.up-burger span,
+.pricing-burger span,
+.settings-burger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--nav-text-hover);
+  border-radius: 2px;
+}
+
+/* ── Home's mobile nav wrapper ─────────────────────────
+   */
+.b-nav-mobile {
+  display: contents;
+}
+
 
 .b-nav-links {
   display: flex;
@@ -209,6 +244,27 @@
 .b-nav-links a:hover { color: var(--nav-text-hover); }
 .b-nav-links a:hover::after { width: 100%; }
 
+/* Same underline-grow hover as the nav links, applied to the desktop
+   Join waitlist / Log in buttons (not the dark "Get started free" CTA —
+   that one's a solid button by design, not a text link). */
+.b-nav-right .b-btn-ghost {
+  position: relative;
+}
+.b-nav-right .b-btn-ghost::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 15px;
+  width: 0;
+  height: 1.5px;
+  background: #2563eb;
+  border-radius: 999px;
+  transition: width 0.2s ease;
+}
+.b-nav-right .b-btn-ghost:hover::after {
+  width: calc(100% - 30px);
+}
+
 /* ── Shared ghost button — same on every page ────────── */
 .b-btn-ghost,
 .up-back,
@@ -225,7 +281,7 @@
   font-weight: 500;
   cursor: pointer;
   font-family: inherit;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
   white-space: nowrap;
   text-decoration: none;
   display: inline-flex;
@@ -241,7 +297,8 @@
   background: var(--nav-btn-hover-bg);
   border-color: var(--nav-btn-hover-border);
   color: var(--nav-text-hover);
-  transform: none;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
 /* Sign out turns red on hover */
@@ -256,6 +313,30 @@
   border-color: #7f1d1d;
   color: #f87171;
 }
+
+/* ── Waitlist nav CTA — distinct accent style, separate from the plain
+   ghost buttons and the dark primary CTA, so it stands out as "the thing
+   to click right now" while reviews are paused ── */
+.b-btn-nav-waitlist {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #2563eb;
+  padding: 7px 15px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+.b-btn-nav-waitlist:hover { background: #dbeafe; border-color: #93c5fd; }
+[data-theme="dark"] .b-btn-nav-waitlist {
+  background: rgba(59,130,246,0.12);
+  border-color: rgba(59,130,246,0.3);
+  color: #60a5fa;
+}
+[data-theme="dark"] .b-btn-nav-waitlist:hover { background: rgba(59,130,246,0.2); }
 
 /* ── Primary CTA ─────────────────────────────────────── */
 .b-btn-nav-cta {
@@ -287,37 +368,176 @@
 
 /* ── Responsive ──────────────────────────────────────── */
 
-/* Hide centred links before they overlap the logo/buttons */
-@media (max-width: 1000px) {
-  .b-nav-links {
+
+@media (max-width: 1180px) {
+  .b-nav-mobile {
     display: none;
-    position: static;
-    transform: none;
   }
-  .b-nav-links.open {
+  .b-nav-mobile.open {
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     position: fixed;
     top: var(--nav-height);
     left: 0;
     right: 0;
-    background: var(--nav-bg);
-    backdrop-filter: blur(20px);
+    background: var(--nav-dropdown-bg);
+    border-bottom: 1px solid var(--nav-border);
+    padding: 20px 28px 24px;
+    gap: 0;
+    z-index: 99;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    max-height: calc(100vh - var(--nav-height));
+    overflow-y: auto;
+  }
+
+  /* Inside the open panel, the links go back to being a normal static
+     flex column instead of the desktop's absolutely-centred row. */
+  .b-nav-mobile.open .b-nav-links {
+    position: static;
+    transform: none;
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--nav-border);
+  }
+  .b-nav-mobile.open .b-nav-links a {
+    padding: 10px 2px;
+    font-size: 15px;
+  }
+
+  
+  .b-nav-mobile.open .b-nav-right {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+  }
+  .b-nav-mobile.open .b-nav-right button,
+  .b-nav-mobile.open .b-nav-right a {
+    all: unset;
+    box-sizing: border-box;
+    display: block;
+    position: relative;
+    width: 100%;
+    padding: 10px 2px;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: inherit;
+    color: var(--nav-text);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .b-nav-mobile.open .b-nav-right button::after,
+  .b-nav-mobile.open .b-nav-right a::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    width: 0;
+    height: 1.5px;
+    background: #2563eb;
+    border-radius: 999px;
+    transition: width 0.2s ease;
+  }
+  .b-nav-mobile.open .b-nav-right button:hover,
+  .b-nav-mobile.open .b-nav-right a:hover {
+    color: var(--nav-text-hover);
+  }
+  .b-nav-mobile.open .b-nav-right button:hover::after,
+  .b-nav-mobile.open .b-nav-right a:hover::after {
+    width: calc(100% - 4px);
+  }
+
+  .b-burger { display: flex; }
+
+ 
+  .rp-nav-right,
+  .up-nav-right,
+  .auth-nav-right,
+  .pricing-nav-right,
+  .settings-nav-right {
+    display: none;
+  }
+  .rp-nav-right.open,
+  .up-nav-right.open,
+  .auth-nav-right.open,
+  .pricing-nav-right.open,
+  .settings-nav-right.open {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    background: var(--nav-dropdown-bg);
     border-bottom: 1px solid var(--nav-border);
     padding: 20px 28px;
-    gap: 18px;
+    gap: 12px;
     z-index: 99;
     box-shadow: 0 8px 24px rgba(0,0,0,0.08);
   }
-  .b-burger { display: flex; }
+  
+  .rp-nav-right.open {
+    gap: 2px;
+  }
+  .rp-nav-right.open button,
+  .rp-nav-right.open a {
+    all: unset;
+    box-sizing: border-box;
+    display: block;
+    position: relative;
+    width: 100%;
+    padding: 10px 2px;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: inherit;
+    color: var(--nav-text);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .rp-nav-right.open button::after,
+  .rp-nav-right.open a::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    width: 0;
+    height: 1.5px;
+    background: #2563eb;
+    border-radius: 999px;
+    transition: width 0.2s ease;
+  }
+  .rp-nav-right.open button:hover,
+  .rp-nav-right.open a:hover {
+    color: var(--nav-text-hover);
+  }
+  .rp-nav-right.open button:hover::after,
+  .rp-nav-right.open a:hover::after {
+    width: calc(100% - 4px);
+  }
+
+  .up-nav-right.open button,
+  .up-nav-right.open a,
+  .auth-nav-right.open button,
+  .auth-nav-right.open a,
+  .pricing-nav-right.open button,
+  .pricing-nav-right.open a,
+  .settings-nav-right.open button,
+  .settings-nav-right.open a {
+    width: 100%;
+    justify-content: center;
+    padding-top: 11px;
+    padding-bottom: 11px;
+  }
 }
 
 /* Tighten padding at medium widths */
 @media (max-width: 900px) {
   :root { --nav-px: 28px; }
 
-  .b-nav-right,
-  .rp-nav-right { gap: 6px; }
+  .b-nav-right { gap: 6px; }
 
   .b-btn-ghost,
   .up-back,
@@ -339,8 +559,9 @@
 @media (max-width: 640px) {
   :root { --nav-px: 16px; }
 
-  /* Results nav — hide less critical buttons */
-  .rp-nav-right .rp-nav-ghost:first-child { display: none; }
+  /* The sticky bottom waitlist bar (Home page) covers this role on mobile,
+     so no need to also crowd the nav with it at narrow widths */
+  .b-btn-nav-waitlist { display: none; }
 
   /* Upload nav — hide Settings button */
   .up-nav-right .up-back:first-child { display: none; }

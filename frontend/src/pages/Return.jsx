@@ -5,20 +5,27 @@ import cviqLogoBlue from '../assets/cviq-icon-blue.png'
 import cviqLogoWhite from '../assets/cviq-icon-white.png'
 import '../styles/Return.css'
 
+function getInitialSessionId() {
+  const params = new URLSearchParams(window.location.search)
+  return params.get('session_id')
+}
+
 export default function Return() {
   const navigate = useNavigate()
-  const [state, setState] = useState('loading')
-  const [message, setMessage] = useState('')
 
+  // If there's no session_id at all, we already know synchronously (from
+  // the URL, at mount) that this is an error state — no need for an effect
+  // just to set state we can already compute during the initial render.
+  const [state, setState] = useState(() => (getInitialSessionId() ? 'loading' : 'error'))
+  const [message, setMessage] = useState(() =>
+    getInitialSessionId() ? '' : 'Missing checkout session — please try upgrading again.'
+  )
+
+  // The actual async work (asking Stripe about the session) genuinely
+  // belongs in an effect — it's synchronizing with an external system.
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const sessionId = params.get('session_id')
-
-    if (!sessionId) {
-      setState('error')
-      setMessage('Missing checkout session — please try upgrading again.')
-      return
-    }
+    const sessionId = getInitialSessionId()
+    if (!sessionId) return
 
     getSessionStatus(sessionId)
       .then(({ status }) => {
@@ -30,7 +37,9 @@ export default function Return() {
               returnPath = saved
               localStorage.removeItem('cviq:upgrade-return')
             }
-          } catch {}
+          } catch {
+            // localStorage may be unavailable (e.g. private browsing) — ignore
+          }
           navigate(`${returnPath}?payment=success`, { replace: true })
         } else if (status === 'open') {
           navigate('/pricing', { replace: true })

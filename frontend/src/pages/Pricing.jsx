@@ -45,8 +45,29 @@ const PLANS = [
       'Detailed ATS deep scan',
     ],
     cta: 'Upgrade to Pro',
+    highlight: false,
+  },
+  {
+    key: 'pro-annual',
+    name: 'Pro Annual',
+    price: '£100',
+    period: '/yr',
+    billed: '£8.33/mo billed annually',
+    saving: 'Save 45%',
+    description: 'Everything in Pro, for a full year — for the price of about 6 and a half months.',
+    features: [
+      'Everything in Pro',
+      'AI bullet point rewrites',
+      'Line-by-line feedback',
+      'AI profile summary rewrite',
+      'CV editor with inline suggestions',
+      'Unlimited Ask CVIQ chat',
+      'Detailed ATS deep scan',
+    ],
+    cta: 'Get Pro Annual',
     highlight: true,
-    badge: 'Most popular',
+    badge: 'Best value',
+    badgeGreen: true,
   },
 ]
 
@@ -66,9 +87,11 @@ export default function Pricing() {
 
   const options = useMemo(() => ({ fetchClientSecret }), [fetchClientSecret])
 
+  if (authLoading) return null
+  if (!user) { navigate('/login', { state: { from: '/pricing' } }); return null }
+
   const handlePlanClick = (planKey) => {
-    if (planKey === 'free') { navigate(user ? '/upload' : '/signup'); return }
-    if (!user) { navigate('/login', { state: { from: '/pricing' } }); return }
+    if (planKey === 'free') { navigate('/upload'); return }
     setSelectedPlan(planKey)
     setError(null)
     setCheckoutOpen(true)
@@ -84,7 +107,6 @@ export default function Pricing() {
           </div>
           <div className="pricing-nav-right">
             <button className="pricing-nav-btn" onClick={() => navigate(-1)}>← Back</button>
-            {!user && <button className="pricing-nav-btn" onClick={() => navigate('/login')}>Sign in</button>}
           </div>
         </div>
       </nav>
@@ -126,7 +148,7 @@ export default function Pricing() {
               </ul>
 
               <div className="pricing-card-footer">
-                {authLoading ? null : isPro && plan.key === 'pro' ? (
+                {authLoading ? null : isPro && (plan.key === 'pro' || plan.key === 'pro-annual') ? (
                   <div className="pricing-already-pro">You are already on Pro</div>
                 ) : (
                   <button

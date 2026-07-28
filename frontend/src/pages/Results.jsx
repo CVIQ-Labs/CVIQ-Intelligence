@@ -20,12 +20,8 @@ const RESULT_KEY = 'cviq:last-result'
 const FILE_KEY = 'cviq:last-cv-file'
 const JD_KEY = 'cviq:last-jd'
 
-// Reviews are paused site-wide ahead of the private beta launch on Aug 7, 2026
-// (first 200 students, via the waitlist). Applies to everyone, including
-// existing/Pro users, so a cached/previously-generated result can't be viewed
-// either. Flip this to false once the beta is live. Keep in sync with the
-// same flag in Upload.jsx.
-const REVIEWS_PAUSED = true
+
+const REVIEWS_PAUSED = false
 
 function ProGate({ feature }) {
   const navigate = useNavigate()
@@ -35,7 +31,8 @@ function ProGate({ feature }) {
       <div className="pro-gate-title">{feature} is a Pro feature</div>
       <p className="pro-gate-sub">Upgrade to unlock this and all other Pro features.</p>
       <button className="pro-gate-btn" onClick={() => {
-        try { localStorage.setItem('cviq:upgrade-return', '/results') } catch {}
+        try { localStorage.setItem('cviq:upgrade-return', '/results') } catch {
+        }
         navigate('/pricing')
       }}>
         Upgrade to Pro — £15/mo
@@ -55,14 +52,39 @@ function Locked({ feature, children }) {
   )
 }
 
+function FreeBanner({ isPro, navigate }) {
+  if (isPro) return null
+  return (
+    <div className="free-tier-banner">
+      <span>You're on the free plan — some features are locked.</span>
+      <button onClick={() => {
+        try { localStorage.setItem('cviq:upgrade-return', '/results') } catch {
+        }
+        navigate('/pricing')
+      }}>Upgrade to Pro →</button>
+    </div>
+  )
+}
+
 export default function Results() {
   const location = useLocation()
   const navigate = useNavigate()
   const [showCV, setShowCV] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
   const [openCat, setOpenCat] = useState(null)
-  const [paymentSuccess, setPaymentSuccess] = useState(false)
   const { user, isPro, loading: authLoading } = useAuth()
+
+  const [paymentSuccess, setPaymentSuccess] = useState(() => {
+    const params = new URLSearchParams(window.location.search)
+    return params.get('payment') === 'success'
+  })
+
+  useEffect(() => {
+    if (paymentSuccess) {
+      window.history.replaceState({}, '', '/results')
+    }
+  }, [paymentSuccess])
 
   const [result] = useState(() => {
     const n = location.state?.result
@@ -87,27 +109,23 @@ export default function Results() {
   const summaryRef = useRef(null)
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    if (params.get('payment') === 'success') {
-      setPaymentSuccess(true)
-      window.history.replaceState({}, '', '/results')
-    }
-  }, [])
-
-  useEffect(() => {
     async function run() {
       if (!cvFile) return
       try {
         const text = await extractCvText(cvFile.base64, cvFile.type)
         setCvText(text)
         if (result?.missing_keywords?.length) setFilteredKeywords(filterTrulyMissing(result.missing_keywords, text))
-      } catch {}
+      } catch {
+        // Text extraction failed — filtered keyword highlighting just won't run
+      }
     }
     run()
   }, [cvFile, result])
 
-  useEffect(() => { if (result) { try { sessionStorage.setItem(RESULT_KEY, JSON.stringify(result)) } catch {} } }, [result])
-  useEffect(() => { if (cvFile) { try { localStorage.setItem(FILE_KEY, JSON.stringify(cvFile)) } catch {} } }, [cvFile])
+  useEffect(() => { if (result) { try { sessionStorage.setItem(RESULT_KEY, JSON.stringify(result)) } catch {
+    } } }, [result])
+  useEffect(() => { if (cvFile) { try { localStorage.setItem(FILE_KEY, JSON.stringify(cvFile)) } catch {
+    } } }, [cvFile])
   useEffect(() => { if (!REVIEWS_PAUSED && !authLoading && !user) navigate('/login') }, [user, authLoading, navigate])
   useEffect(() => { if (!REVIEWS_PAUSED && !result) navigate('/') }, [result, navigate])
 
@@ -116,9 +134,11 @@ export default function Results() {
       <div className="rp">
         <nav className="rp-nav">
           <div className="rp-nav-inner">
-            <div className="rp-logo" onClick={() => navigate('/')}>
-              <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" />
-              <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" />
+            <div className="rp-nav-left">
+              <div className="rp-logo" onClick={() => navigate('/')}>
+                <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" />
+                <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" />
+              </div>
             </div>
           </div>
         </nav>
@@ -159,19 +179,9 @@ export default function Results() {
 
   const halfOrFull = (thisOne, otherOne) => `dash-cell ${thisOne && otherOne ? 'dash-half' : thisOne ? 'dash-full' : ''}`
 
-  const FreeBanner = () => !isPro ? (
-    <div className="free-tier-banner">
-      <span>You're on the free plan — some features are locked.</span>
-      <button onClick={() => {
-        try { localStorage.setItem('cviq:upgrade-return', '/results') } catch {}
-        navigate('/pricing')
-      }}>Upgrade to Pro →</button>
-    </div>
-  ) : null
-
   return (
     <div className="rp">
-      <FreeBanner />
+      <FreeBanner isPro={isPro} navigate={navigate} />
       {paymentSuccess && (
         <div className="rp-success-banner">
           <span>You're now on Pro. All features are unlocked.</span>
@@ -181,17 +191,25 @@ export default function Results() {
 
       <nav className="rp-nav">
         <div className="rp-nav-inner">
-          <div className="rp-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" />
-          </div>
-          <div className="rp-nav-right">
+          {/* Logo + Pro badge grouped together so the badge stays visible
+              in the nav at all times, rather than being tucked inside the
+              collapsible .rp-nav-right group behind the burger. */}
+          <div className="rp-nav-left">
+            <div className="rp-logo" onClick={() => navigate('/')}>
+              <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" />
+              <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" />
+            </div>
             {isPro && <span className="rp-pro-badge">Pro</span>}
-            <button className="rp-nav-ghost" onClick={() => setChatOpen(true)}>Ask CVIQ</button>
-            <button className="rp-nav-ghost" onClick={() => navigate('/upload')}>Review another CV</button>
-            <button className="rp-nav-ghost" onClick={() => navigate('/settings')}>Settings</button>
-            <button className="rp-nav-ghost" onClick={async () => { await supabase.auth.signOut(); navigate('/') }}>Sign out</button>
           </div>
+          <div className={`rp-nav-right ${menuOpen ? 'open' : ''}`}>
+            <button className="rp-nav-ghost" onClick={() => { setChatOpen(true); setMenuOpen(false) }}>Ask CVIQ</button>
+            <button className="rp-nav-ghost" onClick={() => { setMenuOpen(false); navigate('/upload') }}>Review another CV</button>
+            <button className="rp-nav-ghost" onClick={() => { setMenuOpen(false); navigate('/settings') }}>Settings</button>
+            <button className="rp-nav-ghost" onClick={async () => { setMenuOpen(false); await supabase.auth.signOut(); navigate('/') }}>Sign out</button>
+          </div>
+          <button className="b-burger" onClick={() => setMenuOpen(m => !m)} aria-label="Menu">
+            <span /><span /><span />
+          </button>
         </div>
       </nav>
 

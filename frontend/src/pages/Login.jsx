@@ -39,7 +39,9 @@ export default function Login() {
           localStorage.removeItem('cviq:intended-plan')
           dest = '/pricing'
         }
-      } catch {}
+      } catch {
+        // localStorage may be unavailable (e.g. private browsing) — ignore
+      }
       navigate(dest)
     } catch (err) {
       setError(
@@ -59,9 +61,12 @@ export default function Login() {
             <img src={cviqLogoBlue} alt="CVIQ" className="auth-logo-img cviq-logo-light" />
             <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" />
           </div>
-          <Link to="/signup" className="auth-nav-link">
-            Create account
-          </Link>
+          <div style={{ display: 'flex', gap: 14 }}>
+            <button className="auth-nav-link" onClick={() => navigate('/waitlist', { state: { source: 'nav' } })}>Join waitlist</button>
+            <Link to="/signup" className="auth-nav-link">
+              Create account
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -98,9 +103,14 @@ export default function Login() {
             </div>
 
             <div className="auth-field">
-              <label className="auth-label" htmlFor="password">
-                Password
-              </label>
+              <div className="auth-label-row">
+                <label className="auth-label" htmlFor="password">
+                  Password
+                </label>
+                <Link to="/forgot-password" className="auth-forgot-link">
+                  Forgot password?
+                </Link>
+              </div>
               <input
                 id="password"
                 className="auth-input"

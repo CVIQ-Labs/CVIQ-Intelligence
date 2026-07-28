@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { useEffect } from 'react'
 import Home from './pages/Home'
 import Upload from './pages/Upload'
 import Results from './pages/Results'
@@ -9,6 +8,8 @@ import Pricing from './pages/Pricing'
 import Return from './pages/Return'
 import Settings from './pages/Settings'
 import Waitlist from './pages/Waitlist'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 
 // Apply theme before first render to avoid flash.
 // We intentionally default to 'light' here and do NOT check the system/OS
@@ -30,6 +31,8 @@ function App() {
         <Route path="/return" element={<Return />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/waitlist" element={<Waitlist />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   )

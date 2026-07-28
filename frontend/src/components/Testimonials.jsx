@@ -6,7 +6,7 @@ const COLOURS = ['#1d4ed8','#0f6e56','#6366f1','#f59e0b','#ec4899','#ef4444','#1
 
 // Testimonial submissions are turned off for now (ahead of the private beta
 // launch on Aug 7, 2026). This only hides the "Share your experience" CTA
-// and form — flip back to true to re-enable.
+// and form. Flip back to true to re-enable.
 const ALLOW_TESTIMONIAL_SUBMISSIONS = false
 
 // The whole section stays visible but blurred, with a "Coming soon" overlay
@@ -113,21 +113,47 @@ export default function Testimonials() {
   const [loading, setLoading] = useState(true)
   const [active, setActive] = useState(0)
   const [showForm, setShowForm] = useState(false)
-  const [animDir, setAnimDir] = useState(null) // 'left' | 'right'
   const timerRef = useRef(null)
 
   const fetch_ = async () => {
     try {
       const res = await fetch(`${BASE_URL}/testimonials`)
       if (res.ok) setTestimonials(await res.json())
-    } catch {} finally { setLoading(false) }
+    } catch {
+      // Network/API error — leave testimonials empty, "no testimonials yet" state will show
+    } finally { setLoading(false) }
   }
 
-  useEffect(() => { fetch_() }, [])
+  // Guarded with a `cancelled` flag so we never call setState after this
+  // component has unmounted (e.g. if the user navigates away mid-fetch).
+  useEffect(() => {
+    let cancelled = false
+    async function load() {
+      try {
+        const res = await fetch(`${BASE_URL}/testimonials`)
+        if (!cancelled && res.ok) setTestimonials(await res.json())
+      } catch {
+        // Network/API error — leave testimonials empty, "no testimonials yet" state will show
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    load()
+    return () => { cancelled = true }
+  }, [])
 
   const total = testimonials.length
 
-  const startTimer = () => {
+  // navigate() calls startTimer(), and startTimer() calls navigate() from
+  // inside its setInterval callback. startTimer is declared as a hoisted
+  // function declaration specifically so this mutual reference is safe
+  // regardless of source order.
+  const navigate = (dir) => {
+    setActive(p => dir === 'right' ? (p + 1) % total : (p - 1 + total) % total)
+    startTimer()
+  }
+
+  function startTimer() {
     clearInterval(timerRef.current)
     if (total > 1 && !showForm) {
       timerRef.current = setInterval(() => navigate('right'), 4000)
@@ -136,14 +162,7 @@ export default function Testimonials() {
 
   useEffect(() => { startTimer(); return () => clearInterval(timerRef.current) }, [total, showForm])
 
-  const navigate = (dir) => {
-    setAnimDir(dir)
-    setActive(p => dir === 'right' ? (p + 1) % total : (p - 1 + total) % total)
-    startTimer()
-  }
-
   const goTo = (i) => {
-    setAnimDir(i > active ? 'right' : 'left')
     setActive(i)
     startTimer()
   }
@@ -181,7 +200,7 @@ export default function Testimonials() {
           )}
 
           <div className="t-cards-wrap">
-            {positions.map(({ t, pos }, i) => (
+            {positions.map(({ t, pos }) => (
               <TestimonialCard key={`${t.id || t.name}-${pos}`} t={t} position={pos} />
             ))}
           </div>

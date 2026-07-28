@@ -81,7 +81,7 @@ export default function Waitlist() {
               <div className="auth-eyebrow">Early access</div>
               <h1 className="auth-h1">{successMessage}</h1>
               <p className="auth-sub">
-                We'll email <strong>{email.trim()}</strong> as soon as your spot opens up — keep an eye on your inbox for a confirmation. In the meantime, feel free to try CVIQ for free.
+                We'll email <strong>{email.trim()}</strong> as soon as your spot opens up - keep an eye on your inbox for a confirmation. In the meantime, feel free to try CVIQ for free.
               </p>
               <button className="auth-btn-submit" onClick={() => navigate('/signup')}>
                 Get started free →
@@ -92,7 +92,7 @@ export default function Waitlist() {
               <div className="auth-eyebrow">Early access</div>
               <h1 className="auth-h1">Join the waitlist</h1>
               <p className="auth-sub">
-                Be first in line as we roll out new features and expand access. No spam — just an email when it's your turn.
+                Be first in line as we roll out new features and expand access. No spam - just an email when it's your turn.
               </p>
               <div className="auth-form">
                 <div className="auth-field">

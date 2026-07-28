@@ -89,7 +89,7 @@ export function exportEditedPdf(editedHtml, fileName = 'edited_cv.pdf') {
   let y = 56
 
   const sizeFor = { h1: 18, h2: 15, h3: 13, h4: 12, p: 11, li: 11 }
-  const ensureRoom = (lineHeight) => { if (y > pageHeight - 48) { doc.addPage(); y = 56 } }
+  const ensureRoom = () => { if (y > pageHeight - 48) { doc.addPage(); y = 56 } }
 
   blocks.forEach(b => {
     const text = b.runs.map(r => r.text).join('')
@@ -101,7 +101,7 @@ export function exportEditedPdf(editedHtml, fileName = 'edited_cv.pdf') {
     const indent = b.type === 'li' ? 14 : 0
     const lines = doc.splitTextToSize(prefix + text, maxWidth - indent)
     lines.forEach(line => {
-      ensureRoom(fontSize + 6)
+      ensureRoom()
       doc.text(line, marginX + indent, y)
       y += fontSize + 6
     })
