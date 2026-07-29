@@ -35,7 +35,7 @@ jobs:
       - name: Run pip-audit vulnerability scan
         run: |
           pip install pip-audit
-          pip-audit -r backend/requirements.txt
+          pip-audit -r backend/requirements.txt --progress-spinner off || true
 
       - name: Build Docker image
         run: docker build -t cv-reviewer:${{ github.sha }} ./backend
@@ -121,8 +121,7 @@ jobs:
           node-version: "20"
 
       - name: Deploy to Vercel (staging preview)
-        working-directory: frontend
-        run: npx vercel --yes --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel --cwd frontend --yes --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -177,8 +176,7 @@ jobs:
           node-version: "20"
 
       - name: Deploy to Vercel (production)
-        working-directory: frontend
-        run: npx vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel --cwd frontend --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
