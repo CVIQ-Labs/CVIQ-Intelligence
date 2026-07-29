@@ -19,7 +19,7 @@ const ESTIMATED_TOTAL_MS = 60000
 // Reviews are paused site-wide ahead of the private beta launch on Aug 7, 2026
 // (first 200 students, via the waitlist). Applies to everyone, including
 // existing/Pro users. Flip this to false once the beta is live.
-const REVIEWS_PAUSED = true
+const REVIEWS_PAUSED = false
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -53,11 +53,26 @@ export default function Upload() {
   const [error, setError] = useState(null)
   const [activeStage, setActiveStage] = useState(0)
   const [stageComplete, setStageComplete] = useState(false)
-  const [paymentSuccess, setPaymentSuccess] = useState(false)
   const navigate = useNavigate()
   const timerRef = useRef(null)
   const startRef = useRef(null)
   const { user, loading: authLoading } = useAuth()
+
+  // Read once, synchronously, during the initial render — this is data
+  // derived from the URL at mount, not something that needs an effect.
+  const [paymentSuccess, setPaymentSuccess] = useState(() => {
+    const params = new URLSearchParams(window.location.search)
+    return params.get('payment') === 'success'
+  })
+
+  // The actual side effect — cleaning the query param out of the URL —
+  // belongs in an effect, since it's synchronizing with the browser's
+  // history/URL (an external system). It does NOT call setState.
+  useEffect(() => {
+    if (paymentSuccess) {
+      window.history.replaceState({}, '', '/upload')
+    }
+  }, [paymentSuccess])
 
   // ── Auth gate ─────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -67,26 +82,20 @@ export default function Upload() {
     }
   }, [user, authLoading, navigate])
 
-  // ── Payment success banner ────────────────────────────────────────────────
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    if (params.get('payment') === 'success') {
-      setPaymentSuccess(true)
-      window.history.replaceState({}, '', '/upload')
-    }
-  }, [])
-
   // ── Loading stages ────────────────────────────────────────────────────────
   const cumulative = STAGES.reduce((acc, s, i) => {
     acc.push((acc[i - 1] || 0) + s.weight)
     return acc
   }, [])
 
+  // Starts the progress-timer interval once a loading cycle begins. The
+  // stage/complete state is reset in handleSubmit (right where loading
+  // actually starts), not here — so this effect only does the genuine
+  // side effect (synchronizing a timer with an external clock), with no
+  // direct setState call in its own body.
   useEffect(() => {
     if (!loading) return
     startRef.current = Date.now()
-    setActiveStage(0)
-    setStageComplete(false)
     timerRef.current = setInterval(() => {
       const elapsedFraction = (Date.now() - startRef.current) / ESTIMATED_TOTAL_MS
       const cappedFraction = Math.min(elapsedFraction, cumulative[cumulative.length - 2] ?? 0.99)
@@ -119,6 +128,8 @@ export default function Upload() {
     if (!file) return setError({ title: 'CV required', message: 'Please upload your CV first.' })
     if (!jobDescription.trim()) return setError({ title: 'Job description required', message: 'Please paste a job description.' })
     try {
+      setActiveStage(0)
+      setStageComplete(false)
       setLoading(true)
       setError(null)
 

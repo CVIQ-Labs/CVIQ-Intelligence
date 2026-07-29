@@ -11,10 +11,22 @@ export default function BulletRewrites({ bullets, jobDescription }) {
   if (!bullets?.length) return null
   const getVersions = (b, i) => [...[b.improved], ...(b.alternatives||[]), ...(extra[i]||[])].filter(Boolean)
   const doRewrite = async (b, i) => {
-    try { setRewriting(i); const res = await rewriteBullet({ bullet: b.original, jobDescription }); setExtra(p => ({ ...p, [i]: res.rewrites || [] })) } catch {} finally { setRewriting(null) }
+    try {
+      setRewriting(i)
+      const res = await rewriteBullet({ bullet: b.original, jobDescription })
+      setExtra(p => ({ ...p, [i]: res.rewrites || [] }))
+    } catch {
+      // Rewrite request failed — leave existing versions in place
+    } finally { setRewriting(null) }
   }
   const copy = async (text, key) => {
-    try { await navigator.clipboard.writeText(text); setCopied(key); setTimeout(() => setCopied(p=>p===key?null:p), 1400) } catch {}
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(key)
+      setTimeout(() => setCopied(p=>p===key?null:p), 1400)
+    } catch {
+      // Clipboard write failed (e.g. permissions) — silently ignore
+    }
   }
   return (
     <motion.section className="section" variants={fade}>

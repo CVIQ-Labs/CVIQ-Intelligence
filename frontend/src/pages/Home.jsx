@@ -236,7 +236,9 @@ export default function Home() {
           localStorage.removeItem('cviq:intended-plan')
           navigate('/pricing')
         }
-      } catch {}
+      } catch {
+        // localStorage may be unavailable (e.g. private browsing) — ignore
+      }
     }
   }, [user, navigate])
 
@@ -250,28 +252,47 @@ export default function Home() {
             <img src={cviqLogoBlue} alt="CVIQ" className="b-logo-img cviq-logo-light" />
             <img src={cviqLogoWhite} alt="CVIQ" className="b-logo-img cviq-logo-dark" />
           </div>
-          <div className={`b-nav-links ${menuOpen ? 'open' : ''}`}>
-            <a href="#how-it-works">How it works</a>
-            <a href="#features">Features</a>
-            <a href="#pricing">Pricing</a>
+
+          {/* Nav links and the action buttons used to collapse independently
+              (only the links had a burger control — the buttons on the right
+              just squeezed via shrinking padding, which is what was "messing
+              up" the nav on narrow screens). They're now wrapped together so
+              a single burger toggle reveals both, stacked, in one dropdown. */}
+          {/* Only the secondary actions (Join waitlist/Log in, or
+              Settings/Sign out) collapse into the burger dropdown. The
+              primary CTA (Get started free / Go to upload) stays visible
+              at all times, right next to the burger — one clear thing to
+              tap on a squashed screen, rest tucked behind the menu. */}
+          <div className="b-nav-actions">
+            <div className={`b-nav-mobile ${menuOpen ? 'open' : ''}`}>
+              <div className="b-nav-links">
+                <a href="#how-it-works" onClick={() => setMenuOpen(false)}>How it works</a>
+                <a href="#features" onClick={() => setMenuOpen(false)}>Features</a>
+                <a href="#pricing" onClick={() => setMenuOpen(false)}>Pricing</a>
+              </div>
+              <div className="b-nav-right">
+                {user ? (
+                  <>
+                    <button className="b-btn-ghost" onClick={() => { setMenuOpen(false); navigate('/settings') }}>Settings</button>
+                    <button className="b-btn-ghost" onClick={async () => { setMenuOpen(false); await supabase.auth.signOut(); navigate('/') }}>Sign out</button>
+                  </>
+                ) : (
+                  <>
+                    <button className="b-btn-ghost" onClick={() => { setMenuOpen(false); navigate('/waitlist', { state: { source: 'nav' } }) }}>Join waitlist</button>
+                    <button className="b-btn-ghost" onClick={() => { setMenuOpen(false); navigate('/login') }}>Log in</button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <button className="b-btn-nav-cta" onClick={() => navigate(user ? '/upload' : '/signup')}>
+              {user ? 'Go to upload' : 'Get started free'}
+            </button>
+
+            <button className="b-burger" onClick={() => setMenuOpen(m => !m)} aria-label="Menu">
+              <span /><span /><span />
+            </button>
           </div>
-          <div className="b-nav-right">
-            {user ? (
-              <>
-                <button className="b-btn-ghost" onClick={() => navigate('/settings')}>Settings</button>
-                <button className="b-btn-ghost" onClick={async () => { await supabase.auth.signOut(); navigate('/') }}>Sign out</button>
-                <button className="b-btn-nav-cta" onClick={() => navigate('/upload')}>Go to upload</button>
-              </>
-            ) : (
-              <>
-                <button className="b-btn-ghost" onClick={() => navigate('/login')}>Log in</button>
-                <button className="b-btn-nav-cta" onClick={() => navigate('/signup')}>Get started free</button>
-              </>
-            )}
-          </div>
-          <button className="b-burger" onClick={() => setMenuOpen(m => !m)} aria-label="Menu">
-            <span /><span /><span />
-          </button>
         </div>
       </nav>
 
@@ -417,10 +438,15 @@ export default function Home() {
 
 {/* ── Pricing ── */}
 <section className="b-section b-pricing reveal" id="pricing">
+  <div className="b-pricing-waitlist-inline">
+    <span>Join our waitlist for our private beta.</span>
+    <button onClick={() => navigate('/waitlist', { state: { source: 'before_pricing' } })}>
+      Join the waitlist →
+    </button>
+  </div>
   <div className="b-section-head">
     <div className="b-label">Pricing</div>
     <h2 className="b-h2">Start free.<br />Upgrade when you're ready.</h2>
-    <p className="b-section-sub">No credit card required to get started.</p>
   </div>
 
   <div className="b-pricing-cards">
@@ -441,8 +467,7 @@ export default function Home() {
       </button>
     </div>
 
-    <div className="b-pricing-card b-pricing-pro reveal" style={{ transitionDelay: '0.1s' }}>
-      <div className="b-pricing-badge">Most popular</div>
+    <div className="b-pricing-card reveal" style={{ transitionDelay: '0.1s' }}>
       <div className="b-pricing-tier">Pro</div>
       <div className="b-pricing-price">£15<span>/mo</span></div>
       <div className="b-pricing-desc">For long-term users</div>
@@ -454,20 +479,40 @@ export default function Home() {
         <li className="b-pricing-yes">CV editor with suggestions</li>
         <li className="b-pricing-yes">Unlimited Ask CVIQ chat</li>
       </ul>
-      <button className="b-btn-primary-full" onClick={() => {
+      <button className="b-btn-outline-full" onClick={() => {
         if (user) { navigate('/pricing') }
-        else { try { localStorage.setItem('cviq:intended-plan', 'pro') } catch {}; navigate('/signup') }
+        else { try { localStorage.setItem('cviq:intended-plan', 'pro') } catch {
+          // localStorage may be unavailable (e.g. private browsing) — ignore
+        }; navigate('/signup') }
       }}>
         Start Pro - £15/mo →
       </button>
     </div>
-  </div>
 
-  <div className="b-pricing-waitlist">
-    <span className="b-pricing-waitlist-text">Want early access to new features?</span>
-    <button className="b-pricing-waitlist-btn" onClick={() => navigate('/waitlist', { state: { source: 'pricing' } })}>
-      Join the waitlist →
-    </button>
+    <div className="b-pricing-card b-pricing-pro reveal" style={{ transitionDelay: '0.2s' }}>
+      <div className="b-pricing-badge b-pricing-badge-green">Best value</div>
+      <div className="b-pricing-tier">Pro Annual</div>
+      <div className="b-pricing-price">£100<span>/yr</span></div>
+      <div className="b-pricing-billed">£8.33/mo billed annually</div>
+      <div className="b-pricing-saving">Save 45%</div>
+      <div className="b-pricing-desc">Everything in Pro, for a full year.</div>
+      <ul className="b-pricing-list">
+        <li className="b-pricing-yes">Everything in Pro</li>
+        <li className="b-pricing-yes">AI bullet point rewrites</li>
+        <li className="b-pricing-yes">Line-by-line feedback</li>
+        <li className="b-pricing-yes">AI profile summary rewrite</li>
+        <li className="b-pricing-yes">CV editor with suggestions</li>
+        <li className="b-pricing-yes">Unlimited Ask CVIQ chat</li>
+      </ul>
+      <button className="b-btn-primary-full" onClick={() => {
+        if (user) { navigate('/pricing') }
+        else { try { localStorage.setItem('cviq:intended-plan', 'pro-annual') } catch {
+          // localStorage may be unavailable (e.g. private browsing) — ignore
+        }; navigate('/signup') }
+      }}>
+        Get Pro Annual - £100/yr →
+      </button>
+    </div>
   </div>
 </section>
 
@@ -499,6 +544,14 @@ export default function Home() {
           <p className="b-footer-copy">© 2026 CVIQ Inc. · CV Intelligence · Built with FastAPI, React & GPT-4o</p>
         </div>
       </footer>
+
+      {/* ── Mobile sticky waitlist CTA (hidden on desktop via CSS) ── */}
+      <div className="b-mobile-sticky-waitlist">
+        <span>Early access available</span>
+        <button onClick={() => navigate('/waitlist', { state: { source: 'mobile_sticky' } })}>
+          Join waitlist →
+        </button>
+      </div>
     </div>
   )
 }
