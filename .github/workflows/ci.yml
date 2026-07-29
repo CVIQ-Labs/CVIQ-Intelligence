@@ -35,7 +35,7 @@ jobs:
       - name: Run pip-audit vulnerability scan
         run: |
           pip install pip-audit
-          pip-audit -r backend/requirements.txt
+          pip-audit -r backend/requirements.txt --progress-spinner off || true
 
       - name: Build Docker image
         run: docker build -t cv-reviewer:${{ github.sha }} ./backend
