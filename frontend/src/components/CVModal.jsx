@@ -30,11 +30,23 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
   })
   const [dirty, setDirty] = useState(false)
   const [exporting, setExporting] = useState(null)
-  const [versions, setVersions] = useState([])
+  // Loaded lazily during the initial render (not via an effect + setState) —
+  // this is data we already have on hand from sessionStorage at mount time,
+  // so there's no need for an effect to "synchronize" anything here.
+  const [versions, setVersions] = useState(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem(`cviq:cv-versions:${userId || 'guest'}`) || '[]')
+    } catch {
+      return []
+    }
+  })
   const [activeTab, setActiveTab] = useState('feedback')
   const [restoredMsg, setRestoredMsg] = useState(false)
   const [undoStack, setUndoStack] = useState([])
   const [redoStack, setRedoStack] = useState([])
+  // `bubble` intentionally holds only plain, serializable-ish data (numbers
+  // and strings) — NOT a live DOM node reference. See `nodeId` below and
+  // handleAcceptBubble's comment for why.
   const [bubble, setBubble] = useState(null)
 
   const editorRef = useRef(null)
@@ -43,14 +55,6 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
   const autoSaveCountRef = useRef(0)
   const isPdf = fileType === 'application/pdf'
   const exportFormat = isPdf ? 'pdf' : 'docx'
-
-  // ── Load versions ─────────────────────────────────────────────────────────
-  useEffect(() => {
-    try {
-      const saved = JSON.parse(sessionStorage.getItem(VERSION_KEY) || '[]')
-      setVersions(saved)
-    } catch {}
-  }, [VERSION_KEY])
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -70,23 +74,55 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
 
   const normalize = (s) => s.replace(/\s+/g, ' ').trim().toLowerCase()
 
-  // ── Highlight weak lines (purely DOM, no state) ───────────────────────────
+  // ── Highlight weak lines (purely DOM, no state). Each matched line gets a
+  //    stable `data-cv-node-id` so it can be safely re-queried later (by
+  //    handleAcceptBubble) instead of keeping a live node reference in
+  //    React state. ──────────────────────────────────────────────────────
   const highlightWeakLines = useCallback(() => {
     if (!editorRef.current || !weakBullets.length) return
     const blocks = Array.from(editorRef.current.querySelectorAll('p, li'))
     blocks.forEach(el => {
       el.classList.remove('cv-weak-line')
       el.removeAttribute('data-suggestion')
+      el.removeAttribute('data-cv-node-id')
     })
-    weakBullets.forEach(b => {
+    weakBullets.forEach((b, i) => {
       const target = normalize(b.original)
       const match = blocks.find(el => normalize(el.textContent).includes(target))
       if (match) {
         match.classList.add('cv-weak-line')
         match.setAttribute('data-suggestion', b.improved)
+        match.setAttribute('data-cv-node-id', `weak-${i}`)
       }
     })
   }, [weakBullets])
+
+  // ── Recalculate which keywords/bullets are already applied, by scanning
+  //    the current editor HTML. Declared here (rather than further down,
+  //    near saveVersion/restoreVersion) so it's available to the "Load CV
+  //    content" effect below without a used-before-declared lint issue. ────
+  const recalculateApplied = () => {
+    if (!editorRef.current) return
+    const contentLower = editorRef.current.innerHTML.toLowerCase()
+
+    const newAppliedBullets = new Set()
+    weakBullets.forEach((b, i) => {
+      if (!contentLower.includes(normalize(b.original))) newAppliedBullets.add(i)
+    })
+    setAppliedBullets(newAppliedBullets)
+    try { sessionStorage.setItem(APPLIED_BULLETS_KEY, JSON.stringify([...newAppliedBullets])) } catch {
+      // sessionStorage may be unavailable (e.g. private browsing) — ignore
+    }
+
+    const newAppliedKeywords = new Set()
+    missingKeywords.forEach((kw, i) => {
+      if (contentLower.includes(kw.toLowerCase())) newAppliedKeywords.add(i)
+    })
+    setAppliedKeywords(newAppliedKeywords)
+    try { sessionStorage.setItem(APPLIED_KEYWORDS_KEY, JSON.stringify([...newAppliedKeywords])) } catch {
+      // sessionStorage may be unavailable (e.g. private browsing) — ignore
+    }
+  }
 
   // ── Load CV content ───────────────────────────────────────────────────────
   useEffect(() => {
@@ -114,7 +150,9 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
         }
 
         let draft = null
-        try { draft = sessionStorage.getItem(DRAFT_KEY) } catch {}
+        try { draft = sessionStorage.getItem(DRAFT_KEY) } catch {
+          // sessionStorage may be unavailable (e.g. private browsing) — no draft to restore
+        }
 
         if (editorRef.current) {
           editorRef.current.innerHTML = draft || html
@@ -136,7 +174,9 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
   const saveDraft = () => {
     try {
       if (editorRef.current) sessionStorage.setItem(DRAFT_KEY, editorRef.current.innerHTML)
-    } catch {}
+    } catch {
+      // sessionStorage may be unavailable (e.g. private browsing) — draft won't persist
+    }
   }
 
   const clearAllDraftData = () => {
@@ -144,7 +184,9 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
       sessionStorage.removeItem(DRAFT_KEY)
       sessionStorage.removeItem(APPLIED_BULLETS_KEY)
       sessionStorage.removeItem(APPLIED_KEYWORDS_KEY)
-    } catch {}
+    } catch {
+      // sessionStorage may be unavailable (e.g. private browsing) — ignore
+    }
   }
 
   // ── Undo / Redo ───────────────────────────────────────────────────────────
@@ -155,10 +197,21 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     setRedoStack([])
   }
 
+  // Both functions capture editorRef.current.innerHTML into a plain local
+  // variable BEFORE mutating the ref. This matters because the setState
+  // updater callbacks below (`r => [...r, ...]`) don't run immediately —
+  // React calls them later, during the next render — by which point the
+  // ref would already have been overwritten by the `editorRef.current.
+  // innerHTML = ...` line further down, if we read the ref live inside
+  // the updater instead. That was the actual redo bug: the "current"
+  // value pushed onto the other stack was really the value AFTER the
+  // swap, not before it, so redo just reapplied whatever was already on
+  // screen — no visible change.
   const handleUndo = () => {
     if (!editorRef.current || undoStack.length === 0) return
+    const currentHtml = editorRef.current.innerHTML
     const prev = undoStack[undoStack.length - 1]
-    setRedoStack(r => [...r, editorRef.current.innerHTML])
+    setRedoStack(r => [...r, currentHtml])
     setUndoStack(u => u.slice(0, -1))
     editorRef.current.innerHTML = prev
     setBubble(null)
@@ -168,13 +221,31 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
 
   const handleRedo = () => {
     if (!editorRef.current || redoStack.length === 0) return
+    const currentHtml = editorRef.current.innerHTML
     const next = redoStack[redoStack.length - 1]
-    setUndoStack(u => [...u, editorRef.current.innerHTML])
+    setUndoStack(u => [...u, currentHtml])
     setRedoStack(r => r.slice(0, -1))
     editorRef.current.innerHTML = next
     setBubble(null)
     setDirty(true)
     setTimeout(() => { highlightWeakLines(); recalculateApplied() }, 50)
+  }
+
+  // ── Save a named version. Declared here (above the auto-save effect
+  //    below) so the effect's setInterval callback isn't referencing it
+  //    before its declaration. ──────────────────────────────────────────
+  const saveVersion = (label = 'Manual save') => {
+    if (!editorRef.current) return
+    const html = editorRef.current.innerHTML
+    const newVersion = { id: Date.now(), label, timestamp: Date.now(), html }
+    setVersions(prev => {
+      const updated = [newVersion, ...prev].slice(0, 20)
+      try { sessionStorage.setItem(VERSION_KEY, JSON.stringify(updated)) } catch {
+        // sessionStorage may be unavailable (e.g. private browsing) — version list won't persist
+      }
+      return updated
+    })
+    setDirty(false)
   }
 
   // ── Auto-save: draft every 1s, named version every 30s ───────────────────
@@ -191,18 +262,6 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     return () => clearInterval(autoSaveRef.current)
   }, [dirty])
 
-  const saveVersion = (label = 'Manual save') => {
-    if (!editorRef.current) return
-    const html = editorRef.current.innerHTML
-    const newVersion = { id: Date.now(), label, timestamp: Date.now(), html }
-    setVersions(prev => {
-      const updated = [newVersion, ...prev].slice(0, 20)
-      try { sessionStorage.setItem(VERSION_KEY, JSON.stringify(updated)) } catch {}
-      return updated
-    })
-    setDirty(false)
-  }
-
   const restoreVersion = (version) => {
     if (!editorRef.current) return
     pushUndo()
@@ -217,28 +276,11 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     }, 100)
   }
 
-  const recalculateApplied = () => {
-    if (!editorRef.current) return
-    const contentLower = editorRef.current.innerHTML.toLowerCase()
-
-    const newAppliedBullets = new Set()
-    weakBullets.forEach((b, i) => {
-      if (!contentLower.includes(normalize(b.original))) newAppliedBullets.add(i)
-    })
-    setAppliedBullets(newAppliedBullets)
-    try { sessionStorage.setItem(APPLIED_BULLETS_KEY, JSON.stringify([...newAppliedBullets])) } catch {}
-
-    const newAppliedKeywords = new Set()
-    missingKeywords.forEach((kw, i) => {
-      if (contentLower.includes(kw.toLowerCase())) newAppliedKeywords.add(i)
-    })
-    setAppliedKeywords(newAppliedKeywords)
-    try { sessionStorage.setItem(APPLIED_KEYWORDS_KEY, JSON.stringify([...newAppliedKeywords])) } catch {}
-  }
-
   const clearHistory = () => {
     setVersions([])
-    try { sessionStorage.removeItem(VERSION_KEY) } catch {}
+    try { sessionStorage.removeItem(VERSION_KEY) } catch {
+      // sessionStorage may be unavailable (e.g. private browsing) — ignore
+    }
   }
 
   const handleEditorInput = () => {
@@ -251,29 +293,41 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     setTimeout(() => node.classList.remove('cv-flash'), 1600)
   }
 
-  // ── Click on weak line → show bubble ─────────────────────────────────────
+  // ── Click on weak line → show bubble. We store `nodeId` (a plain string,
+  //    the stable data-cv-node-id set by highlightWeakLines) rather than a
+  //    live reference to the DOM node itself — see handleAcceptBubble. ────
   const handleEditorClick = useCallback((e) => {
     const target = e.target.closest('.cv-weak-line')
     if (!target) { setBubble(null); return }
     const suggestion = target.getAttribute('data-suggestion')
-    if (!suggestion) return
+    const nodeId = target.getAttribute('data-cv-node-id')
+    if (!suggestion || !nodeId) return
 
     const panelRect = panelLeftRef.current.getBoundingClientRect()
     const targetRect = target.getBoundingClientRect()
     const top = targetRect.top - panelRect.top + panelLeftRef.current.scrollTop - 10
     const left = targetRect.left - panelRect.left
 
-    setBubble({ top, left, suggestion, node: target })
+    setBubble({ top, left, suggestion, nodeId })
   }, [])
 
-  // ── Accept inline suggestion ──────────────────────────────────────────────
+  // ── Accept inline suggestion. `bubble` (React state) only ever holds
+  //    plain data (top/left/suggestion/nodeId) — never a live DOM node. We
+  //    re-query the actual node fresh, right here, into a local `const`,
+  //    and mutate THAT (not anything pulled out of useState). The editor
+  //    is still managed imperatively on purpose (so React re-renders never
+  //    wipe an in-progress edit), but nothing derived from React state
+  //    gets mutated directly anymore. ──────────────────────────────────
   const handleAcceptBubble = useCallback(() => {
-    if (!bubble || !bubble.node) return
+    if (!bubble || !editorRef.current) return
+    const node = editorRef.current.querySelector(`[data-cv-node-id="${bubble.nodeId}"]`)
+    if (!node) return
     pushUndo()
-    bubble.node.textContent = bubble.suggestion
-    bubble.node.classList.remove('cv-weak-line')
-    bubble.node.removeAttribute('data-suggestion')
-    flashNode(bubble.node)
+    node.textContent = bubble.suggestion
+    node.classList.remove('cv-weak-line')
+    node.removeAttribute('data-suggestion')
+    node.removeAttribute('data-cv-node-id')
+    flashNode(node)
     setDirty(true)
     saveDraft()
     const acceptedSuggestion = bubble.suggestion
@@ -282,7 +336,9 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
       weakBullets.forEach((b, i) => {
         if (b.improved === acceptedSuggestion) next.add(i)
       })
-      try { sessionStorage.setItem(APPLIED_BULLETS_KEY, JSON.stringify([...next])) } catch {}
+      try { sessionStorage.setItem(APPLIED_BULLETS_KEY, JSON.stringify([...next])) } catch {
+        // sessionStorage may be unavailable (e.g. private browsing) — ignore
+      }
       return next
     })
     setBubble(null)
@@ -350,7 +406,9 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     }
     setAppliedKeywords(prev => {
       const next = new Set(prev).add(i)
-      try { sessionStorage.setItem(APPLIED_KEYWORDS_KEY, JSON.stringify([...next])) } catch {}
+      try { sessionStorage.setItem(APPLIED_KEYWORDS_KEY, JSON.stringify([...next])) } catch {
+        // sessionStorage may be unavailable (e.g. private browsing) — ignore
+      }
       return next
     })
     setDirty(true)
@@ -379,10 +437,13 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
       : bullet.improved
     match.classList.remove('cv-weak-line')
     match.removeAttribute('data-suggestion')
+    match.removeAttribute('data-cv-node-id')
     flashNode(match)
     setAppliedBullets(prev => {
       const next = new Set(prev).add(i)
-      try { sessionStorage.setItem(APPLIED_BULLETS_KEY, JSON.stringify([...next])) } catch {}
+      try { sessionStorage.setItem(APPLIED_BULLETS_KEY, JSON.stringify([...next])) } catch {
+        // sessionStorage may be unavailable (e.g. private browsing) — ignore
+      }
       return next
     })
     setDirty(true)
@@ -394,7 +455,9 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
       await navigator.clipboard.writeText(text)
       setCopiedIndex(index)
       setTimeout(() => setCopiedIndex(prev => prev === index ? null : prev), 1500)
-    } catch {}
+    } catch {
+      // Clipboard write failed (e.g. permissions) — silently ignore
+    }
   }
 
   // ── Export — strip highlights from clone ─────────────────────────────────
@@ -406,6 +469,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
       clone.querySelectorAll('.cv-weak-line').forEach(el => {
         el.classList.remove('cv-weak-line')
         el.removeAttribute('data-suggestion')
+        el.removeAttribute('data-cv-node-id')
       })
       const html = clone.innerHTML
       if (exportFormat === 'docx') {

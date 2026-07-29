@@ -58,7 +58,6 @@
 .settings-modal-confirm:disabled { opacity: 0.6; cursor: not-allowed; }
 
 @media (max-width: 768px) {
-  .settings-nav { padding: 0 24px; }
   .settings-container { padding: 40px 20px 60px; }
   .settings-h1 { font-size: 32px; }
   .settings-card { padding: 22px 20px; }

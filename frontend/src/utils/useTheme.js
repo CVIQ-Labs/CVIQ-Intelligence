@@ -8,7 +8,9 @@ export function useTheme() {
     try {
       const stored = localStorage.getItem(THEME_KEY)
       if (stored === 'dark' || stored === 'light') return stored
-    } catch {}
+    } catch {
+      // localStorage may be unavailable (e.g. private browsing) — fall through to default
+    }
     // 2. Default to light mode — we intentionally do NOT check the system/OS
     //    preference here. The site should always load in light mode unless
     //    the user has explicitly chosen dark mode themselves.
@@ -28,14 +30,22 @@ export function useTheme() {
   const toggleTheme = () => {
     setTheme(prev => {
       const next = prev === 'dark' ? 'light' : 'dark'
-      try { localStorage.setItem(THEME_KEY, next) } catch {}
+      try {
+        localStorage.setItem(THEME_KEY, next)
+      } catch {
+        // localStorage may be unavailable (e.g. private browsing) — ignore
+      }
       return next
     })
   }
 
   const setThemeExplicit = (t) => {
     setTheme(t)
-    try { localStorage.setItem(THEME_KEY, t) } catch {}
+    try {
+      localStorage.setItem(THEME_KEY, t)
+    } catch {
+      // localStorage may be unavailable (e.g. private browsing) — ignore
+    }
   }
 
   return { theme, toggleTheme, setTheme: setThemeExplicit }
