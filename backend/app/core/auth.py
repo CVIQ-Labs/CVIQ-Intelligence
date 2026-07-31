@@ -44,6 +44,25 @@ async def require_user(user: Optional[dict] = Depends(get_current_user)) -> dict
     return user
 
 
+async def require_beta_access(user: dict = Depends(require_user)) -> dict:
+    """Blocks access unless the user has is_beta_user = true in user_profiles."""
+    supabase = _get_supabase()
+    if not supabase:
+        raise HTTPException(status_code=503, detail="Auth service not configured.")
+    try:
+        result = (
+            supabase.table("user_profiles")
+            .select("is_beta_user")
+            .eq("user_id", user["id"])
+            .execute()
+        )
+        if result.data and result.data[0].get("is_beta_user"):
+            return user
+    except Exception as e:
+        print(f"[auth] beta check failed for user={user['id']}: {e}")
+    raise HTTPException(status_code=403, detail="Access denied.")
+
+
 def get_user_tier(user: Optional[dict]) -> str:
     """Return 'paid' if the user has an active pro subscription, otherwise 'free'."""
     if not user:
