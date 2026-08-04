@@ -222,7 +222,7 @@ function CVBeforeAfter() {
 export default function Home() {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
-  const { user } = useAuth()
+  const { user, betaAccess } = useAuth()
 
   useScrollReveal('.reveal')
 
@@ -311,8 +311,8 @@ export default function Home() {
             75% of CVs never reach a human. CVIQ tells you exactly what's wrong and rewrites it for you in seconds.
           </p>
           <div className="b-hero-actions">
-            <button className="b-btn-primary" onClick={() => navigate('/upload')}>
-              Analyse my CV →
+            <button className="b-btn-primary" onClick={() => navigate(betaAccess ? '/upload' : '/waitlist')}>
+              {betaAccess ? 'Analyse my CV →' : 'Join the Waitlist →'}
             </button>
             <button className="b-btn-secondary" onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}>
               See how it works

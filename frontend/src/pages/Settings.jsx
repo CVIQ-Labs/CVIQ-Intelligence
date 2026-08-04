@@ -16,6 +16,7 @@ export default function Settings() {
   const [showModal, setShowModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const [showCancelModal, setShowCancelModal] = useState(false)
   const [cancelling, setCancelling] = useState(false)
@@ -88,10 +89,13 @@ export default function Settings() {
             <img src={cviqLogoBlue} alt="CVIQ" className="settings-logo-img cviq-logo-light" />
             <img src={cviqLogoWhite} alt="CVIQ" className="settings-logo-img cviq-logo-dark" />
           </div>
-          <div className="settings-nav-right">
-            <button className="settings-nav-btn" onClick={() => navigate(-1)}>← Back</button>
-            <button className="settings-nav-btn" onClick={async () => { await supabase.auth.signOut(); navigate('/') }}>Sign out</button>
+          <div className={`settings-nav-right ${menuOpen ? 'open' : ''}`}>
+            <button className="settings-nav-btn" onClick={() => { setMenuOpen(false); navigate(-1) }}>← Back</button>
+            <button className="settings-nav-btn" onClick={async () => { setMenuOpen(false); await supabase.auth.signOut(); navigate('/') }}>Sign out</button>
           </div>
+          <button className="settings-burger" onClick={() => setMenuOpen(m => !m)} aria-label="Menu">
+            <span /><span /><span />
+          </button>
         </div>
       </nav>
 

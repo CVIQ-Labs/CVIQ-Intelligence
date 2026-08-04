@@ -32,7 +32,7 @@
 @media (max-width: 600px) { .auth-card { padding: 32px 20px; } .auth-page-footer { padding: 16px 20px; } .auth-h1 { font-size: 30px; } }
 
 /* ==========================================================================
-   Post-signup success page additions — append to Auth.css
+   Post-signup success page additions â€” append to Auth.css
    ========================================================================== */
 
    .signup-success-page {
@@ -47,7 +47,7 @@
       width: 100%;
     }
     
-    /* Top section — email confirmation */
+    /* Top section â€” email confirmation */
     .signup-success-top {
       display: flex;
       flex-direction: column;
@@ -311,7 +311,7 @@
     [data-theme="dark"] .signup-plan-features li { color: #94a3b8; }
     
     .signup-plan-features li::before {
-      content: '✓';
+      content: 'âœ“';
       position: absolute;
       left: 0;
       color: #16a34a;
@@ -438,7 +438,7 @@
  [data-theme="dark"] .auth-forgot-link { color: #60a5fa; }
 
  /* ==========================================================================
-   Signup page cleanup — tighter spacing + trust badges
+   Signup page cleanup â€” tighter spacing + trust badges
    
    ========================================================================== */
 
@@ -495,4 +495,102 @@
    color: #16a34a;
    font-weight: 700;
    font-size: 11px;
+ }
+ /* ==========================================================================
+   Social login (Google / Apple)
+   ========================================================================== */
+
+.social-login {
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+   margin-top: 24px;
+ }
+ 
+ .social-btn {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 10px;
+   width: 100%;
+   padding: 11px 16px;
+   border-radius: 100px;
+   font-size: 14px;
+   font-weight: 600;
+   font-family: inherit;
+   cursor: pointer;
+   transition: all 0.15s;
+ }
+ 
+ .social-btn:disabled {
+   opacity: 0.6;
+   cursor: not-allowed;
+ }
+ 
+ .social-btn-google {
+   background: #fff;
+   color: #1f1f1f;
+   border: 1px solid #dadce0;
+ }
+ .social-btn-google:hover:not(:disabled) {
+   background: #f8f9fa;
+   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+ }
+ 
+ .social-btn-apple {
+   background: #000;
+   color: #fff;
+   border: 1px solid #000;
+ }
+ .social-btn-apple:hover:not(:disabled) {
+   background: #1a1a1a;
+ }
+ 
+ .social-btn-icon {
+   width: 18px;
+   height: 18px;
+   flex-shrink: 0;
+ }
+ 
+ .social-btn-spinner {
+   width: 16px;
+   height: 16px;
+   border: 2px solid rgba(0,0,0,0.15);
+   border-top-color: #1f1f1f;
+   border-radius: 50%;
+   animation: social-spin 0.7s linear infinite;
+   flex-shrink: 0;
+ }
+ .social-btn-spinner-light {
+   border: 2px solid rgba(255,255,255,0.25);
+   border-top-color: #fff;
+ }
+ @keyframes social-spin { to { transform: rotate(360deg); } }
+ 
+ .auth-divider {
+   display: flex;
+   align-items: center;
+   gap: 14px;
+   margin: 22px 0;
+ }
+ .auth-divider::before,
+ .auth-divider::after {
+   content: '';
+   flex: 1;
+   height: 1px;
+   background: #e5e7eb;
+ }
+ .auth-divider span {
+   font-size: 12.5px;
+   font-weight: 600;
+   color: #94a3b8;
+   white-space: nowrap;
+ }
+ 
+ [data-theme="dark"] .auth-divider::before,
+ [data-theme="dark"] .auth-divider::after {
+   background: #1e2d45;
+ }
+ [data-theme="dark"] .auth-divider span {
+   color: #64748b;
  }
