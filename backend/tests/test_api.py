@@ -12,6 +12,10 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.core.auth import require_beta_access
+
+# Bypass beta access gate in all tests — we're testing API behaviour, not auth
+app.dependency_overrides[require_beta_access] = lambda: {"id": "test-user", "email": "test@example.com"}
 
 # TestClient lets us send fake HTTP requests to the app without a real server
 client = TestClient(app)
