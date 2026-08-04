@@ -1,7 +1,7 @@
-const API_URL = import.meta.env.VITE_API_URL || ''
+const BASE_URL = 'https://cvreview-api.duckdns.org'
 
 export async function createCheckoutSession(token) {
-  const res = await fetch(`${API_URL}/create-checkout-session`, {
+  const res = await fetch(`${BASE_URL}/create-checkout-session`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -16,7 +16,7 @@ export async function createCheckoutSession(token) {
 }
 
 export async function getSessionStatus(sessionId) {
-  const res = await fetch(`${API_URL}/session-status?session_id=${encodeURIComponent(sessionId)}`)
+  const res = await fetch(`${BASE_URL}/session-status?session_id=${encodeURIComponent(sessionId)}`)
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
     throw new Error(body.detail || 'Failed to confirm payment status.')
