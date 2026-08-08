@@ -1,9 +1,9 @@
 /* ==========================================================================
-   Polished nav Ã¢â‚¬â€ unified design across all pages
+   Polished nav — unified design across all pages
    Consistent colour, transitions, responsive behaviour
    ========================================================================== */
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Shared nav tokens Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Shared nav tokens ───────────────────────────────── */
 :root {
   --nav-height: 64px;
   --nav-px: 56px;
@@ -30,33 +30,35 @@
   --nav-btn-hover-border: rgba(255,255,255,0.18);
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Logo container Ã¢â‚¬â€ icon sits inline, vertically centred Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Logo container — icon sits inline, vertically centred ── */
 .b-logo,
 .up-logo,
 .auth-logo,
 .settings-logo,
 .pricing-logo,
-.rp-logo {
+.rp-logo,
+.legal-logo {
   display: inline-flex;
   align-items: center;
   cursor: pointer;
   line-height: 0;
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Logo image Ã¢â‚¬â€ single source of truth for sizing.
+/* ── Logo image — single source of truth for sizing.
    These are transparent icon-only PNGs (not a square JPG with a baked-in
    background), so we fix HEIGHT only and let width scale naturally via the
-   image's real aspect ratio Ã¢â‚¬â€ object-fit: cover would crop a non-square
+   image's real aspect ratio — object-fit: cover would crop a non-square
    transparent icon, which we don't want here. !important is used
    deliberately: this asset has caused sizing regressions a few times
    already, so this guards against any other rule (inline style, page CSS,
-   browser default) overriding it. Ã¢â€â‚¬Ã¢â€â‚¬ */
+   browser default) overriding it. ── */
 .b-logo-img,
 .up-logo-img,
 .auth-logo-img,
 .settings-logo-img,
 .pricing-logo-img,
 .rp-logo-img,
+.legal-logo-img,
 .return-logo-img {
   height: 34px !important;
   width: auto !important;
@@ -73,25 +75,27 @@
   .settings-logo-img,
   .pricing-logo-img,
   .rp-logo-img,
+  .legal-logo-img,
   .return-logo-img {
     height: 26px !important;
   }
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Logo colour by theme Ã¢â‚¬â€ blue icon on light backgrounds, white icon on
+/* ── Logo colour by theme — blue icon on light backgrounds, white icon on
    dark backgrounds. Both images are rendered in the DOM at all times and
    CSS toggles which one is visible, so there's no flash/swap delay and no
-   JS theme-detection needed on a per-page basis. Ã¢â€â‚¬Ã¢â€â‚¬ */
+   JS theme-detection needed on a per-page basis. ── */
 .cviq-logo-dark { display: none !important; }
 [data-theme="dark"] .cviq-logo-light { display: none !important; }
 [data-theme="dark"] .cviq-logo-dark { display: block !important; }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Shared nav structure Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Shared nav structure ────────────────────────────── */
 .b-nav,
 .up-nav,
 .auth-nav,
 .pricing-nav,
-.settings-nav {
+.settings-nav,
+.legal-nav {
   height: var(--nav-height);
   padding: 0 var(--nav-px);
   background: var(--nav-bg);
@@ -113,15 +117,15 @@
   justify-content: space-between;
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Results nav Ã¢â‚¬â€ intentionally NOT merged into the shared rule above.
+/* ── Results nav — intentionally NOT merged into the shared rule above.
    Every other nav puts its horizontal padding directly on the nav
    element itself. This one instead puts padding (and max-width content
    centering) on .rp-nav-inner, because Results is the one page whose
    nav content needs to line up with a centered, width-capped layout
    rather than just stretch edge-to-edge. Adding `padding` here too would
    double up with .rp-nav-inner's own padding. Height/background/blur/
-   border/shadow/position/z-index still match the shared rule exactly Ã¢â‚¬â€
-   only the padding/display strategy differs, on purpose. Ã¢â€â‚¬Ã¢â€â‚¬ */
+   border/shadow/position/z-index still match the shared rule exactly —
+   only the padding/display strategy differs, on purpose. ── */
 .rp-nav {
   height: var(--nav-height);
   background: var(--nav-bg);
@@ -165,19 +169,19 @@
   flex-shrink: 0;
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Auth-family pages (Login/Signup/Waitlist/ForgotPassword) Ã¢â‚¬â€ shared
+/* ── Auth-family pages (Login/Signup/Waitlist/ForgotPassword) — shared
    right-hand button group. Previously each of these pages just laid its
-   1Ã¢â‚¬â€œ3 buttons out with an inline style or no wrapper at all, so there was
+   1–3 buttons out with an inline style or no wrapper at all, so there was
    nothing to collapse behind a burger on narrow screens. This gives them
    all the same wrapper as Home/Results, so the same collapse rules below
-   apply uniformly. Ã¢â€â‚¬Ã¢â€â‚¬ */
+   apply uniformly. ── */
 .auth-nav-right {
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Home nav links Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Home nav links ──────────────────────────────────── */
 .b-nav-inner {
   width: 100%;
   display: flex;
@@ -189,7 +193,7 @@
 
 /* Groups the mobile dropdown trigger, the primary CTA (Get started free /
    Go to upload), and the burger into one inline row. This class had no
-   CSS at all before Ã¢â‚¬â€ with no display set it defaulted to a plain block
+   CSS at all before — with no display set it defaulted to a plain block
    box, so its children (the -mobile wrapper, the CTA button, the burger)
    each started their own new line instead of sitting inline together,
    which is what pushed the CTA button onto its own row below the rest. */
@@ -200,12 +204,12 @@
   flex-shrink: 0;
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Shared mobile burger button Ã¢â‚¬â€ every page Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+/* ── Shared mobile burger button — every page ─────────
    Base look lives here (not per-page CSS) so Login/Signup/Waitlist/
    Pricing/Settings/Upload all get the exact same button without
    duplicating it five times. Colour uses --nav-text-hover so it's
    visible in dark mode too (the old Home-only version hardcoded
-   #0a1628, which would've been invisible against a dark nav). Ã¢â€â‚¬Ã¢â€â‚¬ */
+   #0a1628, which would've been invisible against a dark nav). ── */
 .b-burger,
 .auth-burger,
 .up-burger,
@@ -231,25 +235,25 @@
   border-radius: 2px;
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Home's mobile nav wrapper Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+/* ── Home's mobile nav wrapper ─────────────────────────
    Home is the one page with both centred nav-links AND right-hand action
-   buttons that need to collapse together behind one burger Ã¢â‚¬â€ so it gets
+   buttons that need to collapse together behind one burger — so it gets
    its own wrapper. Every other page (Login/Signup/Waitlist/Pricing/
    Settings/Upload/Results) only has the right-hand button group, so
    those collapse directly via their existing -nav-right class (see the
    max-width query below) with no extra wrapper needed.
    `display: contents` makes this wrapper's children behave as if they
    were direct children of .b-nav-inner, exactly as before this wrapper
-   existed Ã¢â‚¬â€ desktop layout is unaffected. Ã¢â€â‚¬Ã¢â€â‚¬ */
+   existed — desktop layout is unaffected. ── */
 .b-nav-mobile {
   display: contents;
 }
 
 /* Absolutely centred over the whole bar (true centre, not "centre of
-   whatever space is left between the logo and buttons") Ã¢â‚¬â€ the same
+   whatever space is left between the logo and buttons") — the same
    technique this nav used originally. This does mean the links sit
    outside the normal flex flow, so nothing here physically stops it
-   from getting close to the logo/buttons as the screen narrows Ã¢â‚¬â€ that's
+   from getting close to the logo/buttons as the screen narrows — that's
    handled separately, by moving the burger breakpoint (below) up to a
    width where there's always comfortable room on both sides. */
 .b-nav-links {
@@ -286,26 +290,28 @@
 .b-nav-links a:hover { color: var(--nav-text-hover); }
 .b-nav-links a:hover::after { width: 100%; }
 
-/* Same underline-grow hover as the nav links Ã¢â‚¬â€ was scoped to just
+/* Same underline-grow hover as the nav links — was scoped to just
    .b-nav-right .b-btn-ghost (Home's desktop nav) at first, now applied to
    every page's shared ghost-style nav button for consistency. Not applied
-   to the dark "Get started free" / primary CTA buttons Ã¢â‚¬â€ those are solid
+   to the dark "Get started free" / primary CTA buttons — those are solid
    buttons by design, not text links, so they keep their existing hover. */
-/* .up-nav-signout is deliberately excluded Ã¢â‚¬â€ it already turns red on
+/* .up-nav-signout is deliberately excluded — it already turns red on
    hover as a "danger action" signal, and a blue underline on red text
    would clash rather than read as consistent. */
 .b-btn-ghost,
 .up-back,
 .auth-nav-link,
 .settings-nav-btn,
-.rp-nav-ghost {
+.rp-nav-ghost,
+.legal-nav-link {
   position: relative;
 }
 .b-btn-ghost::after,
 .up-back::after,
 .auth-nav-link::after,
 .settings-nav-btn::after,
-.rp-nav-ghost::after {
+.rp-nav-ghost::after,
+.legal-nav-link::after {
   content: '';
   position: absolute;
   bottom: 2px;
@@ -320,17 +326,19 @@
 .up-back:hover::after,
 .auth-nav-link:hover::after,
 .settings-nav-btn:hover::after,
-.rp-nav-ghost:hover::after {
+.rp-nav-ghost:hover::after,
+.legal-nav-link:hover::after {
   width: calc(100% - 30px);
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Shared ghost button Ã¢â‚¬â€ same on every page Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Shared ghost button — same on every page ────────── */
 .b-btn-ghost,
 .up-back,
 .up-nav-signout,
 .auth-nav-link,
 .settings-nav-btn,
-.rp-nav-ghost {
+.rp-nav-ghost,
+.legal-nav-link {
   background: transparent;
   border: 1px solid var(--nav-btn-border);
   color: var(--nav-text);
@@ -352,7 +360,8 @@
 .up-back:hover,
 .auth-nav-link:hover,
 .settings-nav-btn:hover,
-.rp-nav-ghost:hover {
+.rp-nav-ghost:hover,
+.legal-nav-link:hover {
   background: var(--nav-btn-hover-bg);
   border-color: var(--nav-btn-hover-border);
   color: var(--nav-text-hover);
@@ -373,9 +382,9 @@
   color: #f87171;
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Waitlist nav CTA Ã¢â‚¬â€ distinct accent style, separate from the plain
+/* ── Waitlist nav CTA — distinct accent style, separate from the plain
    ghost buttons and the dark primary CTA, so it stands out as "the thing
-   to click right now" while reviews are paused Ã¢â€â‚¬Ã¢â€â‚¬ */
+   to click right now" while reviews are paused ── */
 .b-btn-nav-waitlist {
   background: #eff6ff;
   border: 1px solid #bfdbfe;
@@ -397,7 +406,7 @@
 }
 [data-theme="dark"] .b-btn-nav-waitlist:hover { background: rgba(59,130,246,0.2); }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Primary CTA Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Primary CTA ─────────────────────────────────────── */
 .b-btn-nav-cta {
   background: #0a1628;
   color: #fff;
@@ -425,14 +434,14 @@
 [data-theme="dark"] .b-btn-nav-cta { background: #f1f5f9; color: #0a1628; }
 [data-theme="dark"] .b-btn-nav-cta:hover { background: #fff; }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Responsive Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Responsive ──────────────────────────────────────── */
 
 /* Collapse the whole nav-mobile wrapper (links + action buttons) behind
    the burger before anything gets a chance to squeeze or wrap awkwardly.
    1180px, not 1000px: Home's absolutely-centred links + logo + 3
    right-hand buttons realistically need close to that much combined
    width before there's a real risk of the centred links touching either
-   side Ã¢â‚¬â€ 1000px left a genuine tight window right before the old
+   side — 1000px left a genuine tight window right before the old
    breakpoint kicked in, which is what caused the overlap. */
 @media (max-width: 1180px) {
   .b-nav-mobile {
@@ -472,8 +481,8 @@
     font-size: 15px;
   }
 
-  /* Waitlist/Log in/Get started free now render as plain text Ã¢â‚¬â€ matching
-     How it works/Features/Pricing above them Ã¢â‚¬â€ rather than as pill
+  /* Waitlist/Log in/Get started free now render as plain text — matching
+     How it works/Features/Pricing above them — rather than as pill
      buttons. `all: unset` strips the .b-btn-ghost/.b-btn-nav-cta pill
      styling (background, border, border-radius, box-shadow) so only the
      text-link look below applies; box-sizing and display are then set
@@ -523,7 +532,7 @@
 
   /* Every other page's nav-right button group gets the same
      collapse-to-dropdown treatment as Home's nav links and Results'
-     .rp-nav-right Ã¢â‚¬â€ hidden by default under 1000px, and when its
+     .rp-nav-right — hidden by default under 1000px, and when its
      sibling burger toggles `.open`, it becomes a stacked full-width
      dropdown panel instead of squeezing into a shrinking row. */
   .rp-nav-right,
@@ -553,8 +562,8 @@
     box-shadow: 0 8px 24px rgba(0,0,0,0.08);
   }
   /* Ask CVIQ / Review another CV / Settings / Sign out now render as
-     plain text in the dropdown too Ã¢â‚¬â€ same treatment as Home's nav-right
-     items Ã¢â‚¬â€ rather than as pill buttons. `all: unset` strips the
+     plain text in the dropdown too — same treatment as Home's nav-right
+     items — rather than as pill buttons. `all: unset` strips the
      .rp-nav-ghost pill styling first; box-sizing/display are then set
      explicitly since `unset` resets those to their initial values too. */
   .rp-nav-right.open {
@@ -633,7 +642,7 @@
   }
 }
 
-/* Mobile Ã¢â‚¬â€ minimal nav */
+/* Mobile — minimal nav */
 @media (max-width: 640px) {
   :root { --nav-px: 16px; }
 
@@ -641,6 +650,6 @@
      so no need to also crowd the nav with it at narrow widths */
   .b-btn-nav-waitlist { display: none; }
 
-  /* Upload nav Ã¢â‚¬â€ hide Settings button */
+  /* Upload nav — hide Settings button */
   .up-nav-right .up-back:first-child { display: none; }
 }

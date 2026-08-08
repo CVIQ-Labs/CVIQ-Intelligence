@@ -10,6 +10,7 @@ import Settings from './pages/Settings'
 import Waitlist from './pages/Waitlist'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
+import Terms from './pages/Terms'
 
 // Apply theme before first render to avoid flash.
 // We intentionally default to 'light' here and do NOT check the system/OS
@@ -33,6 +34,7 @@ function App() {
         <Route path="/waitlist" element={<Waitlist />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/terms" element={<Terms />} />
       </Routes>
     </BrowserRouter>
   )

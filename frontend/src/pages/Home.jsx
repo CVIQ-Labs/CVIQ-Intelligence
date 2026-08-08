@@ -541,7 +541,10 @@ export default function Home() {
             <a href="#features">Features</a>
             <a href="#pricing">Pricing</a>
           </div>
-          <p className="b-footer-copy">© 2026 CVIQ Inc. · CV Intelligence Platform ·</p>
+          <p className="b-footer-copy">
+            © 2026 CVIQ Inc. · CV Intelligence Platform ·{' '}
+            <a href="/terms" onClick={e => { e.preventDefault(); navigate('/terms') }}>Terms &amp; Conditions</a>
+          </p>
         </div>
       </footer>
 
