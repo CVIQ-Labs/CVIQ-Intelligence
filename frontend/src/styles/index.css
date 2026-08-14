@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import './dark-mode.css';
 @import './nav-polish.css';
 
@@ -6,3 +5,4 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { margin: 0; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; background: #0f1117; color: #fff; }
 #root { min-height: 100vh; }
+
