@@ -86,8 +86,8 @@ export default function Settings() {
       <nav className="settings-nav">
         <div className="settings-nav-inner">
           <div className="settings-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="settings-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="settings-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="settings-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="settings-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
           <div className={`settings-nav-right ${menuOpen ? 'open' : ''}`}>
             <button className="settings-nav-btn" onClick={() => { setMenuOpen(false); navigate(-1) }}>← Back</button>
