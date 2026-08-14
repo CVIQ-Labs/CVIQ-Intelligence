@@ -102,8 +102,8 @@ export default function Pricing() {
       <nav className="pricing-nav">
         <div className="pricing-nav-inner">
           <div className="pricing-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="pricing-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="pricing-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="pricing-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="pricing-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
           <div className="pricing-nav-right">
             <button className="pricing-nav-btn" onClick={() => navigate(-1)}>← Back</button>

@@ -84,8 +84,8 @@ export default function Terms() {
       <nav className="legal-nav">
         <div className="legal-nav-inner">
           <div className="legal-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="legal-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="legal-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="legal-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="legal-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
           <button className="legal-nav-link" onClick={() => navigate('/')}>← Back to home</button>
         </div>
@@ -288,8 +288,8 @@ export default function Terms() {
       <footer className="legal-footer">
         <div className="legal-footer-inner">
           <div className="legal-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="legal-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="legal-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="legal-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="legal-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
           <p className="legal-footer-copy">© 2026 CVIQ Inc. · CV Intelligence Platform</p>
         </div>

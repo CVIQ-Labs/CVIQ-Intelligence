@@ -147,8 +147,8 @@ export default function Results() {
           <div className="rp-nav-inner">
             <div className="rp-nav-left">
               <div className="rp-logo" onClick={() => navigate('/')}>
-                <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" />
-                <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" />
+                <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" width="40" height="40" />
+                <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" width="40" height="40" />
               </div>
             </div>
           </div>
@@ -207,8 +207,8 @@ export default function Results() {
               collapsible .rp-nav-right group behind the burger. */}
           <div className="rp-nav-left">
             <div className="rp-logo" onClick={() => navigate('/')}>
-              <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" />
-              <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" />
+              <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" width="40" height="40" />
+              <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" width="40" height="40" />
             </div>
             {isPro && <span className="rp-pro-badge">Pro</span>}
           </div>
@@ -306,8 +306,8 @@ export default function Results() {
       <footer className="rp-footer">
         <div className="rp-footer-inner">
           <div className="rp-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
           <p className="rp-footer-copy">© 2026 CVIQ Inc. · CV Intelligence Platform</p>
         </div>

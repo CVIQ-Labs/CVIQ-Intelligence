@@ -249,8 +249,8 @@ export default function Home() {
       <nav className="b-nav">
         <div className="b-nav-inner">
           <div className="b-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="b-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="b-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="b-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="b-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
 
           {/* Nav links and the action buttons used to collapse independently
@@ -296,245 +296,249 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* ── Hero ── */}
-      <section className="b-hero">
-        <div className="b-blob b-blob-hero" />
-        <div className="b-hero-text">
-          <div className="b-eyebrow">
-            <span className="b-eyebrow-dot" />
-            CV Intelligence · AI-Powered CV Reviews
+      <main>
+
+        {/* ── Hero ── */}
+        <section className="b-hero">
+          <div className="b-blob b-blob-hero" />
+          <div className="b-hero-text">
+            <div className="b-eyebrow">
+              <span className="b-eyebrow-dot" />
+              CV Intelligence · AI-Powered CV Reviews
+            </div>
+            <h1 className="b-h1">
+              Smarter CV's.<br />Zero Stress. <em>Real Results</em>
+            </h1>
+            <p className="b-hero-sub">
+              75% of CVs never reach a human. CVIQ tells you exactly what's wrong and rewrites it for you in seconds.
+            </p>
+            <div className="b-hero-actions">
+              <button className="b-btn-primary" onClick={() => navigate(betaAccess ? '/upload' : '/waitlist')}>
+                {betaAccess ? 'Analyse my CV →' : 'Join the Waitlist →'}
+              </button>
+              <button className="b-btn-secondary" onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}>
+                See how it works
+              </button>
+            </div>
           </div>
-          <h1 className="b-h1">
-            Smarter CV's.<br />Zero Stress. <em>Real Results</em>
-          </h1>
-          <p className="b-hero-sub">
-            75% of CVs never reach a human. CVIQ tells you exactly what's wrong and rewrites it for you in seconds.
-          </p>
-          <div className="b-hero-actions">
-            <button className="b-btn-primary" onClick={() => navigate(betaAccess ? '/upload' : '/waitlist')}>
-              {betaAccess ? 'Analyse my CV →' : 'Join the Waitlist →'}
+          <div className="b-hero-ui">
+            <ScoreDemo />
+          </div>
+        </section>
+
+        {/* ── How it works (3-step process — moved to top per advisor feedback) ── */}
+        <section className="b-section b-hiw reveal" id="how-it-works">
+          <div className="b-blob b-blob-right" />
+          <div className="b-section-head">
+            <div className="b-label">Getting started</div>
+            <h2 className="b-h2">Your first result is<br />60 seconds away.</h2>
+            <p className="b-section-sub">No account required. Upload your CV, paste the job description, get feedback.</p>
+          </div>
+          <div className="b-hiw-cards">
+
+            <div className="b-hiw-card reveal">
+              <div className="b-hiw-visual b-hiw-visual-1">
+                <div className="b-vis-upload">
+                  <div className="b-vis-upload-box">
+                    <div className="b-vis-upload-icon">📄</div>
+                    <div className="b-vis-upload-text">CV_2026_Final.pdf</div>
+                    <div className="b-vis-upload-sub">.pdf · 284 KB</div>
+                    <div className="b-vis-upload-bar">
+                      <div className="b-vis-upload-progress" />
+                    </div>
+                  </div>
+                  <div className="b-vis-upload-badge">Uploaded & parsed</div>
+                </div>
+              </div>
+              <div className="b-hiw-text">
+                <div className="b-hiw-step">Step 01</div>
+                <h3 className="b-hiw-title">Upload your CV</h3>
+                <p className="b-hiw-body">Drag and drop your PDF or .docx. Our parser extracts and structures your content instantly.</p>
+              </div>
+            </div>
+
+            <div className="b-hiw-card reveal" style={{ transitionDelay: '0.1s' }}>
+              <div className="b-hiw-visual b-hiw-visual-2">
+                <div className="b-vis-paste">
+                  <div className="b-vis-paste-box">
+                    <div className="b-vis-paste-label">Job Description</div>
+                    <div className="b-vis-paste-role">Software Engineer · Google</div>
+                    <div className="b-vis-paste-line" style={{ width: '100%' }} />
+                    <div className="b-vis-paste-line" style={{ width: '88%' }} />
+                    <div className="b-vis-paste-line" style={{ width: '75%' }} />
+                    <div className="b-vis-paste-chips">
+                      <span>Python</span><span>React</span><span>AWS</span>
+                    </div>
+                  </div>
+                  <div className="b-vis-paste-badge">47 keywords extracted</div>
+                </div>
+              </div>
+              <div className="b-hiw-text">
+                <div className="b-hiw-step">Step 02</div>
+                <h3 className="b-hiw-title">Paste the job description</h3>
+                <p className="b-hiw-body">Tell us exactly what role you're targeting. The more detail, the more precise your feedback.</p>
+              </div>
+            </div>
+
+            <div className="b-hiw-card reveal" style={{ transitionDelay: '0.2s' }}>
+              <div className="b-hiw-visual b-hiw-visual-3">
+                <div className="b-vis-results">
+                  <div className="b-vis-score-card">
+                    <div>
+                      <div className="b-vis-score-sublabel">Recruiter Score</div>
+                      <div className="b-vis-score-num">8<span style={{ fontSize: 14, fontWeight: 500, color: '#a78bfa' }}>/10</span></div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div className="b-vis-score-sublabel">ATS</div>
+                      <div style={{ fontSize: 22, fontWeight: 800, color: '#16a34a', letterSpacing: '-0.5px' }}>84%</div>
+                    </div>
+                  </div>
+                  <div className="b-vis-result-row">
+                    <span className="b-vis-result-label">Strong experience section</span>
+                  </div>
+                  <div className="b-vis-result-row b-vis-result-warn">
+                    <span className="b-vis-result-label">Add: Docker, Kubernetes</span>
+                  </div>
+                </div>
+              </div>
+              <div className="b-hiw-text">
+                <div className="b-hiw-step">Step 03</div>
+                <h3 className="b-hiw-title">Get your review</h3>
+                <p className="b-hiw-body">Scores, keyword gaps, strengths, weaknesses, and AI-rewritten bullets in seconds.</p>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ── CV Before/After ── */}
+        <CVBeforeAfter />
+
+        {/* ── Features ── */}
+        <section className="b-section b-features reveal" id="features">
+          <div className="b-section-head">
+            <div className="b-label">What you get</div>
+            <h2 className="b-h2">From upload to<br />offer-ready.</h2>
+            <p className="b-section-sub">Every tool you need to compete for the role.</p>
+          </div>
+          <div className="b-features-grid">
+            {[
+              { title: 'Recruiter Feedback Score', body: 'A 0 to 10 score based on how a real recruiter would evaluate your CV, with colour-coded feedback bands.' },
+              { title: 'ATS Compatibility Check', body: 'See your ATS score and exactly which keywords are missing based on the job description.' },
+              { title: 'AI Bullet Rewrites', body: 'Every weak bullet gets rewritten in the Action plus Impact format that recruiters look for.' },
+              { title: 'Download Your Improved CV', body: 'Get your tailored CV as a PDF or .docx, ready to send with all improvements applied.' },
+              { title: 'CV Preview with Feedback', body: 'View your CV side by side with the feedback so you know exactly which lines need changing.' },
+              { title: 'Category Breakdown', body: 'Scores across six categories: impact, relevance, structure, clarity, ATS, and keywords.' },
+            ].map((f, i) => (
+              <div key={i} className="b-feature-card reveal" style={{ transitionDelay: `${i * 0.07}s` }}>
+                <h3 className="b-feature-title">{f.title}</h3>
+                <p className="b-feature-body">{f.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Pricing ── */}
+        <section className="b-section b-pricing reveal" id="pricing">
+          <div className="b-pricing-waitlist-inline">
+            <span>Join our waitlist for our private beta.</span>
+            <button onClick={() => navigate('/waitlist', { state: { source: 'before_pricing' } })}>
+              Join the waitlist →
             </button>
-            <button className="b-btn-secondary" onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}>
-              See how it works
-            </button>
           </div>
-        </div>
-        <div className="b-hero-ui">
-          <ScoreDemo />
-        </div>
-      </section>
-
-      {/* ── How it works (3-step process — moved to top per advisor feedback) ── */}
-      <section className="b-section b-hiw reveal" id="how-it-works">
-        <div className="b-blob b-blob-right" />
-        <div className="b-section-head">
-          <div className="b-label">Getting started</div>
-          <h2 className="b-h2">Your first result is<br />60 seconds away.</h2>
-          <p className="b-section-sub">No account required. Upload your CV, paste the job description, get feedback.</p>
-        </div>
-        <div className="b-hiw-cards">
-
-          <div className="b-hiw-card reveal">
-            <div className="b-hiw-visual b-hiw-visual-1">
-              <div className="b-vis-upload">
-                <div className="b-vis-upload-box">
-                  <div className="b-vis-upload-icon">📄</div>
-                  <div className="b-vis-upload-text">CV_2026_Final.pdf</div>
-                  <div className="b-vis-upload-sub">.pdf · 284 KB</div>
-                  <div className="b-vis-upload-bar">
-                    <div className="b-vis-upload-progress" />
-                  </div>
-                </div>
-                <div className="b-vis-upload-badge">Uploaded & parsed</div>
-              </div>
-            </div>
-            <div className="b-hiw-text">
-              <div className="b-hiw-step">Step 01</div>
-              <h3 className="b-hiw-title">Upload your CV</h3>
-              <p className="b-hiw-body">Drag and drop your PDF or .docx. Our parser extracts and structures your content instantly.</p>
-            </div>
+          <div className="b-section-head">
+            <div className="b-label">Pricing</div>
+            <h2 className="b-h2">Start free.<br />Upgrade when you're ready.</h2>
           </div>
 
-          <div className="b-hiw-card reveal" style={{ transitionDelay: '0.1s' }}>
-            <div className="b-hiw-visual b-hiw-visual-2">
-              <div className="b-vis-paste">
-                <div className="b-vis-paste-box">
-                  <div className="b-vis-paste-label">Job Description</div>
-                  <div className="b-vis-paste-role">Software Engineer · Google</div>
-                  <div className="b-vis-paste-line" style={{ width: '100%' }} />
-                  <div className="b-vis-paste-line" style={{ width: '88%' }} />
-                  <div className="b-vis-paste-line" style={{ width: '75%' }} />
-                  <div className="b-vis-paste-chips">
-                    <span>Python</span><span>React</span><span>AWS</span>
-                  </div>
-                </div>
-                <div className="b-vis-paste-badge">47 keywords extracted</div>
-              </div>
+          <div className="b-pricing-cards">
+            <div className="b-pricing-card reveal">
+              <div className="b-pricing-tier">Free</div>
+              <div className="b-pricing-price">£0<span>/mo</span></div>
+              <div className="b-pricing-desc">For job seekers getting started</div>
+              <ul className="b-pricing-list">
+                <li className="b-pricing-yes">CV score & ATS check</li>
+                <li className="b-pricing-yes">Recruiter assessment</li>
+                <li className="b-pricing-yes">Missing keyword detection</li>
+                <li className="b-pricing-yes">Action plan & recommendations</li>
+                <li className="b-pricing-no">AI bullet rewrites</li>
+                <li className="b-pricing-no">CV editor & download</li>
+              </ul>
+              <button className="b-btn-outline-full" onClick={() => user ? navigate('/upload') : navigate('/signup')}>
+                Get started free
+              </button>
             </div>
-            <div className="b-hiw-text">
-              <div className="b-hiw-step">Step 02</div>
-              <h3 className="b-hiw-title">Paste the job description</h3>
-              <p className="b-hiw-body">Tell us exactly what role you're targeting. The more detail, the more precise your feedback.</p>
+
+            <div className="b-pricing-card reveal" style={{ transitionDelay: '0.1s' }}>
+              <div className="b-pricing-tier">Pro</div>
+              <div className="b-pricing-price">£15<span>/mo</span></div>
+              <div className="b-pricing-desc">For long-term users</div>
+              <ul className="b-pricing-list">
+                <li className="b-pricing-yes">Everything in Free</li>
+                <li className="b-pricing-yes">AI bullet point rewrites</li>
+                <li className="b-pricing-yes">Line-by-line feedback</li>
+                <li className="b-pricing-yes">AI profile summary rewrite</li>
+                <li className="b-pricing-yes">CV editor with suggestions</li>
+                <li className="b-pricing-yes">Unlimited Ask CVIQ chat</li>
+              </ul>
+              <button className="b-btn-outline-full" onClick={() => {
+                if (user) { navigate('/pricing') }
+                else { try { localStorage.setItem('cviq:intended-plan', 'pro') } catch {
+                  // localStorage may be unavailable (e.g. private browsing) — ignore
+                }; navigate('/signup') }
+              }}>
+                Start Pro - £15/mo →
+              </button>
+            </div>
+
+            <div className="b-pricing-card b-pricing-pro reveal" style={{ transitionDelay: '0.2s' }}>
+              <div className="b-pricing-badge b-pricing-badge-green">Best value</div>
+              <div className="b-pricing-tier">Pro Annual</div>
+              <div className="b-pricing-price">£100<span>/yr</span></div>
+              <div className="b-pricing-billed">£8.33/mo billed annually</div>
+              <div className="b-pricing-saving">Save 45%</div>
+              <div className="b-pricing-desc">Everything in Pro, for a full year.</div>
+              <ul className="b-pricing-list">
+                <li className="b-pricing-yes">Everything in Pro</li>
+                <li className="b-pricing-yes">AI bullet point rewrites</li>
+                <li className="b-pricing-yes">Line-by-line feedback</li>
+                <li className="b-pricing-yes">AI profile summary rewrite</li>
+                <li className="b-pricing-yes">CV editor with suggestions</li>
+                <li className="b-pricing-yes">Unlimited Ask CVIQ chat</li>
+              </ul>
+              <button className="b-btn-primary-full" onClick={() => {
+                if (user) { navigate('/pricing') }
+                else { try { localStorage.setItem('cviq:intended-plan', 'pro-annual') } catch {
+                  // localStorage may be unavailable (e.g. private browsing) — ignore
+                }; navigate('/signup') }
+              }}>
+                Get Pro Annual - £100/yr →
+              </button>
             </div>
           </div>
+        </section>
 
-          <div className="b-hiw-card reveal" style={{ transitionDelay: '0.2s' }}>
-            <div className="b-hiw-visual b-hiw-visual-3">
-              <div className="b-vis-results">
-                <div className="b-vis-score-card">
-                  <div>
-                    <div className="b-vis-score-sublabel">Recruiter Score</div>
-                    <div className="b-vis-score-num">8<span style={{ fontSize: 14, fontWeight: 500, color: '#a78bfa' }}>/10</span></div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div className="b-vis-score-sublabel">ATS</div>
-                    <div style={{ fontSize: 22, fontWeight: 800, color: '#16a34a', letterSpacing: '-0.5px' }}>84%</div>
-                  </div>
-                </div>
-                <div className="b-vis-result-row">
-                  <span className="b-vis-result-label">Strong experience section</span>
-                </div>
-                <div className="b-vis-result-row b-vis-result-warn">
-                  <span className="b-vis-result-label">Add: Docker, Kubernetes</span>
-                </div>
-              </div>
-            </div>
-            <div className="b-hiw-text">
-              <div className="b-hiw-step">Step 03</div>
-              <h3 className="b-hiw-title">Get your review</h3>
-              <p className="b-hiw-body">Scores, keyword gaps, strengths, weaknesses, and AI-rewritten bullets in seconds.</p>
-            </div>
-          </div>
+        {/* ── Testimonials ── */}
+        <Testimonials />
 
-        </div>
-      </section>
+        {/* ── Final CTA ── */}
+        <section className="b-cta reveal">
+          <div className="b-blob b-blob-centre" />
+          <h2 className="b-cta-h2">Stop guessing.<br /><em>Start getting interviews.</em></h2>
+          <p className="b-cta-sub">Upload your CV and get a full AI-powered review in under 60 seconds.</p>
+          <button className="b-btn-primary" onClick={() => navigate('/upload')}>
+            Analyse my CV for free →
+          </button>
+        </section>
 
-      {/* ── CV Before/After ── */}
-      <CVBeforeAfter />
-
-      {/* ── Features ── */}
-      <section className="b-section b-features reveal" id="features">
-        <div className="b-section-head">
-          <div className="b-label">What you get</div>
-          <h2 className="b-h2">From upload to<br />offer-ready.</h2>
-          <p className="b-section-sub">Every tool you need to compete for the role.</p>
-        </div>
-        <div className="b-features-grid">
-          {[
-            { title: 'Recruiter Feedback Score', body: 'A 0 to 10 score based on how a real recruiter would evaluate your CV, with colour-coded feedback bands.' },
-            { title: 'ATS Compatibility Check', body: 'See your ATS score and exactly which keywords are missing based on the job description.' },
-            { title: 'AI Bullet Rewrites', body: 'Every weak bullet gets rewritten in the Action plus Impact format that recruiters look for.' },
-            { title: 'Download Your Improved CV', body: 'Get your tailored CV as a PDF or .docx, ready to send with all improvements applied.' },
-            { title: 'CV Preview with Feedback', body: 'View your CV side by side with the feedback so you know exactly which lines need changing.' },
-            { title: 'Category Breakdown', body: 'Scores across six categories: impact, relevance, structure, clarity, ATS, and keywords.' },
-          ].map((f, i) => (
-            <div key={i} className="b-feature-card reveal" style={{ transitionDelay: `${i * 0.07}s` }}>
-              <h3 className="b-feature-title">{f.title}</h3>
-              <p className="b-feature-body">{f.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-{/* ── Pricing ── */}
-<section className="b-section b-pricing reveal" id="pricing">
-  <div className="b-pricing-waitlist-inline">
-    <span>Join our waitlist for our private beta.</span>
-    <button onClick={() => navigate('/waitlist', { state: { source: 'before_pricing' } })}>
-      Join the waitlist →
-    </button>
-  </div>
-  <div className="b-section-head">
-    <div className="b-label">Pricing</div>
-    <h2 className="b-h2">Start free.<br />Upgrade when you're ready.</h2>
-  </div>
-
-  <div className="b-pricing-cards">
-    <div className="b-pricing-card reveal">
-      <div className="b-pricing-tier">Free</div>
-      <div className="b-pricing-price">£0<span>/mo</span></div>
-      <div className="b-pricing-desc">For job seekers getting started</div>
-      <ul className="b-pricing-list">
-        <li className="b-pricing-yes">CV score & ATS check</li>
-        <li className="b-pricing-yes">Recruiter assessment</li>
-        <li className="b-pricing-yes">Missing keyword detection</li>
-        <li className="b-pricing-yes">Action plan & recommendations</li>
-        <li className="b-pricing-no">AI bullet rewrites</li>
-        <li className="b-pricing-no">CV editor & download</li>
-      </ul>
-      <button className="b-btn-outline-full" onClick={() => user ? navigate('/upload') : navigate('/signup')}>
-        Get started free
-      </button>
-    </div>
-
-    <div className="b-pricing-card reveal" style={{ transitionDelay: '0.1s' }}>
-      <div className="b-pricing-tier">Pro</div>
-      <div className="b-pricing-price">£15<span>/mo</span></div>
-      <div className="b-pricing-desc">For long-term users</div>
-      <ul className="b-pricing-list">
-        <li className="b-pricing-yes">Everything in Free</li>
-        <li className="b-pricing-yes">AI bullet point rewrites</li>
-        <li className="b-pricing-yes">Line-by-line feedback</li>
-        <li className="b-pricing-yes">AI profile summary rewrite</li>
-        <li className="b-pricing-yes">CV editor with suggestions</li>
-        <li className="b-pricing-yes">Unlimited Ask CVIQ chat</li>
-      </ul>
-      <button className="b-btn-outline-full" onClick={() => {
-        if (user) { navigate('/pricing') }
-        else { try { localStorage.setItem('cviq:intended-plan', 'pro') } catch {
-          // localStorage may be unavailable (e.g. private browsing) — ignore
-        }; navigate('/signup') }
-      }}>
-        Start Pro - £15/mo →
-      </button>
-    </div>
-
-    <div className="b-pricing-card b-pricing-pro reveal" style={{ transitionDelay: '0.2s' }}>
-      <div className="b-pricing-badge b-pricing-badge-green">Best value</div>
-      <div className="b-pricing-tier">Pro Annual</div>
-      <div className="b-pricing-price">£100<span>/yr</span></div>
-      <div className="b-pricing-billed">£8.33/mo billed annually</div>
-      <div className="b-pricing-saving">Save 45%</div>
-      <div className="b-pricing-desc">Everything in Pro, for a full year.</div>
-      <ul className="b-pricing-list">
-        <li className="b-pricing-yes">Everything in Pro</li>
-        <li className="b-pricing-yes">AI bullet point rewrites</li>
-        <li className="b-pricing-yes">Line-by-line feedback</li>
-        <li className="b-pricing-yes">AI profile summary rewrite</li>
-        <li className="b-pricing-yes">CV editor with suggestions</li>
-        <li className="b-pricing-yes">Unlimited Ask CVIQ chat</li>
-      </ul>
-      <button className="b-btn-primary-full" onClick={() => {
-        if (user) { navigate('/pricing') }
-        else { try { localStorage.setItem('cviq:intended-plan', 'pro-annual') } catch {
-          // localStorage may be unavailable (e.g. private browsing) — ignore
-        }; navigate('/signup') }
-      }}>
-        Get Pro Annual - £100/yr →
-      </button>
-    </div>
-  </div>
-</section>
-
-      {/* ── Testimonials ── */}
-      <Testimonials />
-
-      {/* ── Final CTA ── */}
-      <section className="b-cta reveal">
-        <div className="b-blob b-blob-centre" />
-        <h2 className="b-cta-h2">Stop guessing.<br /><em>Start getting interviews.</em></h2>
-        <p className="b-cta-sub">Upload your CV and get a full AI-powered review in under 60 seconds.</p>
-        <button className="b-btn-primary" onClick={() => navigate('/upload')}>
-          Analyse my CV for free →
-        </button>
-      </section>
+      </main>
 
       {/* ── Footer ── */}
       <footer className="b-footer">
         <div className="b-footer-inner">
           <div className="b-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="b-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="b-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="b-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="b-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
           <div className="b-footer-links">
             <a href="#how-it-works">How it works</a>
