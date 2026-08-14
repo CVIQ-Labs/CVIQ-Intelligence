@@ -160,8 +160,8 @@ export default function Upload() {
         <nav className="up-nav">
           <div className="up-nav-inner">
             <div className="up-logo" onClick={() => navigate('/')}>
-              <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" />
-              <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" />
+              <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" width="40" height="40" />
+              <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" width="40" height="40" />
             </div>
           </div>
         </nav>
@@ -186,8 +186,8 @@ export default function Upload() {
         <nav className="up-nav">
           <div className="up-nav-inner">
             <div className="up-logo" onClick={() => navigate('/')}>
-              <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" />
-              <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" />
+              <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" width="40" height="40" />
+              <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" width="40" height="40" />
             </div>
           </div>
         </nav>
@@ -230,8 +230,8 @@ export default function Upload() {
       <nav className="up-nav">
         <div className="up-nav-inner">
           <div className="up-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
           <div className={`up-nav-right ${menuOpen ? 'open' : ''}`}>
             <button className="up-back" onClick={() => { setMenuOpen(false); navigate('/settings') }}>Settings</button>
@@ -305,8 +305,8 @@ export default function Upload() {
       <footer className="up-footer">
         <div className="up-footer-inner">
           <div className="up-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
           <p className="up-footer-copy">© 2026 CVIQ Inc. · CV Intelligence Platform</p>
         </div>

@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap');
-
 .up-page { background: #fff; min-height: 100vh; display: flex; flex-direction: column; font-family: 'Inter', -apple-system, sans-serif; color: #0a1628; -webkit-font-smoothing: antialiased; }
 .up-nav-inner { width: 100%; display: flex; align-items: center; justify-content: space-between; }
 .up-logo { cursor: pointer; display: flex; align-items: center; }

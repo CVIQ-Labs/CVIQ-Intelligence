@@ -1,7 +1,3 @@
-import { Document, Packer, Paragraph, TextRun, HeadingLevel } from 'docx'
-import { jsPDF } from 'jspdf'
-
-
 function htmlToBlocks(html) {
   const container = document.createElement('div')
   container.innerHTML = html
@@ -61,6 +57,10 @@ function htmlToBlocks(html) {
 }
 
 export async function exportEditedDocx(editedHtml, fileName = 'edited_cv.docx') {
+  // Lazy-loaded: docx is only needed when a user actually exports as .docx,
+  // so it shouldn't ship in the main bundle for every page visit.
+  const { Document, Packer, Paragraph, TextRun, HeadingLevel } = await import('docx')
+
   const blocks = htmlToBlocks(editedHtml)
   const headingLevelMap = { h1: HeadingLevel.HEADING_1, h2: HeadingLevel.HEADING_2, h3: HeadingLevel.HEADING_3, h4: HeadingLevel.HEADING_4 }
 
@@ -80,7 +80,11 @@ export async function exportEditedDocx(editedHtml, fileName = 'edited_cv.docx') 
   downloadBlob(blob, fileName)
 }
 
-export function exportEditedPdf(editedHtml, fileName = 'edited_cv.pdf') {
+export async function exportEditedPdf(editedHtml, fileName = 'edited_cv.pdf') {
+  // Lazy-loaded: jsPDF is only needed when a user actually exports as .pdf,
+  // so it shouldn't ship in the main bundle for every page visit.
+  const { jsPDF } = await import('jspdf')
+
   const blocks = htmlToBlocks(editedHtml)
   const doc = new jsPDF({ unit: 'pt', format: 'a4' })
   const marginX = 48
