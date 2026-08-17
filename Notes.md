@@ -1,97 +1,164 @@
-### Quality Assurance Notes – CV Upload & ATS Scoring Feature
+Front-End QA & User Experience Review
+Phase 1 features (ATS scoring, recruiter feedback, category breakdowns, loading states) are now fully implemented in Version 1. Phase 2 expands the CV review workflow into a more intelligent, role‑specific, and interactive experience.
 
-#### Front-End QA & User Experience Review
+Current State (Post‑Version 1)
+Users upload their CV and receive:
 
-While testing the CV upload and ATS scoring workflow, several potential improvements were identified to enhance the user experience and provide more actionable feedback to candidates.
+ATS Score
 
-##### Current State
+Recruiter Feedback Score
 
-* Users upload their CV and receive an ATS score.
-* The score provides a general indication of ATS compatibility.
+Category-level breakdowns (skills, experience, formatting, keywords)
 
-##### Proposed Enhancements
+Stable UI/UX with consistent scoring and responsive design.
 
-* Introduce a **Recruiter Feedback Score (0–10)** alongside the ATS score.
-* Present scoring in a more recruiter-centric format to help users better understand how a hiring manager may perceive their application.
-* Include visual indicators such as:
+Phase 2 Enhancements
+Introduce Role Fit Score (/100) based on job-family intelligence (SWE, Data, ML/AI, Cloud, Cyber, Product).
 
-  * ATS Score (%)
-  * Recruiter Feedback Score (/10)
-  * Technical Skills Match
-  * Experience Relevance
-  * Formatting & Readability
-  * Keyword Alignment
-* Add colour-coded feedback categories:
+Upgrade scoring to role-specific rubrics aligned with real recruiter expectations.
 
-  * 8–10 = Strong Application
-  * 5–7 = Competitive but requires improvement
-  * 0–4 = Significant optimisation required
-* Improve loading states during CV analysis by:
+Add interactive visual layers:
 
-  * Displaying progress indicators
-  * Showing analysis stages (Parsing CV → Knowledge Base Matching → ATS Evaluation → Recruiter Feedback Generation)
-  * Providing estimated completion times
+CV Heatmap (strong vs weak sections)
 
-##### QA Testing Considerations
+Keyword Density Meter (live updating)
 
-* Validate uploads across multiple file formats (.pdf, .docx).
-* Test CVs of varying lengths and structures.
-* Verify score consistency across repeated uploads.
-* Ensure mobile and desktop responsiveness.
-* Test user experience under slower network conditions.
+Experience Depth Index
 
----
+Expand feedback indicators:
 
-#### Back-End QA & Data Quality Review
+ATS Score (%)
 
-##### Knowledge Base & RAG Validation
+Recruiter Feedback Score (/10)
 
-The effectiveness of ATS scoring and recruiter feedback depends heavily on the quality and freshness of the Retrieval-Augmented Generation (RAG) system.
+Role Fit Score (/100)
 
-##### Key Validation Areas
+Skill Coverage Map
 
-* Ensure the knowledge base contains up-to-date technical job market data.
-* Regularly refresh:
+Formatting & Readability
 
-  * Software Engineering roles
-  * Data Engineering roles
-  * Machine Learning and AI positions
-  * Cloud Engineering opportunities
-  * Cybersecurity positions
-  * Product and Technical Analyst roles
-* Validate that retrieved job descriptions accurately match user-selected career paths.
-* Monitor retrieval accuracy and relevance scores.
-* Detect and remove duplicate job listings.
-* Verify data integrity during ingestion and indexing processes.
+Add revision intelligence:
 
-##### CI/CD Pipeline Requirements
+Before/After snapshots
 
-To maintain data quality and platform reliability:
+Adaptive feedback that updates as the user edits
 
-* Automate knowledge base updates through CI/CD workflows.
-* Schedule regular ingestion of new job descriptions and industry requirements.
-* Implement automated testing before deployment.
-* Validate embeddings and vector database updates after each refresh.
-* Monitor API performance and retrieval latency.
-* Establish rollback procedures for failed deployments.
-* Track changes to job market trends and keyword requirements over time.
+Improve loading states:
 
-##### QA Success Metrics
+Parsing CV → Semantic Mapping → Role Fit Analysis → Recruiter Simulation → Rewrite Suggestions
 
-* CV upload success rate > 99%.
-* ATS scoring response time < 10 seconds.
-* Knowledge base refresh success rate > 95%.
-* Retrieval relevance score maintained above target threshold.
-* Zero critical deployment failures in production.
-* Consistent ATS and recruiter feedback outputs across repeated test cases.
+Micro-animations + estimated completion time
 
----
+Colour-Coded Feedback Categories
+8–10 / Green = Strong Application
 
-#### Future Enhancement Opportunities
+5–7 / Amber = Competitive but requires improvement
 
-* Recruiter persona selection (Startup Recruiter, FAANG Recruiter, Consulting Recruiter, Healthcare Recruiter).
-* Industry-specific ATS scoring models.
-* Cover Letter Engine integration.
-* Real-time labour market intelligence.
-* Benchmarking against successful CVs from similar roles.
-* Personalised career progression recommendations powered by the AI Matrix.
+0–4 / Red = Significant optimisation required
+
+***QA Testing Considerations (Phase 2)
+Validate role-specific scoring consistency across job families.
+
+Test heatmap accuracy across different CV formats.
+
+Stress-test real-time rewrite engine under heavy editing.
+
+Confirm revision snapshots persist across sessions.
+
+Ensure mobile editor performance remains smooth.
+
+Test behaviour under slower networks and large CV files.
+
+***Back-End QA & Data Quality Review
+***Knowledge Base & RAG Validation (Phase 2)
+Phase 2 introduces deeper job-family intelligence and multi-vector retrieval.
+
+Key Validation Areas
+Ensure job-family intelligence packs are complete and up-to-date:
+
+Software Engineering
+
+Data Engineering
+
+Machine Learning & AI
+
+Cloud Engineering
+
+Cybersecurity
+
+Product & Technical Analyst
+
+Consulting & Healthcare (new)
+
+Validate:
+
+Skill taxonomies
+
+Recruiter heuristics
+
+Impact benchmarks
+
+Common failure patterns
+
+Improve retrieval accuracy:
+
+Multi-vector retrieval (skills, responsibilities, seniority)
+
+Deduplication + clustering of similar job descriptions
+
+Semantic filtering to remove irrelevant JD noise
+
+Validate Role Fit Engine outputs:
+
+Score stability
+
+Actionable recommendations
+
+Alignment with job-family expectations
+
+***CI/CD Pipeline Requirements (Phase 2)
+Automate ingestion of job-family intelligence packs.
+
+Validate role-specific scoring models before deployment.
+
+Regression testing for rewrite engine + recruiter simulation.
+
+Validate embeddings and vector DB updates after each refresh.
+
+Monitor:
+
+Retrieval latency
+
+Model drift
+
+Scoring consistency across versions
+
+Maintain rollback procedures for scoring anomalies.
+
+Track job market trend shifts and keyword evolution.
+
+QA Success Metrics (Phase 2)
+Role Fit Score accuracy > 90%
+
+Rewrite engine latency < 3 seconds
+
+Heatmap generation < 2 seconds
+
+Retrieval relevance above target threshold per job family
+
+Zero critical deployment failures
+
+Consistent scoring across repeated test cases
+
+***Future Enhancement Opportunities
+Recruiter persona selection (Startup, FAANG, Consulting, Healthcare).
+
+Industry-specific ATS scoring models.
+
+Cover Letter Intelligence Engine.
+
+Real-time labour market intelligence.
+
+Benchmarking against successful CVs from similar roles.
+
+Personalised career progression recommendations powered by the AI Matrix.
