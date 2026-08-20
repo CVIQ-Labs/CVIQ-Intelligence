@@ -20,12 +20,14 @@ const RESULT_KEY = 'cviq:last-result'
 const FILE_KEY = 'cviq:last-cv-file'
 const JD_KEY = 'cviq:last-jd'
 
-// Reviews are paused site-wide ahead of the private beta launch on Aug 7, 2026
-// (first 200 students, via the waitlist). Applies to everyone, including
-// existing/Pro users, so a cached/previously-generated result can't be viewed
-// either. Flip this to false once the beta is live. Keep in sync with the
-// same flag in Upload.jsx.
-const REVIEWS_PAUSED = false
+// Pre-launch access gate — same mechanism as Upload.jsx, kept in sync with
+// the flag there. See the fuller comment in Upload.jsx for the reasoning;
+// short version: BETA_LAUNCHED is the master switch (flip on launch day),
+// until then only accounts with betaAccess === true (approved internal
+// accounts) can see real results — everyone else gets the waiting-list
+// page below. This is a UX convenience only; the backend must
+// independently reject non-approved requests regardless of this flag.
+const BETA_LAUNCHED = false
 
 function ProGate({ feature }) {
   const navigate = useNavigate()
@@ -79,7 +81,8 @@ export default function Results() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
   const [openCat, setOpenCat] = useState(null)
-  const { user, isPro, loading: authLoading } = useAuth()
+  const { user, isPro, betaAccess, loading: authLoading } = useAuth()
+  const hasAccess = BETA_LAUNCHED || betaAccess
 
   const [paymentSuccess, setPaymentSuccess] = useState(() => {
     const params = new URLSearchParams(window.location.search)
@@ -134,18 +137,18 @@ export default function Results() {
   useEffect(() => { if (cvFile) { try { localStorage.setItem(FILE_KEY, JSON.stringify(cvFile)) } catch {
       // localStorage may be unavailable (e.g. private browsing) — ignore
     } } }, [cvFile])
-  useEffect(() => { if (!REVIEWS_PAUSED && !authLoading && !user) navigate('/login') }, [user, authLoading, navigate])
-  useEffect(() => { if (!REVIEWS_PAUSED && !result) navigate('/') }, [result, navigate])
+  useEffect(() => { if (hasAccess && !authLoading && !user) navigate('/login') }, [user, authLoading, navigate, hasAccess])
+  useEffect(() => { if (hasAccess && !result) navigate('/') }, [result, navigate, hasAccess])
 
-  if (REVIEWS_PAUSED) {
+  if (!hasAccess) {
     return (
       <div className="rp">
         <nav className="rp-nav">
           <div className="rp-nav-inner">
             <div className="rp-nav-left">
               <div className="rp-logo" onClick={() => navigate('/')}>
-                <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" />
-                <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" />
+                <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" width="40" height="40" />
+                <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" width="40" height="40" />
               </div>
             </div>
           </div>
@@ -204,8 +207,8 @@ export default function Results() {
               collapsible .rp-nav-right group behind the burger. */}
           <div className="rp-nav-left">
             <div className="rp-logo" onClick={() => navigate('/')}>
-              <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" />
-              <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" />
+              <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" width="40" height="40" />
+              <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" width="40" height="40" />
             </div>
             {isPro && <span className="rp-pro-badge">Pro</span>}
           </div>
@@ -303,8 +306,8 @@ export default function Results() {
       <footer className="rp-footer">
         <div className="rp-footer-inner">
           <div className="rp-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
           <p className="rp-footer-copy">© 2026 CVIQ Inc. · CV Intelligence Platform</p>
         </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../utils/supabase'
 import { useAuth } from '../utils/useAuth'
@@ -16,16 +16,27 @@ export default function Settings() {
   const [showModal, setShowModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const [showCancelModal, setShowCancelModal] = useState(false)
   const [cancelling, setCancelling] = useState(false)
   const [cancelError, setCancelError] = useState(null)
   const [cancelSuccess, setCancelSuccess] = useState(false)
 
-  if (authLoading) return null
-  if (!user) { navigate('/login'); return null }
+  // Redirect to login only once we know there's no user — as a side
+  // effect after the initial paint, not by blocking the whole page from
+  // rendering at all until the Supabase auth round-trip finishes. Same
+  // fix as Pricing.jsx: the previous `if (authLoading) return null` /
+  // `if (!user) {...; return null}` pattern held up this page's LCP
+  // behind a real network request on every load.
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/login')
+    }
+  }, [authLoading, user, navigate])
 
   const handleDelete = async () => {
+    if (!user) return
     try {
       setDeleting(true)
       setError(null)
@@ -52,6 +63,7 @@ export default function Settings() {
   // to match the same fetch pattern as handleDelete above. Once the endpoint is
   // built, the URL/method below should be the only thing that needs to change.
   const handleCancelSubscription = async () => {
+    if (!user) return
     try {
       setCancelling(true)
       setCancelError(null)
@@ -80,18 +92,39 @@ export default function Settings() {
     setCancelSuccess(false)
   }
 
+  if (!user) {
+    // Still resolving auth, or about to redirect via the effect above —
+    // render nothing for the account-specific content, but this returns
+    // fast either way rather than blocking on the network round-trip.
+    return (
+      <div className="settings-page">
+        <nav className="settings-nav">
+          <div className="settings-nav-inner">
+            <div className="settings-logo" onClick={() => navigate('/')}>
+              <img src={cviqLogoBlue} alt="CVIQ" className="settings-logo-img cviq-logo-light" width="40" height="40" />
+              <img src={cviqLogoWhite} alt="CVIQ" className="settings-logo-img cviq-logo-dark" width="40" height="40" />
+            </div>
+          </div>
+        </nav>
+      </div>
+    )
+  }
+
   return (
     <div className="settings-page">
       <nav className="settings-nav">
         <div className="settings-nav-inner">
           <div className="settings-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="settings-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="settings-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="settings-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="settings-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
-          <div className="settings-nav-right">
-            <button className="settings-nav-btn" onClick={() => navigate(-1)}>← Back</button>
-            <button className="settings-nav-btn" onClick={async () => { await supabase.auth.signOut(); navigate('/') }}>Sign out</button>
+          <div className={`settings-nav-right ${menuOpen ? 'open' : ''}`}>
+            <button className="settings-nav-btn" onClick={() => { setMenuOpen(false); navigate(-1) }}>← Back</button>
+            <button className="settings-nav-btn" onClick={async () => { setMenuOpen(false); await supabase.auth.signOut(); navigate('/') }}>Sign out</button>
           </div>
+          <button className="settings-burger" onClick={() => setMenuOpen(m => !m)} aria-label="Menu">
+            <span /><span /><span />
+          </button>
         </div>
       </nav>
 
@@ -111,20 +144,22 @@ export default function Settings() {
           <div className="settings-row">
             <span className="settings-row-key">Plan</span>
             <span className="settings-row-val">
-              {isPro
+              {authLoading ? (
+                <span className="settings-plan-badge settings-plan-free">…</span>
+              ) : isPro
                 ? <span className="settings-plan-badge settings-plan-pro">Pro</span>
                 : <span className="settings-plan-badge settings-plan-free">Free</span>
               }
             </span>
           </div>
-          {!isPro && (
+          {!authLoading && !isPro && (
             <div className="settings-upgrade-row">
               <button className="settings-upgrade-btn" onClick={() => navigate('/pricing')}>
                 Upgrade to Pro — £15/mo
               </button>
             </div>
           )}
-          {isPro && (
+          {!authLoading && isPro && (
             <div className="settings-upgrade-row">
               <button className="settings-cancel-sub-btn" onClick={() => setShowCancelModal(true)}>
                 Cancel subscription

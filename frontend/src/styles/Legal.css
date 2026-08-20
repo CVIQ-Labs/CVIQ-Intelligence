@@ -1,0 +1,338 @@
+.legal-page {
+  background: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', -apple-system, sans-serif;
+  color: #0a1628;
+  -webkit-font-smoothing: antialiased;
+}
+[data-theme="dark"] .legal-page { background: #0a0f1a; color: #e2e8f0; }
+
+.legal-nav-inner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.legal-logo { cursor: pointer; display: flex; align-items: center; }
+.legal-logo-img { height: 40px; width: auto; border-radius: 8px; display: block; }
+
+/* ── Hero ─────────────────────────────────────────────── */
+.legal-hero {
+  text-align: center;
+  padding: 80px 24px 48px;
+  border-bottom: 1px solid #e5e7eb;
+}
+[data-theme="dark"] .legal-hero { border-bottom-color: #1e2d45; }
+
+.legal-eyebrow {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #2563eb;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 14px;
+}
+[data-theme="dark"] .legal-eyebrow { color: #60a5fa; }
+
+/* Fluid sizing (same clamp() technique already used on Home's hero
+   headline) rather than fixed pixel jumps at each breakpoint — scales
+   smoothly across every screen width instead of snapping. */
+.legal-h1 {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(36px, 5.5vw, 58px);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  margin-bottom: 12px;
+}
+
+.legal-effective {
+  font-size: 15.5px;
+  color: #6b7280;
+}
+[data-theme="dark"] .legal-effective { color: #94a3b8; }
+
+/* ── Layout: sticky contents sidebar + main content ──────
+   Widened considerably — the previous 1080px cap left a lot of unused
+   space on anything wider than a laptop. This scales up to a generous
+   1440px on large screens while the content column itself stays capped
+   at a comfortable reading width (see .legal-content) rather than
+   letting individual lines of text stretch too wide to read easily. */
+.legal-layout {
+  flex: 1;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 64px 64px 120px;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.legal-sidebar { min-width: 0; }
+.legal-sidebar-sticky {
+  position: sticky;
+  top: calc(var(--nav-height, 64px) + 40px);
+}
+
+.legal-sidebar-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+[data-theme="dark"] .legal-sidebar-label { color: #64748b; }
+
+.legal-toc-group { margin-bottom: 26px; }
+.legal-toc-group-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0a1628;
+  margin-bottom: 8px;
+}
+[data-theme="dark"] .legal-toc-group-label { color: #f1f5f9; }
+
+.legal-toc-link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 8px 0 8px 14px;
+  margin-left: -2px;
+  border-left: 2px solid transparent;
+  font-size: 15px;
+  font-family: inherit;
+  color: #6b7280;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+[data-theme="dark"] .legal-toc-link { color: #94a3b8; }
+
+.legal-toc-link:hover { color: #0a1628; }
+[data-theme="dark"] .legal-toc-link:hover { color: #f1f5f9; }
+
+.legal-toc-link.active {
+  color: #2563eb;
+  border-left-color: #2563eb;
+  font-weight: 600;
+}
+[data-theme="dark"] .legal-toc-link.active { color: #60a5fa; border-left-color: #60a5fa; }
+
+/* ── Main content ─────────────────────────────────────── 
+   max-width capped for readability — typography best practice keeps a
+   line of body text to roughly 65-75 characters, so this doesn't just
+   stretch to fill the wider layout. The extra room goes to the sidebar
+   and generous side margins instead, which is what actually fixes the
+   "unused space" issue rather than making paragraphs uncomfortably wide. */
+.legal-content { min-width: 0; max-width: 760px; }
+
+.legal-intro {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #6b7280;
+  margin-bottom: 56px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid #e5e7eb;
+}
+[data-theme="dark"] .legal-intro { color: #94a3b8; border-bottom-color: #1e2d45; }
+
+.legal-section {
+  margin-bottom: 52px;
+  scroll-margin-top: calc(var(--nav-height, 64px) + 32px);
+}
+.legal-section:last-child { margin-bottom: 0; }
+
+.legal-section h2 {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(26px, 2.8vw, 32px);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  margin-bottom: 18px;
+  color: #0a1628;
+}
+[data-theme="dark"] .legal-section h2 { color: #f1f5f9; }
+
+.legal-section p {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #374151;
+  margin-bottom: 18px;
+}
+[data-theme="dark"] .legal-section p { color: #cbd5e1; }
+.legal-section p:last-child { margin-bottom: 0; }
+
+.legal-section ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding-left: 0;
+}
+
+.legal-section li {
+  font-size: 18px;
+  line-height: 1.7;
+  color: #374151;
+  padding-left: 26px;
+  position: relative;
+}
+[data-theme="dark"] .legal-section li { color: #cbd5e1; }
+
+.legal-section li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 10px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #9ca3af;
+}
+[data-theme="dark"] .legal-section li::before { background: #475569; }
+
+.legal-section li strong {
+  color: #0a1628;
+  font-weight: 600;
+}
+[data-theme="dark"] .legal-section li strong { color: #f1f5f9; }
+
+/* ── Footer ───────────────────────────────────────────── */
+.legal-footer {
+  background: #f8fafc;
+  border-top: 1px solid #e5e7eb;
+  padding: 24px 72px;
+}
+[data-theme="dark"] .legal-footer { background: #0d1422; border-color: #1e2d45; }
+
+.legal-footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.legal-footer-copy { font-size: 12px; color: #cbd5e1; }
+[data-theme="dark"] .legal-footer-copy { color: #334155; }
+
+/* ── Mobile "Jump to section" dropdown ────────────────
+   Hidden on desktop by default — only shown inside the max-width: 900px
+   query below, once the sidebar itself is hidden. */
+.legal-mobile-toc { display: none; }
+
+.legal-mobile-toc-label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+[data-theme="dark"] .legal-mobile-toc-label { color: #64748b; }
+
+.legal-mobile-select {
+  width: 100%;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0a1628;
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+}
+.legal-mobile-select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
+}
+[data-theme="dark"] .legal-mobile-select {
+  background-color: #1a2235;
+  border-color: #1e2d45;
+  color: #f1f5f9;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+[data-theme="dark"] .legal-mobile-select:focus { border-color: #60a5fa; }
+
+/* ── Responsive ───────────────────────────────────────── 
+   Breakpoints cover the full range rather than jumping straight from
+   desktop to mobile: a wide-desktop cap, a laptop/tablet-landscape step
+   down, tablet-portrait (where the sidebar collapses to a horizontal
+   tab bar), then two mobile steps for phones of different sizes. */
+
+/* Wide desktop — plenty of screens are wider than 1440px now */
+@media (min-width: 1600px) {
+  .legal-layout { max-width: 1600px; }
+}
+
+/* Laptop / small desktop — tighten side padding and the sidebar gap
+   slightly before anything needs to actually restructure */
+@media (max-width: 1300px) {
+  .legal-layout { padding: 56px 40px 100px; gap: 56px; }
+}
+
+/* Tablet landscape — sidebar starts to feel cramped next to a full
+   760px content column at this width, so narrow the content slightly
+   rather than let the two columns fight for space */
+@media (max-width: 1100px) {
+  .legal-layout { grid-template-columns: 240px 1fr; gap: 40px; }
+  .legal-content { max-width: 100%; }
+}
+
+/* Tablet portrait and below — the desktop sidebar hides entirely and
+   the "Jump to section" dropdown takes over as the only way to
+   navigate between sections on a narrow screen, rather than trying to
+   fit the sidebar's links into a wrapping row of tabs (which got messy
+   fast with 13 individual sections). */
+@media (max-width: 900px) {
+  .legal-layout {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 48px 32px 80px;
+  }
+  .legal-sidebar { display: none; }
+  .legal-mobile-toc {
+    display: block;
+    margin-bottom: 32px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  [data-theme="dark"] .legal-mobile-toc { border-bottom-color: #1e2d45; }
+}
+
+/* Phones */
+@media (max-width: 640px) {
+  .legal-hero { padding: 48px 20px 32px; }
+  .legal-layout { padding: 36px 20px 64px; }
+  .legal-intro { font-size: 16.5px; margin-bottom: 40px; padding-bottom: 28px; }
+  .legal-section { margin-bottom: 40px; }
+  .legal-section p,
+  .legal-section li { font-size: 16.5px; }
+  .legal-footer { padding: 20px 20px; }
+}
+
+/* Small phones */
+@media (max-width: 380px) {
+  .legal-h1 { font-size: 30px; }
+  .legal-eyebrow { font-size: 11px; }
+  .legal-layout { padding: 28px 16px 56px; }
+  .legal-intro,
+  .legal-section p,
+  .legal-section li { font-size: 15.5px; }
+}

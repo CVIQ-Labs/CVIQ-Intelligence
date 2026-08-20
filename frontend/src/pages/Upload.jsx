@@ -16,10 +16,20 @@ const STAGES = [
 ]
 const ESTIMATED_TOTAL_MS = 60000
 
-// Reviews are paused site-wide ahead of the private beta launch on Aug 7, 2026
-// (first 200 students, via the waitlist). Applies to everyone, including
-// existing/Pro users. Flip this to false once the beta is live.
-const REVIEWS_PAUSED = false
+// Pre-launch access gate. Two layers, per the access strategy:
+//   1. BETA_LAUNCHED — the master switch. Flip to true on launch day to
+//      open CV Review to everyone, no exceptions.
+//   2. Until then, access is limited to accounts with betaAccess === true
+//      (an approved-internal-account flag fetched via useAuth, backed by
+//      a `beta_access` column on the user's profile in Supabase).
+// This replaces the older REVIEWS_PAUSED flag, which blocked everyone
+// with no exceptions — that was fine for "reviews are off entirely," but
+// this launch needs founders/engineering to keep testing while everyone
+// else sees the waiting-list page. IMPORTANT: this frontend check is a
+// UX convenience only — the actual review API endpoint must reject
+// requests from non-approved users independently, server-side. Keep this
+// flag in sync with the same one in Results.jsx.
+const BETA_LAUNCHED = false
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -53,21 +63,18 @@ export default function Upload() {
   const [error, setError] = useState(null)
   const [activeStage, setActiveStage] = useState(0)
   const [stageComplete, setStageComplete] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const navigate = useNavigate()
   const timerRef = useRef(null)
   const startRef = useRef(null)
-  const { user, loading: authLoading } = useAuth()
+  const { user, betaAccess, loading: authLoading } = useAuth()
+  const hasAccess = BETA_LAUNCHED || betaAccess
 
-  // Read once, synchronously, during the initial render — this is data
-  // derived from the URL at mount, not something that needs an effect.
   const [paymentSuccess, setPaymentSuccess] = useState(() => {
     const params = new URLSearchParams(window.location.search)
     return params.get('payment') === 'success'
   })
 
-  // The actual side effect — cleaning the query param out of the URL —
-  // belongs in an effect, since it's synchronizing with the browser's
-  // history/URL (an external system). It does NOT call setState.
   useEffect(() => {
     if (paymentSuccess) {
       window.history.replaceState({}, '', '/upload')
@@ -76,7 +83,6 @@ export default function Upload() {
 
   // ── Auth gate ─────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (REVIEWS_PAUSED) return
     if (!authLoading && !user) {
       navigate('/login', { state: { from: '/upload' } })
     }
@@ -88,11 +94,6 @@ export default function Upload() {
     return acc
   }, [])
 
-  // Starts the progress-timer interval once a loading cycle begins. The
-  // stage/complete state is reset in handleSubmit (right where loading
-  // actually starts), not here — so this effect only does the genuine
-  // side effect (synchronizing a timer with an external clock), with no
-  // direct setState call in its own body.
   useEffect(() => {
     if (!loading) return
     startRef.current = Date.now()
@@ -153,14 +154,14 @@ export default function Upload() {
 
   if (authLoading) return null
 
-  if (REVIEWS_PAUSED) {
+  if (!hasAccess) {
     return (
       <div className="up-page">
         <nav className="up-nav">
           <div className="up-nav-inner">
             <div className="up-logo" onClick={() => navigate('/')}>
-              <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" />
-              <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" />
+              <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" width="40" height="40" />
+              <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" width="40" height="40" />
             </div>
           </div>
         </nav>
@@ -185,8 +186,8 @@ export default function Upload() {
         <nav className="up-nav">
           <div className="up-nav-inner">
             <div className="up-logo" onClick={() => navigate('/')}>
-              <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" />
-              <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" />
+              <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" width="40" height="40" />
+              <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" width="40" height="40" />
             </div>
           </div>
         </nav>
@@ -229,14 +230,17 @@ export default function Upload() {
       <nav className="up-nav">
         <div className="up-nav-inner">
           <div className="up-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
-          <div className="up-nav-right">
-            <button className="up-back" onClick={() => navigate('/settings')}>Settings</button>
-            <button className="up-back" onClick={() => navigate('/')}>← Back to home</button>
-            <button className="up-nav-signout" onClick={async () => { await supabase.auth.signOut(); navigate('/') }}>Sign out</button>
+          <div className={`up-nav-right ${menuOpen ? 'open' : ''}`}>
+            <button className="up-back" onClick={() => { setMenuOpen(false); navigate('/settings') }}>Settings</button>
+            <button className="up-back" onClick={() => { setMenuOpen(false); navigate('/') }}>← Back to home</button>
+            <button className="up-nav-signout" onClick={async () => { setMenuOpen(false); await supabase.auth.signOut(); navigate('/') }}>Sign out</button>
           </div>
+          <button className="up-burger" onClick={() => setMenuOpen(m => !m)} aria-label="Menu">
+            <span /><span /><span />
+          </button>
         </div>
       </nav>
 
@@ -301,8 +305,8 @@ export default function Upload() {
       <footer className="up-footer">
         <div className="up-footer-inner">
           <div className="up-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="up-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="up-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
           <p className="up-footer-copy">© 2026 CVIQ Inc. · CV Intelligence Platform</p>
         </div>

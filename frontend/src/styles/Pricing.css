@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap');
-
 /* ==========================================================================
    Pricing page
    ========================================================================== */
@@ -31,6 +29,9 @@
   background-clip: text;
 }
 
+/* Underline-grow hover, matching every other page's nav buttons â€” added
+   here (rather than relying on the shared nav-polish.css group) since
+   .pricing-nav-btn is its own class, not part of that shared family. */
 .pricing-nav-btn {
   font-family: inherit;
   font-size: 13px;
@@ -43,6 +44,23 @@
   cursor: pointer;
   transition: all 0.15s;
   white-space: nowrap;
+  position: relative;
+}
+
+.pricing-nav-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 15px;
+  width: 0;
+  height: 1.5px;
+  background: #2563eb;
+  border-radius: 999px;
+  transition: width 0.2s ease;
+}
+
+.pricing-nav-btn:hover::after {
+  width: calc(100% - 30px);
 }
 
 .pricing-nav-btn:hover {

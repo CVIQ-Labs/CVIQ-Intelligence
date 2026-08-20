@@ -57,8 +57,8 @@ export default function Return() {
   if (state === 'error') {
     return (
       <div className="return-page">
-        <img src={cviqLogoBlue} alt="CVIQ" className="return-logo-img cviq-logo-light" style={{ marginBottom: 24 }} onClick={() => navigate('/')} />
-        <img src={cviqLogoWhite} alt="CVIQ" className="return-logo-img cviq-logo-dark" style={{ marginBottom: 24 }} onClick={() => navigate('/')} />
+        <img src={cviqLogoBlue} alt="CVIQ" className="return-logo-img cviq-logo-light" width="40" height="40" style={{ marginBottom: 24 }} onClick={() => navigate('/')} />
+        <img src={cviqLogoWhite} alt="CVIQ" className="return-logo-img cviq-logo-dark" width="40" height="40" style={{ marginBottom: 24 }} onClick={() => navigate('/')} />
         <p className="return-title">We couldn't confirm your payment</p>
         <p className="return-message">{message}</p>
         <button className="return-btn" onClick={() => navigate('/pricing')}>Back to pricing</button>
@@ -68,8 +68,8 @@ export default function Return() {
 
   return (
     <div className="return-page">
-      <img src={cviqLogoBlue} alt="CVIQ" className="return-logo-img cviq-logo-light" style={{ marginBottom: 24 }} onClick={() => navigate('/')} />
-      <img src={cviqLogoWhite} alt="CVIQ" className="return-logo-img cviq-logo-dark" style={{ marginBottom: 24 }} onClick={() => navigate('/')} />
+      <img src={cviqLogoBlue} alt="CVIQ" className="return-logo-img cviq-logo-light" width="40" height="40" style={{ marginBottom: 24 }} onClick={() => navigate('/')} />
+      <img src={cviqLogoWhite} alt="CVIQ" className="return-logo-img cviq-logo-dark" width="40" height="40" style={{ marginBottom: 24 }} onClick={() => navigate('/')} />
       <div className="return-spinner" />
       <p className="return-title">Confirming your payment…</p>
     </div>

@@ -1,6 +1,5 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { loadStripe } from '@stripe/stripe-js'
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js'
 import { createCheckoutSession } from '../api/stripe'
 import { supabase } from '../utils/supabase'
@@ -8,8 +7,6 @@ import { useAuth } from '../utils/useAuth'
 import cviqLogoBlue from '../assets/cviq-icon-blue.png'
 import cviqLogoWhite from '../assets/cviq-icon-white.png'
 import '../styles/Pricing.css'
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 
 const PLANS = [
   {
@@ -78,6 +75,16 @@ export default function Pricing() {
   const { user, isPro, loading: authLoading } = useAuth()
   const navigate = useNavigate()
 
+  const stripePromiseRef = useRef(null)
+
+  const getStripePromise = useCallback(async () => {
+    if (!stripePromiseRef.current) {
+      const { loadStripe } = await import('@stripe/stripe-js')
+      stripePromiseRef.current = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
+    }
+    return stripePromiseRef.current
+  }, [])
+
   const fetchClientSecret = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession()
     const token = session?.access_token
@@ -87,10 +94,21 @@ export default function Pricing() {
 
   const options = useMemo(() => ({ fetchClientSecret }), [fetchClientSecret])
 
-  if (authLoading) return null
-  if (!user) { navigate('/login', { state: { from: '/pricing' } }); return null }
+  // Redirect to login only once we actually know there's no user — this
+  // runs as a side effect AFTER the initial paint, instead of blocking
+  // the whole page (pricing cards, nav, everything) from rendering at
+  // all until the Supabase auth round-trip finishes. That round-trip
+  // was costing ~800-900ms directly against this page's LCP, on top of
+  // the font/JS costs every page already pays — this was the single
+  // biggest reason Pricing scored lower than Home/Login on Lighthouse.
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/login', { state: { from: '/pricing' } })
+    }
+  }, [authLoading, user, navigate])
 
   const handlePlanClick = (planKey) => {
+    if (!user) return // guard: ignore clicks before we know auth state
     if (planKey === 'free') { navigate('/upload'); return }
     setSelectedPlan(planKey)
     setError(null)
@@ -102,8 +120,8 @@ export default function Pricing() {
       <nav className="pricing-nav">
         <div className="pricing-nav-inner">
           <div className="pricing-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="pricing-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="pricing-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="pricing-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="pricing-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
           <div className="pricing-nav-right">
             <button className="pricing-nav-btn" onClick={() => navigate(-1)}>← Back</button>
@@ -148,7 +166,9 @@ export default function Pricing() {
               </ul>
 
               <div className="pricing-card-footer">
-                {authLoading ? null : isPro && (plan.key === 'pro' || plan.key === 'pro-annual') ? (
+                {authLoading ? (
+                  <button className="pricing-cta pricing-cta-ghost" disabled>Loading…</button>
+                ) : isPro && (plan.key === 'pro' || plan.key === 'pro-annual') ? (
                   <div className="pricing-already-pro">You are already on Pro</div>
                 ) : (
                   <button
@@ -176,12 +196,26 @@ export default function Pricing() {
         <div className="checkout-modal-backdrop" onClick={() => setCheckoutOpen(false)}>
           <div className="checkout-modal" onClick={e => e.stopPropagation()}>
             <button className="checkout-close" onClick={() => setCheckoutOpen(false)}>✕</button>
-            <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
-              <EmbeddedCheckout />
-            </EmbeddedCheckoutProvider>
+            <StripeCheckout getStripePromise={getStripePromise} options={options} />
           </div>
         </div>
       )}
     </div>
+  )
+}
+
+function StripeCheckout({ getStripePromise, options }) {
+  const [stripePromise, setStripePromise] = useState(null)
+
+  useMemo(() => {
+    getStripePromise().then(setStripePromise)
+  }, [getStripePromise])
+
+  if (!stripePromise) return null
+
+  return (
+    <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
+      <EmbeddedCheckout />
+    </EmbeddedCheckoutProvider>
   )
 }

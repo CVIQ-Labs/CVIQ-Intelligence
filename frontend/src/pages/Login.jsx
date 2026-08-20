@@ -1,9 +1,40 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { supabase } from '../utils/supabase'
+import SocialLoginButtons from '../components/SocialLoginButtons'
 import cviqLogoBlue from '../assets/cviq-icon-blue.png'
 import cviqLogoWhite from '../assets/cviq-icon-white.png'
 import '../styles/Auth.css'
+
+// Site is admin-only for now — only Sade, Rochelle, Seyi, and Jamie's
+// accounts have is_beta_user = true in user_profiles. Anyone else who
+// successfully authenticates (whether by password or Google) gets
+// signed straight back out and sent to the waitlist instead — we don't
+// want a non-admin session sitting around even briefly. This is the
+// single place that check happens for every sign-in path: Google OAuth
+// redirects here too (see SocialLoginButtons.jsx's OAUTH_REDIRECT).
+async function checkAdminAndRoute(userId, navigate, dest) {
+  try {
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('is_beta_user')
+      .eq('user_id', userId)
+      .single()
+
+    if (profile?.is_beta_user) {
+      navigate(dest)
+    } else {
+      await supabase.auth.signOut()
+      navigate('/waitlist', { state: { source: 'login_not_approved' } })
+    }
+  } catch {
+    // If we can't confirm admin status, fail closed rather than open —
+    // sign out and send to the waitlist rather than risk letting a
+    // non-admin through because a query happened to error.
+    await supabase.auth.signOut()
+    navigate('/waitlist', { state: { source: 'login_not_approved' } })
+  }
+}
 
 export default function Login() {
   const navigate = useNavigate()
@@ -14,6 +45,38 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  // Shown briefly while we check admin status after a Google redirect
+  // lands back here with a session already established — avoids a flash
+  // of the empty login form before we know where the user's actually going.
+  const [checkingOAuthReturn, setCheckingOAuthReturn] = useState(true)
+
+  // Handles the Google OAuth return case: Supabase's client parses the
+  // recovery/session tokens from the URL hash automatically on load, so
+  // by the time this effect runs there may already be a live session —
+  // this is what actually applies the admin gate to that path.
+  useEffect(() => {
+    let cancelled = false
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (cancelled) return
+      if (session?.user) {
+        let dest = location.state?.from || '/'
+        try {
+          const plan = localStorage.getItem('cviq:intended-plan')
+          if (plan === 'pro') {
+            localStorage.removeItem('cviq:intended-plan')
+            dest = '/pricing'
+          }
+        } catch {
+          // localStorage may be unavailable (e.g. private browsing) — ignore
+        }
+        await checkAdminAndRoute(session.user.id, navigate, dest)
+      }
+      if (!cancelled) setCheckingOAuthReturn(false)
+    })
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -24,14 +87,13 @@ export default function Login() {
       setLoading(true)
       setError(null)
 
-      const { error: authError } = await supabase.auth.signInWithPassword({
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
       if (authError) throw authError
 
-      // Respect intended destination from Pricing page or signup flow
       let dest = location.state?.from || '/'
       try {
         const plan = localStorage.getItem('cviq:intended-plan')
@@ -42,7 +104,8 @@ export default function Login() {
       } catch {
         // localStorage may be unavailable (e.g. private browsing) — ignore
       }
-      navigate(dest)
+
+      await checkAdminAndRoute(authData.user.id, navigate, dest)
     } catch (err) {
       setError(
         err.message ||
@@ -53,20 +116,25 @@ export default function Login() {
     }
   }
 
+  if (checkingOAuthReturn) return null
+
   return (
     <div className="auth-page">
       <nav className="auth-nav">
         <div className="auth-nav-inner">
           <div className="auth-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="auth-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="auth-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
-          <div style={{ display: 'flex', gap: 14 }}>
-            <button className="auth-nav-link" onClick={() => navigate('/waitlist', { state: { source: 'nav' } })}>Join waitlist</button>
-            <Link to="/signup" className="auth-nav-link">
+          <div className={`auth-nav-right ${menuOpen ? 'open' : ''}`}>
+            <button className="auth-nav-link" onClick={() => { setMenuOpen(false); navigate('/waitlist', { state: { source: 'nav' } }) }}>Join waitlist</button>
+            <Link to="/signup" className="auth-nav-link" onClick={() => setMenuOpen(false)}>
               Create account
             </Link>
           </div>
+          <button className="auth-burger" onClick={() => setMenuOpen(m => !m)} aria-label="Menu">
+            <span /><span /><span />
+          </button>
         </div>
       </nav>
 
@@ -84,6 +152,12 @@ export default function Login() {
               free below.
             </div>
           )}
+
+          <SocialLoginButtons disabled={loading} />
+
+          <div className="auth-divider">
+            <span>or continue with email</span>
+          </div>
 
           <div className="auth-form">
             <div className="auth-field">
@@ -143,8 +217,8 @@ export default function Login() {
       <footer className="auth-page-footer">
         <div className="auth-page-footer-inner">
           <div className="auth-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="auth-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="auth-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
           <p className="auth-page-footer-copy">
             © 2026 CVIQ Inc. · CV Intelligence Platform
