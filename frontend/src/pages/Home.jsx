@@ -222,7 +222,7 @@ function CVBeforeAfter() {
 export default function Home() {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
-  const { user, betaAccess } = useAuth()
+  const { user } = useAuth()
 
   useScrollReveal('.reveal')
 
