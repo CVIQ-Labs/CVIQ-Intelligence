@@ -6,36 +6,6 @@ import cviqLogoBlue from '../assets/cviq-icon-blue.png'
 import cviqLogoWhite from '../assets/cviq-icon-white.png'
 import '../styles/Auth.css'
 
-// Site is admin-only for now — only Sade, Rochelle, Seyi, and Jamie's
-// accounts have is_beta_user = true in user_profiles. Anyone else who
-// successfully authenticates (whether by password or Google) gets
-// signed straight back out and sent to the waitlist instead — we don't
-// want a non-admin session sitting around even briefly. This is the
-// single place that check happens for every sign-in path: Google OAuth
-// redirects here too (see SocialLoginButtons.jsx's OAUTH_REDIRECT).
-async function checkAdminAndRoute(userId, navigate, dest) {
-  try {
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('is_beta_user')
-      .eq('user_id', userId)
-      .single()
-
-    if (profile?.is_beta_user) {
-      navigate(dest)
-    } else {
-      await supabase.auth.signOut()
-      navigate('/waitlist', { state: { source: 'login_not_approved' } })
-    }
-  } catch {
-    // If we can't confirm admin status, fail closed rather than open —
-    // sign out and send to the waitlist rather than risk letting a
-    // non-admin through because a query happened to error.
-    await supabase.auth.signOut()
-    navigate('/waitlist', { state: { source: 'login_not_approved' } })
-  }
-}
-
 export default function Login() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -70,7 +40,7 @@ export default function Login() {
         } catch {
           // localStorage may be unavailable (e.g. private browsing) — ignore
         }
-        await checkAdminAndRoute(session.user.id, navigate, dest)
+        navigate(dest)
       }
       if (!cancelled) setCheckingOAuthReturn(false)
     })
@@ -105,7 +75,7 @@ export default function Login() {
         // localStorage may be unavailable (e.g. private browsing) — ignore
       }
 
-      await checkAdminAndRoute(authData.user.id, navigate, dest)
+      navigate(dest)
     } catch (err) {
       setError(
         err.message ||
@@ -127,7 +97,7 @@ export default function Login() {
             <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
           <div className={`auth-nav-right ${menuOpen ? 'open' : ''}`}>
-            <button className="auth-nav-link" onClick={() => { setMenuOpen(false); navigate('/waitlist', { state: { source: 'nav' } }) }}>Join waitlist</button>
+            <button className="auth-nav-link" onClick={() => { setMenuOpen(false); navigate('/signup') }}>Sign up</button>
             <Link to="/signup" className="auth-nav-link" onClick={() => setMenuOpen(false)}>
               Create account
             </Link>
