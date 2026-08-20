@@ -80,7 +80,7 @@ jobs:
       - name: Deploy to Oracle VM (staging)
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: 129.159.222.241
+          host: 130.162.237.24
           username: ubuntu
           key: ${{ secrets.ORACLE_SSH_PRIVATE_KEY }}
           script: |
@@ -135,7 +135,7 @@ jobs:
       - name: Deploy to Oracle VM
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: 129.159.222.241
+          host: 130.162.237.24
           username: ubuntu
           key: ${{ secrets.ORACLE_SSH_PRIVATE_KEY }}
           script: |
