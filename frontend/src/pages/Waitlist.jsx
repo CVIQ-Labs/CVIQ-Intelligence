@@ -19,6 +19,7 @@ export default function Waitlist() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [successMessage, setSuccessMessage] = useState("You're on the list")
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const handleJoin = async () => {
     const trimmed = email.trim()
@@ -67,10 +68,15 @@ export default function Waitlist() {
       <nav className="auth-nav">
         <div className="auth-nav-inner">
           <div className="auth-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="auth-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="auth-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
-          <button className="auth-nav-link" onClick={() => navigate('/')}>← Back to home</button>
+          <div className={`auth-nav-right ${menuOpen ? 'open' : ''}`}>
+            <button className="auth-nav-link" onClick={() => { setMenuOpen(false); navigate('/') }}>← Back to home</button>
+          </div>
+          <button className="auth-burger" onClick={() => setMenuOpen(m => !m)} aria-label="Menu">
+            <span /><span /><span />
+          </button>
         </div>
       </nav>
 
@@ -92,7 +98,9 @@ export default function Waitlist() {
               <div className="auth-eyebrow">Early access</div>
               <h1 className="auth-h1">Join the waitlist</h1>
               <p className="auth-sub">
-                Be first in line as we roll out new features and expand access. No spam - just an email when it's your turn.
+                {source === 'login_not_approved'
+                  ? "That account doesn't have access yet — we're in a private phase right now. Join the waitlist and we'll email you when it's your turn."
+                  : "Be first in line as we roll out new features and expand access. No spam - just an email when it's your turn."}
               </p>
               <div className="auth-form">
                 <div className="auth-field">
@@ -125,8 +133,8 @@ export default function Waitlist() {
       <footer className="auth-page-footer">
         <div className="auth-page-footer-inner">
           <div className="auth-logo" onClick={() => navigate('/')}>
-            <img src={cviqLogoBlue} alt="CVIQ" className="auth-logo-img cviq-logo-light" />
-            <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" />
+            <img src={cviqLogoBlue} alt="CVIQ" className="auth-logo-img cviq-logo-light" width="40" height="40" />
+            <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
           <p className="auth-page-footer-copy">© 2026 CVIQ Inc. · CV Intelligence Platform</p>
         </div>

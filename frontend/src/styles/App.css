@@ -1,8 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800;900&display=swap');
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
-
+/* overflow-x: clip (not hidden) is deliberate: setting overflow-x alone to
+   anything other than visible/clip forces the browser to also treat
+   overflow-y as a scroll container (per the CSS overflow spec), which
+   breaks position: sticky on the nav below — the nav would render fine
+   but never actually stick while scrolling. clip avoids that side effect
+   while still hiding the horizontal blob overflow this was added for. */
 .b-page { background: #fff; min-height: 100vh; overflow-x: clip; }
 
 /* ── Blobs ───────────────────────────────────────────── */
@@ -20,6 +23,18 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 /* .b-burger base look (display/flex-direction/span colour) now lives in
    nav-polish.css, shared across every page instead of duplicated here —
    see that file's "Shared mobile burger button" section. */
+
+/* NOTE: .b-nav-inner, .b-nav-links, .b-nav-links:hover, .b-nav-links.open,
+   and .b-nav's own height/padding are all owned by nav-polish.css (the
+   shared, dark-mode-aware, multi-breakpoint nav system loaded globally via
+   index.css). They used to be duplicated here too, with different values —
+   e.g. this file hardcoded the mobile dropdown at `top: 68px` while
+   nav-polish.css used `top: var(--nav-height)` (64px). Since this file
+   loads AFTER nav-polish.css in the bundle (App.css is imported by Home.jsx,
+   which loads later in the module graph than index.css), these duplicates
+   were silently winning the cascade — meaning the mobile dropdown menu was
+   actually using the wrong, unsynced position value. Removed here so
+   nav-polish.css is the single source of truth. ── */
 
 
 /* ── Hero ─────────────────────────────────────────────── 
@@ -62,7 +77,7 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-demo-hero-eyebrow { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: #2563eb; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
 .b-demo-hero-dot { width: 6px; height: 6px; border-radius: 50%; background: #2563eb; }
 .b-demo-hero-title { font-size: 22px; font-weight: 800; color: #0a1628; letter-spacing: -0.5px; margin-bottom: 4px; }
-.b-demo-hero-sub { font-size: 13px; color: #94a3b8; }
+.b-demo-hero-sub { font-size: 13px; color: #64748b; }
 .b-demo-view-btn { background: #f8fafc; border: 1px solid #e2e8f0; color: #64748b; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; flex-shrink: 0; }
 .b-demo-body { display: flex; flex-direction: column; }
 .b-demo-scores-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 16px; padding: 20px 28px; }
@@ -180,7 +195,7 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-feature-body { font-size: 14px; color: #6b7280; line-height: 1.7; }
 
 /* ── Waitlist banner — bold, high-contrast, sits at the top of the
-   Pricing section.  ── */
+   Pricing section. Copy is a placeholder, swap freely. ── */
 .b-pricing-waitlist-inline {
   display: flex;
   align-items: center;
@@ -264,9 +279,12 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-footer { background: #f8fafc; border-top: 1px solid #e5e7eb; padding: 36px 72px; }
 .b-footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
 .b-footer-links { display: flex; gap: 28px; }
-.b-footer-links a { font-size: 13px; color: #9ca3af; text-decoration: none; transition: color 0.15s; }
+.b-footer-links a { font-size: 13px; color: #64748b; text-decoration: none; transition: color 0.15s; }
 .b-footer-links a:hover { color: #0a1628; }
-.b-footer-copy { font-size: 12px; color: #cbd5e1; }
+.b-footer-copy { font-size: 12px; color: #94a3b8; }
+.b-footer-copy a { color: #94a3b8; text-decoration: underline; text-underline-offset: 2px; transition: color 0.15s; }
+.b-footer-copy a:hover { color: #0a1628; }
+[data-theme="dark"] .b-footer-copy a:hover { color: #f1f5f9; }
 
 /* ── Scroll reveal ───────────────────────────────────── */
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s cubic-bezier(0.16,1,0.3,1), transform 0.65s cubic-bezier(0.16,1,0.3,1); }
@@ -286,21 +304,34 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
   .b-h2 { font-size: 48px; }
 }
 /* ── Tablet range (601–900px) ─────────────────────────
-    */
+   Previously the 3-column grids below jumped straight to a single column
+   at 900px, which left a lot of unused width on iPad-portrait (768px) and
+   similar devices. This gives that range its own 2-column treatment
+   instead of skipping straight to mobile's single column. */
 @media (min-width: 601px) and (max-width: 900px) {
   /* 6 features read cleanly as a 2×3 grid at this width */
   .b-features-grid { grid-template-columns: 1fr 1fr; }
 
- 
+  /* 3 how-it-works steps: first two side by side, the third (the results
+     step) spans the full width beneath them rather than leaving an
+     awkward single half-width card dangling on its own row */
   .b-hiw-cards { grid-template-columns: 1fr 1fr; }
   .b-hiw-cards .b-hiw-card:nth-child(3) { grid-column: 1 / -1; }
 
+  /* 3 pricing cards: Free + Pro side by side, Pro Annual (the one we
+     actively want to draw the eye to) spans full width beneath — this
+     also happens to give the highlighted plan more visual weight rather
+     than squeezing it into a half-width slot */
   .b-pricing-cards { grid-template-columns: 1fr 1fr; max-width: 720px; }
   .b-pricing-cards .b-pricing-card:nth-child(3) { grid-column: 1 / -1; }
 }
 
 @media (max-width: 900px) {
-
+  /* .b-nav-links / .b-burger collapse is owned entirely by nav-polish.css
+     (which already covers this under its own 1000px breakpoint) — a
+     duplicate used to live here too, which is exactly the kind of split
+     source of truth that caused the earlier nav cascade bug. Removed. */
+  /* .b-h1 no longer overridden here — see note above. */
   .b-h2 { font-size: 38px; letter-spacing: -1.5px; }
   .b-features-grid { gap: 0; }
   .b-pricing-waitlist-inline { flex-direction: column; gap: 12px; padding: 20px 24px; border-radius: 20px; }
@@ -348,7 +379,9 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
   }
 }
 @media (max-width: 600px) {
-
+  /* Slightly less top padding than desktop's 108px, and the CTA row's
+     bottom margin comes down from 80px to 48px — 80px was eating too
+     much of the fold on small screens above the "how it works" section. */
   .b-hero { padding: 56px 20px 0; }
   .b-hero-actions { margin-bottom: 48px; }
   /* .b-h1 no longer overridden here — see note above. */

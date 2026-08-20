@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Dark mode â€” applies when <html data-theme="dark">
+   Dark mode — applies when <html data-theme="dark">
    All pages use these overrides automatically via CSS custom properties
    ========================================================================== */
 
@@ -7,13 +7,13 @@
     color-scheme: dark;
   }
   
-  /* â”€â”€ Body & root â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Body & root ── */
   [data-theme="dark"] body {
     background: #0a0f1a;
     color: #e2e8f0;
   }
   
-  /* â”€â”€ Results page tokens â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Results page tokens ── */
   [data-theme="dark"] .rp {
     --blue: #60a5fa;
     --blue-dark: #3b82f6;
@@ -33,7 +33,7 @@
     background: #0a0f1a;
   }
   
-  /* â”€â”€ Home page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Home page ── */
   [data-theme="dark"] .b-page {
     background: #0a0f1a;
     color: #e2e8f0;
@@ -52,6 +52,13 @@
   }
   [data-theme="dark"] .b-btn-ghost:hover { border-color: #60a5fa; color: #f1f5f9; }
   [data-theme="dark"] .b-h1 { color: #f1f5f9; }
+  /* CONTRAST FIX: .b-h1 em (the italic "Real Results" accent word in the
+     hero headline) inherited the light-mode blue #2563eb with no dark
+     override — 3.71:1 against the #0a0f1a page background, failing WCAG AA
+     (needs 4.5:1 for normal text). #60a5fa, already used for accents
+     elsewhere in dark mode, measures 7.54:1 here — comfortably passes AA
+     and even AAA. */
+  [data-theme="dark"] .b-h1 em { color: #60a5fa; }
   [data-theme="dark"] .b-h2 { color: #f1f5f9; }
   [data-theme="dark"] .b-hero-sub { color: #94a3b8; }
   [data-theme="dark"] .b-section-sub { color: #94a3b8; }
@@ -73,7 +80,7 @@
   [data-theme="dark"] .b-team-name { color: #f1f5f9; }
   [data-theme="dark"] .b-team-bio { color: #94a3b8; }
 
-  /* â”€â”€ Waitlist CTA (inline within Pricing section) â”€â”€â”€â”€â”€â”€ */
+  /* ── Waitlist CTA (inline within Pricing section) ── */
   [data-theme="dark"] .b-pricing-waitlist {
     background: #0d1a2e;
     border-color: #1e3a5f;
@@ -93,8 +100,26 @@
     border-color: #1e2d45;
     color: #f1f5f9;
   }
+  /* CONTRAST/VISIBILITY FIX: .b-btn-outline-full's light-mode :hover rule
+     (background: #f9fafb, near-white) was still firing in dark mode
+     because there was no dark override for the hover state — only for
+     the resting state above. That left near-white text (#f1f5f9, from
+     the dark override) sitting on a near-white hover background,
+     making the "Start Pro" button's label disappear on hover. This adds
+     the missing dark-mode hover override, using the same "background:
+     #1a2235 / border-color accent blue" pattern already used for
+     .b-btn-ghost:hover and other dark-mode hover states elsewhere in
+     this file, so it stays visually consistent with the rest of dark
+     mode's hover language rather than introducing a new one. */
+  [data-theme="dark"] .b-btn-outline-full:hover {
+    background: #1a2235;
+    border-color: #3b82f6;
+    color: #f1f5f9;
+  }
   [data-theme="dark"] .b-cta { background: #0a0f1a; border-color: #1e2d45; }
   [data-theme="dark"] .b-cta-h2 { color: #f1f5f9; }
+  /* CONTRAST FIX: same issue as .b-h1 em above, same fix. */
+  [data-theme="dark"] .b-cta-h2 em { color: #60a5fa; }
   [data-theme="dark"] .b-cta-sub { color: #94a3b8; }
   [data-theme="dark"] .b-footer { background: #0d1422; border-color: #1e2d45; }
   [data-theme="dark"] .b-footer-copy { color: #334155; }
@@ -119,7 +144,7 @@
   [data-theme="dark"] .b-demo-view-btn { background: #1a2235; border-color: #1e2d45; color: #94a3b8; }
   [data-theme="dark"] .b-demo-before { color: #475569; border-color: #1e2d45; }
   
-  /* â”€â”€ Auth pages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Auth pages ── */
   [data-theme="dark"] .auth-page { background: #0a0f1a; color: #e2e8f0; }
   [data-theme="dark"] .auth-nav {
     background: rgba(10, 15, 26, 0.92);
@@ -131,6 +156,11 @@
     background: #111827;
     border-color: #1e2d45;
   }
+  /* CONTRAST FIX: .auth-eyebrow (used on Login, Signup, Waitlist, Forgot/
+     Reset Password) has no background pill of its own — it sits directly
+     on .auth-card's background, which is #111827 in dark mode. Same
+     3.43:1 failure as the other cases above, same #60a5fa fix. */
+  [data-theme="dark"] .auth-eyebrow { color: #60a5fa; }
   [data-theme="dark"] .auth-h1 { color: #f1f5f9; }
   [data-theme="dark"] .auth-sub { color: #94a3b8; }
   [data-theme="dark"] .auth-label { color: #94a3b8; }
@@ -146,13 +176,16 @@
   [data-theme="dark"] .auth-page-footer { background: #0d1422; border-color: #1e2d45; }
   [data-theme="dark"] .auth-page-footer-copy { color: #334155; }
   
-  /* â”€â”€ Upload page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Upload page ── */
   [data-theme="dark"] .up-page { background: #0a0f1a; color: #e2e8f0; }
   [data-theme="dark"] .up-nav {
     background: rgba(10, 15, 26, 0.92);
     border-bottom-color: #1e2d45;
   }
   [data-theme="dark"] .up-logo-text { color: #f1f5f9; }
+  /* CONTRAST FIX: same missing-override pattern as .auth-eyebrow above,
+     same fix — .up-eyebrow sits directly on .up-page's dark background. */
+  [data-theme="dark"] .up-eyebrow { color: #60a5fa; }
   [data-theme="dark"] .up-back { background: none; border-color: #1e2d45; color: #94a3b8; }
   [data-theme="dark"] .up-nav-signout { border-color: #1e2d45; color: #94a3b8; }
   [data-theme="dark"] .up-h1 { color: #f1f5f9; }
@@ -186,22 +219,35 @@
   [data-theme="dark"] .up-stage.done .up-stage-label { color: #4ade80; }
   [data-theme="dark"] .up-stage-marker { background: #1a2235; border-color: #1e2d45; color: #475569; }
   
-  /* â”€â”€ Pricing page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Pricing page ── */
   [data-theme="dark"] .pricing-page { background: #0a0f1a; color: #e2e8f0; }
   [data-theme="dark"] .pricing-nav { background: rgba(10,15,26,0.92); border-bottom-color: #1e2d45; }
+  /* CONTRAST FIX: .pricing-eyebrow uses a low-alpha rgba(37,99,235,0.06)
+     background in light mode. That's not a genuine light pill — at low
+     alpha it just tints whatever's behind it, so in dark mode it renders
+     as a barely-tinted near-black background, not a light one. The blue
+     text on top was therefore effectively still text-on-dark, same
+     3.43-3.71:1 failure as the other eyebrows, same fix. */
+  [data-theme="dark"] .pricing-eyebrow { color: #60a5fa; }
   [data-theme="dark"] .pricing-h1 { color: #f1f5f9; }
   [data-theme="dark"] .pricing-sub { color: #94a3b8; }
   [data-theme="dark"] .pricing-card { background: #111827; border-color: #1e2d45; }
+  /* CONTRAST FIX: the "FREE / PRO / PRO ANNUAL" tier name inside each
+     card — same missing-override pattern, same fix. */
+  [data-theme="dark"] .pricing-card-name { color: #60a5fa; }
   [data-theme="dark"] .pricing-card-price { color: #f1f5f9; }
   [data-theme="dark"] .pricing-card-period { color: #94a3b8; }
   [data-theme="dark"] .pricing-card-features li { color: #cbd5e1; }
   [data-theme="dark"] .checkout-modal { background: #111827; }
   [data-theme="dark"] .checkout-close { background: #1a2235; border-color: #1e2d45; color: #94a3b8; }
   
-  /* â”€â”€ Settings page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Settings page ── */
   [data-theme="dark"] .settings-page { background: #0a0f1a; color: #e2e8f0; }
   [data-theme="dark"] .settings-nav { background: rgba(10,15,26,0.92); border-bottom-color: #1e2d45; }
   [data-theme="dark"] .settings-logo { color: #f1f5f9; }
+  /* CONTRAST FIX: same missing-override pattern as the other eyebrow
+     labels above, same fix. */
+  [data-theme="dark"] .settings-eyebrow { color: #60a5fa; }
   [data-theme="dark"] .settings-nav-btn { border-color: #1e2d45; color: #94a3b8; }
   [data-theme="dark"] .settings-nav-btn:hover { border-color: #60a5fa; color: #f1f5f9; }
   [data-theme="dark"] .settings-h1 { color: #f1f5f9; }
@@ -220,35 +266,16 @@
   [data-theme="dark"] .settings-modal-body { color: #94a3b8; }
   [data-theme="dark"] .settings-modal-cancel { background: #1a2235; border-color: #1e2d45; color: #94a3b8; }
   
-  /* â”€â”€ Return page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Return page ── */
   [data-theme="dark"] .return-page { background: #0a0f1a; }
   [data-theme="dark"] .return-title { color: #f1f5f9; }
   [data-theme="dark"] .return-message { color: #94a3b8; }
   [data-theme="dark"] .return-spinner { border-color: #1e2d45; border-top-color: #60a5fa; }
   
-  /* â”€â”€ Testimonials (home page) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-  [data-theme="dark"] .b-page .testimonials-section { background: #0d1422; border-color: #1e2d45; }
-  [data-theme="dark"] .b-page .section-h2 { color: #f1f5f9; }
-  [data-theme="dark"] .b-page .section-sub { color: #94a3b8; }
-  [data-theme="dark"] .b-page .testimonial-card { background: #111827; border-color: #1e2d45; }
-  [data-theme="dark"] .b-page .testimonial-card.active { border-color: #1e3a5f; }
-  [data-theme="dark"] .b-page .testimonial-message { color: #cbd5e1; }
-  [data-theme="dark"] .b-page .testimonial-name { color: #f1f5f9; }
-  [data-theme="dark"] .b-page .testimonial-role { color: #94a3b8; }
-  [data-theme="dark"] .b-page .testimonial-arrow { background: #111827; border-color: #1e2d45; color: #94a3b8; }
-  [data-theme="dark"] .b-page .testimonial-dot { background: #334155; }
-  [data-theme="dark"] .b-page .testimonial-form { background: #111827; border-color: #1e2d45; }
-  [data-theme="dark"] .b-page .testimonial-form h3 { color: #f1f5f9; }
-  [data-theme="dark"] .b-page .testimonial-form p { color: #94a3b8; }
-  [data-theme="dark"] .b-page .testimonial-form .field label { color: #94a3b8; }
-  [data-theme="dark"] .b-page .testimonial-form .field input,
-  [data-theme="dark"] .b-page .testimonial-form .field textarea {
-    background: #1a2235;
-    border-color: #1e2d45;
-    color: #f1f5f9;
-  }
+  /* ── Testimonials (home page) ── */
+  [data-theme="dark"] .t-eyebrow { color: #60a5fa; }
   
-  /* â”€â”€ Results nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Results nav ── */
   [data-theme="dark"] .rp-nav {
     background: rgba(10, 15, 26, 0.92);
     border-bottom-color: #1e2d45;
@@ -281,7 +308,7 @@
     color: #4ade80;
   }
   
-  /* â”€â”€ Results sidebar & hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Results sidebar & hero ── */
   [data-theme="dark"] .sidebar {
     background: #111827;
     border-color: #1e2d45;
@@ -324,7 +351,7 @@
   }
   [data-theme="dark"] .hero-score-item-label { color: #94a3b8; }
   
-  /* â”€â”€ Priority actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Priority actions ── */
   [data-theme="dark"] .action-item {
     background: #111827 !important;
     border-color: #1e2d45 !important;
@@ -340,7 +367,7 @@
   }
   [data-theme="dark"] .action-cta:hover { background: #1e2d45; }
   
-  /* â”€â”€ Section cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Section cards ── */
   [data-theme="dark"] .section {
     background: #111827;
     border-color: #1e2d45;
@@ -348,7 +375,7 @@
   [data-theme="dark"] .section-h2 { color: #f1f5f9; }
   [data-theme="dark"] .section-sub { color: #94a3b8; }
   
-  /* â”€â”€ CV Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── CV Modal ── */
   [data-theme="dark"] .cv-modal-wide {
     background: #111827;
   }
@@ -437,7 +464,7 @@
     color: #fbbf24;
   }
   
-  /* â”€â”€ Upload dropzone â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Upload dropzone ── */
   [data-theme="dark"] .up-file-attached {
     background: #052e16;
     border-color: #166534;
@@ -450,7 +477,7 @@
     color: #4ade80;
   }
   
-  /* â”€â”€ Recruiter / SW / Keywords / Bullets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Recruiter / SW / Keywords / Bullets ── */
   [data-theme="dark"] .recruiter-quote {
     background: #1a2235;
     border-color: #1e2d45;
@@ -510,7 +537,7 @@
     background: rgba(96,165,250,0.1);
   }
   
-  /* â”€â”€ Bottom CTA + footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Bottom CTA + footer ── */
   [data-theme="dark"] .rp-bottom {
     background: #111827;
     border-color: #1e2d45;
@@ -522,13 +549,13 @@
   }
   [data-theme="dark"] .rp-footer-copy { color: #334155; }
   
-  /* â”€â”€ Locked overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Locked overlay ── */
   [data-theme="dark"] .locked-overlay {
     background: rgba(10,15,26,0.8);
     border-color: #1e2d45;
   }
   
-  /* â”€â”€ Chat panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Chat panel ── */
   [data-theme="dark"] .chat-panel { background: #111827; }
   [data-theme="dark"] .chat-top { border-color: #1e2d45; }
   [data-theme="dark"] .chat-title { color: #f1f5f9; }
@@ -551,63 +578,3 @@
     color: #f1f5f9;
   }
   [data-theme="dark"] .chat-note { color: #475569; }
-  
-  /* â”€â”€ Home page testimonials (success stories) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-  [data-theme="dark"] .b-page .testimonials-section {
-    background: #0d1422;
-    border-color: #1e2d45;
-  }
-  [data-theme="dark"] .b-page .section-label { color: #60a5fa; }
-  [data-theme="dark"] .b-page .section-h2 { color: #f1f5f9; }
-  [data-theme="dark"] .b-page .section-sub { color: #94a3b8; }
-  [data-theme="dark"] .b-page .testimonial-card {
-    background: #111827;
-    border-color: #1e2d45;
-  }
-  [data-theme="dark"] .b-page .testimonial-card.active {
-    background: #111827;
-    border-color: #1e3a5f;
-    box-shadow: 0 8px 32px rgba(96,165,250,0.08);
-  }
-  [data-theme="dark"] .b-page .testimonial-message { color: #cbd5e1; }
-  [data-theme="dark"] .b-page .testimonial-name { color: #f1f5f9; }
-  [data-theme="dark"] .b-page .testimonial-role { color: #94a3b8; }
-  [data-theme="dark"] .b-page .star { color: #1e2d45; }
-  [data-theme="dark"] .b-page .star.filled { color: #fbbf24; }
-  [data-theme="dark"] .b-page .testimonial-arrow {
-    background: #111827;
-    border-color: #1e2d45;
-    color: #94a3b8;
-  }
-  [data-theme="dark"] .b-page .testimonial-arrow:hover {
-    background: #1a2235;
-    color: #f1f5f9;
-  }
-  [data-theme="dark"] .b-page .testimonial-dot { background: #334155; }
-  [data-theme="dark"] .b-page .testimonial-dot.active { background: #60a5fa; }
-  [data-theme="dark"] .b-page .testimonial-form {
-    background: #111827;
-    border-color: #1e2d45;
-  }
-  [data-theme="dark"] .b-page .testimonial-form h3 { color: #f1f5f9; }
-  [data-theme="dark"] .b-page .testimonial-form p { color: #94a3b8; }
-  [data-theme="dark"] .b-page .testimonial-form .field label { color: #94a3b8; }
-  [data-theme="dark"] .b-page .testimonial-form .field input,
-  [data-theme="dark"] .b-page .testimonial-form .field textarea {
-    background: #1a2235;
-    border-color: #1e2d45;
-    color: #f1f5f9;
-  }
-  [data-theme="dark"] .b-page .testimonial-form .field input::placeholder,
-  [data-theme="dark"] .b-page .testimonial-form .field textarea::placeholder { color: #475569; }
-  [data-theme="dark"] .b-page .testimonial-form-success {
-    background: #052e16;
-    border-color: #166534;
-  }
-  [data-theme="dark"] .b-page .testimonial-form-success h3 { color: #f1f5f9; }
-  [data-theme="dark"] .b-page .testimonial-form-success p { color: #94a3b8; }
-  [data-theme="dark"] .b-page .btn-ghost-sm {
-    background: #1a2235;
-    border-color: #1e2d45;
-    color: #94a3b8;
-  }
