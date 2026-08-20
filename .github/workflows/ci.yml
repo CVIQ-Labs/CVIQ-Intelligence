@@ -84,6 +84,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.ORACLE_SSH_PRIVATE_KEY }}
           script: |
+            if [ ! -d ~/Resume-Review-Engine ]; then git clone https://github.com/CVIQ-Labs/CVIQ-Intelligence.git ~/Resume-Review-Engine; fi
             cd ~/Resume-Review-Engine && git fetch origin && git reset --hard origin/staging
             cd backend && docker build -t cv-reviewer-staging .
             docker stop cv-reviewer-staging || true
@@ -139,6 +140,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.ORACLE_SSH_PRIVATE_KEY }}
           script: |
+            if [ ! -d ~/Resume-Review-Engine ]; then git clone https://github.com/CVIQ-Labs/CVIQ-Intelligence.git ~/Resume-Review-Engine; fi
             cd ~/Resume-Review-Engine && git fetch origin && git reset --hard origin/main
             cd backend && docker build -t cv-reviewer .
             docker stop cv-reviewer cviq-api || true
