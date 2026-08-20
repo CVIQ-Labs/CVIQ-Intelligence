@@ -29,7 +29,7 @@ const ESTIMATED_TOTAL_MS = 60000
 // UX convenience only — the actual review API endpoint must reject
 // requests from non-approved users independently, server-side. Keep this
 // flag in sync with the same one in Results.jsx.
-const BETA_LAUNCHED = false
+const BETA_LAUNCHED = true
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
