@@ -307,7 +307,7 @@ export default function Home() {
               CV Intelligence · AI-Powered CV Reviews
             </div>
             <h1 className="b-h1">
-              Smarter CV's.<br />Zero Stress. <em>Real Results</em>
+              Smarter CVs.<br />Zero Stress. <em>Real Results</em>
             </h1>
             <p className="b-hero-sub">
               75% of CVs never reach a human. CVIQ tells you exactly what's wrong and rewrites it for you in seconds.
