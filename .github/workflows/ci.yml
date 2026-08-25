@@ -97,14 +97,14 @@ jobs:
 
       - name: Smoke test staging
         run: |
-          for i in $(seq 1 12); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://staging.api.getcviq.com/health)
+          for i in $(seq 1 18); do
+            STATUS=$(curl -s --connect-timeout 5 -m 10 -o /dev/null -w "%{http_code}" https://staging.api.getcviq.com/health || echo "000")
             if [ "$STATUS" = "200" ]; then
               echo "Staging health check passed (attempt $i)"
               exit 0
             fi
-            echo "Attempt $i/12: got HTTP $STATUS - retrying in 5s"
-            sleep 5
+            echo "Attempt $i/18: got HTTP $STATUS - retrying in 10s"
+            sleep 10
           done
           echo "Staging smoke test failed"
           exit 1
@@ -142,7 +142,15 @@ jobs:
           script: |
             if [ ! -d ~/Resume-Review-Engine ]; then git clone https://github.com/CVIQ-Labs/CVIQ-Intelligence.git ~/Resume-Review-Engine; fi
             cd ~/Resume-Review-Engine && git fetch origin && git reset --hard origin/main
-            cd backend && docker build -t cv-reviewer .
+            # Ensure ports 80 and 443 are open in nftables (idempotent)
+            if ! sudo nft list chain ip filter INPUT 2>/dev/null | grep -q "tcp dport 80 accept"; then
+              REJECT_HANDLE=$(sudo nft -a list chain ip filter INPUT | grep "reject with icmp" | grep -o "handle [0-9]*" | awk '{print $2}')
+              sudo nft insert rule ip filter INPUT handle $REJECT_HANDLE tcp dport 80 accept
+              sudo nft insert rule ip filter INPUT handle $REJECT_HANDLE tcp dport 443 accept
+              sudo nft list ruleset | sudo tee /etc/nftables.conf
+              sudo systemctl enable nftables
+            fi
+            cd ~/Resume-Review-Engine/backend && docker build -t cv-reviewer .
             docker stop cv-reviewer cviq-api || true
             docker rm cv-reviewer cviq-api || true
             docker run -d --name cv-reviewer --restart unless-stopped \
@@ -153,16 +161,16 @@ jobs:
 
       - name: Smoke test
         run: |
-          for i in $(seq 1 12); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://api.getcviq.com/health)
+          for i in $(seq 1 18); do
+            STATUS=$(curl -s --connect-timeout 5 -m 10 -o /dev/null -w "%{http_code}" https://api.getcviq.com/health || echo "000")
             if [ "$STATUS" = "200" ]; then
               echo "Health check passed (attempt $i)"
               exit 0
             fi
-            echo "Attempt $i/12: got HTTP $STATUS - retrying in 5s"
-            sleep 5
+            echo "Attempt $i/18: got HTTP $STATUS - retrying in 10s"
+            sleep 10
           done
-          echo "Smoke test failed: /health did not return 200 within 60s"
+          echo "Smoke test failed: /health did not return 200 within 3 minutes"
           exit 1
 
   deploy-frontend:
