@@ -1,4 +1,4 @@
-const BASE_URL = 'https://cvreview-api.duckdns.org'
+const BASE_URL = 'https://api.getcviq.com'
 
 export async function createCheckoutSession(token) {
   const res = await fetch(`${BASE_URL}/create-checkout-session`, {
