@@ -7,7 +7,7 @@ import cviqLogoBlue from '../assets/cviq-icon-blue.png'
 import cviqLogoWhite from '../assets/cviq-icon-white.png'
 import '../styles/Settings.css'
 
-const BASE_URL = 'https://cvreview-api.duckdns.org'
+const BASE_URL = 'https://api.getcviq.com'
 
 export default function Settings() {
   const navigate = useNavigate()
