@@ -48,8 +48,12 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
   // and strings) — NOT a live DOM node reference. See `nodeId` below and
   // handleAcceptBubble's comment for why.
   const [bubble, setBubble] = useState(null)
+  // showPreview: DOCX starts in pixel-perfect docx-preview mode; switches to
+  // the text editor automatically when the user applies their first fix.
+  const [showPreview, setShowPreview] = useState(fileType !== 'application/pdf')
 
   const editorRef = useRef(null)
+  const previewRef = useRef(null)
   const panelLeftRef = useRef(null)
   const autoSaveRef = useRef(null)
   const autoSaveCountRef = useRef(0)
@@ -204,6 +208,20 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
           if (!mammoth) await new Promise(r => setTimeout(r, 400))
           const result = await mammoth.convertToHtml({ arrayBuffer: bytes.buffer })
           html = result.value
+
+          // Render pixel-perfect preview using docx-preview (separate from the
+          // Mammoth HTML editor — docx-preview gets the original bytes so it
+          // renders fonts, spacing, and layout exactly as Word would show them)
+          if (previewRef.current) {
+            const { renderAsync } = await import('docx-preview')
+            await renderAsync(bytes.buffer.slice(0), previewRef.current, null, {
+              inWrapper: true,
+              ignoreWidth: true,
+              ignoreHeight: true,
+              breakPages: true,
+              useBase64URL: true,
+            })
+          }
         }
 
         let draft = null
@@ -214,6 +232,9 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
         if (editorRef.current) {
           editorRef.current.innerHTML = draft || html
         }
+        // If there's a saved draft (user has made edits before), switch to edit
+        // mode so they see their changes rather than the original preview
+        if (draft && fileType !== 'application/pdf') setShowPreview(false)
         setLoading(false)
         setTimeout(() => {
           highlightWeakLines()
@@ -470,6 +491,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     })
     setDirty(true)
     saveDraft()
+    if (!isPdf) setShowPreview(false)
   }
 
   const applyBullet = (bullet, i) => {
@@ -512,6 +534,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     })
     setDirty(true)
     saveDraft()
+    if (!isPdf) setShowPreview(false)
   }
 
   const handleCopy = async (text, index) => {
@@ -565,6 +588,15 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
             {restoredMsg && <span className="cv-restored-msg">✓ Version restored</span>}
           </div>
           <div className="cv-modal-header-actions">
+            {!isPdf && (
+              <button
+                className="cv-header-btn"
+                onClick={() => setShowPreview(p => !p)}
+                title={showPreview ? 'Switch to editable text view' : 'Switch to original document view'}
+              >
+                {showPreview ? '✏️ Edit mode' : '👁 Preview'}
+              </button>
+            )}
             <button className="cv-header-btn cv-undo-btn" onClick={handleUndo} disabled={undoStack.length === 0} title="Undo (within this session)">↩ Undo</button>
             <button className="cv-header-btn cv-undo-btn" onClick={handleRedo} disabled={redoStack.length === 0} title="Redo">↪ Redo</button>
             <button className="cv-header-btn" onClick={() => saveVersion('Manual save')} disabled={!dirty}>Save version</button>
@@ -588,37 +620,49 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
             {error && <div className="cv-modal-error">{error}</div>}
 
             <div style={{ display: loading || error ? 'none' : 'contents' }}>
-              {weakBullets.length > 0 && (
-                <div className="cv-weak-hint">
-                  <span className="cv-weak-hint-dot" />
-                  Highlighted lines have suggestions — click to improve them
-                </div>
-              )}
-
-              {bubble && (
+              {/* docx-preview: pixel-perfect Word rendering (DOCX only) */}
+              {!isPdf && (
                 <div
-                  className="cv-inline-bubble"
-                  style={{ top: bubble.top, left: bubble.left }}
-                  onMouseDown={e => e.preventDefault()}
-                >
-                  <div className="cv-inline-bubble-label">✨ Suggested rewrite</div>
-                  <div className="cv-inline-bubble-text">{bubble.suggestion}</div>
-                  <div className="cv-inline-bubble-actions">
-                    <button className="cv-inline-accept" onClick={handleAcceptBubble}>✓ Accept</button>
-                    <button className="cv-inline-dismiss" onClick={handleDismissBubble}>✕ Dismiss</button>
-                  </div>
-                  <div className="cv-inline-bubble-arrow" />
-                </div>
+                  ref={previewRef}
+                  className="cv-docx-preview"
+                  style={{ display: showPreview ? 'block' : 'none' }}
+                />
               )}
 
-              <div
-                ref={editorRef}
-                className="cv-modal-docx cv-modal-editable"
-                contentEditable
-                suppressContentEditableWarning
-                onInput={handleEditorInput}
-                onClick={handleEditorClick}
-              />
+              {/* Text editor: always shown for PDF, shown for DOCX after edits */}
+              <div style={{ display: !showPreview || isPdf ? 'contents' : 'none' }}>
+                {weakBullets.length > 0 && (
+                  <div className="cv-weak-hint">
+                    <span className="cv-weak-hint-dot" />
+                    Highlighted lines have suggestions — click to improve them
+                  </div>
+                )}
+
+                {bubble && (
+                  <div
+                    className="cv-inline-bubble"
+                    style={{ top: bubble.top, left: bubble.left }}
+                    onMouseDown={e => e.preventDefault()}
+                  >
+                    <div className="cv-inline-bubble-label">✨ Suggested rewrite</div>
+                    <div className="cv-inline-bubble-text">{bubble.suggestion}</div>
+                    <div className="cv-inline-bubble-actions">
+                      <button className="cv-inline-accept" onClick={handleAcceptBubble}>✓ Accept</button>
+                      <button className="cv-inline-dismiss" onClick={handleDismissBubble}>✕ Dismiss</button>
+                    </div>
+                    <div className="cv-inline-bubble-arrow" />
+                  </div>
+                )}
+
+                <div
+                  ref={editorRef}
+                  className="cv-modal-docx cv-modal-editable"
+                  contentEditable
+                  suppressContentEditableWarning
+                  onInput={handleEditorInput}
+                  onClick={handleEditorClick}
+                />
+              </div>
             </div>
           </div>
 

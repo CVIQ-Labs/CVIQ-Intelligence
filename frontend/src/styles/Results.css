@@ -755,6 +755,11 @@
 .cv-modal-editable i { font-style: italic; }
 .cv-modal-editable a { color: var(--blue); }
 .cv-modal-editable hr.cv-page-break { margin: 14px 0; border: none; border-top: 1px dashed var(--border); }
+/* docx-preview container — fills the left panel, styles the Word page render */
+.cv-docx-preview { flex: 1; overflow-y: auto; background: #e8e8e8; padding: 16px 24px; }
+.cv-docx-preview .docx-wrapper { background: #fff; max-width: 820px; margin: 0 auto; box-shadow: 0 2px 12px rgba(10,22,40,0.12); border-radius: 2px; }
+.cv-docx-preview section.docx { padding: 40px 48px; }
+
 .cv-modal-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--text-dim); font-size: 13.5px; }
 .cv-modal-error { padding: 40px; text-align: center; color: var(--red); font-size: 14px; }
 .loading-spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: cv-spin 0.8s linear infinite; }
