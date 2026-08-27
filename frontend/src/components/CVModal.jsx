@@ -186,7 +186,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
               if (!text) continue
               const gap = prevY !== null ? Math.abs(prevY - line.y) : 0
               const isHeading = line.h > medH * 1.2
-              const hasBullet = /^[•‣◦⁃∙▪●–—\-]\s/.test(text)
+              const hasBullet = /^[•‣◦⁃∙▪●–—-]\s/.test(text)
               const isNewBlock = !curBlock || isHeading || hasBullet || gap > lineSpacing * 1.4
               if (isNewBlock) {
                 if (curBlock) blocks.push(curBlock)
