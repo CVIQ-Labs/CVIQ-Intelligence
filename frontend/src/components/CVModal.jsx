@@ -683,7 +683,6 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
                 className="cv-docx-preview"
                 style={{ display: showPreview ? 'block' : 'none' }}
               />
-              )}
 
               {/* Text editor: always shown for PDF, shown for DOCX after edits */}
               <div style={{ display: !showPreview || isPdf ? 'contents' : 'none' }}>
