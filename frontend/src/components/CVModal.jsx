@@ -513,7 +513,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     })
     setDirty(true)
     saveDraft()
-    setShowPreview(false)
+    if (!isPdf) setShowPreview(false)
   }
 
   const applyBullet = (bullet, i) => {
@@ -557,7 +557,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     appliedFixesRef.current.push({ original: bullet.original, improved: bullet.improved })
     setDirty(true)
     saveDraft()
-    setShowPreview(false)
+    if (!isPdf) setShowPreview(false)
   }
 
   const handleCopy = async (text, index) => {
