@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { exportEditedDocx, exportEditedPdf } from '../utils/exportEditedCV'
+import { exportEditedDocx, exportEditedPdf, patchExportDocx } from '../utils/exportEditedCV'
 
 let mammoth = null
 import('mammoth').then(m => { mammoth = m.default || m })
@@ -55,6 +55,9 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
   const editorRef = useRef(null)
   const previewRef = useRef(null)
   const panelLeftRef = useRef(null)
+  // Ordered list of AI fixes applied this session — used by the in-place
+  // DOCX patcher at export time so the original file's formatting is preserved.
+  const appliedFixesRef = useRef([])
   const autoSaveRef = useRef(null)
   const autoSaveCountRef = useRef(0)
   const isPdf = fileType === 'application/pdf'
@@ -532,6 +535,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
       }
       return next
     })
+    appliedFixesRef.current.push({ original: bullet.original, improved: bullet.improved })
     setDirty(true)
     saveDraft()
     if (!isPdf) setShowPreview(false)
@@ -547,7 +551,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     }
   }
 
-  // ── Export — strip highlights from clone ─────────────────────────────────
+  // ── Export ────────────────────────────────────────────────────────────────
   const handleExport = async () => {
     if (!editorRef.current) return
     setExporting(exportFormat)
@@ -559,11 +563,30 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
         el.removeAttribute('data-cv-node-id')
       })
       const html = clone.innerHTML
-      if (exportFormat === 'docx') {
+
+      if (exportFormat === 'docx' && fileBase64 && appliedFixesRef.current.length > 0) {
+        // Patch the original DOCX bytes in-place: preserves fonts, layout,
+        // tables, images.  Falls back to HTML rebuild if the API is unavailable.
+        const { skipped, fallback } = await patchExportDocx(
+          fileBase64,
+          fileName,
+          appliedFixesRef.current,
+          html,
+        )
+        if (fallback) {
+          console.warn('patch-export unavailable — used HTML rebuild fallback')
+        } else if (skipped.length > 0) {
+          alert(
+            `${skipped.length} fix${skipped.length > 1 ? 'es' : ''} couldn't be located in the original document and were skipped:\n\n` +
+            skipped.map(s => `• ${s.slice(0, 80)}${s.length > 80 ? '…' : ''}`).join('\n')
+          )
+        }
+      } else if (exportFormat === 'docx') {
         await exportEditedDocx(html, fileName.replace(/\.[^.]+$/, '') + '_edited.docx')
       } else {
         exportEditedPdf(html, fileName.replace(/\.[^.]+$/, '') + '_edited.pdf')
       }
+
       setDirty(false)
       clearAllDraftData()
     } catch (e) {
