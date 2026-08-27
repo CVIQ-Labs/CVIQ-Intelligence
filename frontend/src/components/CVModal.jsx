@@ -48,8 +48,12 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
   // and strings) — NOT a live DOM node reference. See `nodeId` below and
   // handleAcceptBubble's comment for why.
   const [bubble, setBubble] = useState(null)
+  // showPreview: DOCX starts in pixel-perfect docx-preview mode; switches to
+  // the text editor automatically when the user applies their first fix.
+  const [showPreview, setShowPreview] = useState(fileType !== 'application/pdf')
 
   const editorRef = useRef(null)
+  const previewRef = useRef(null)
   const panelLeftRef = useRef(null)
   const autoSaveRef = useRef(null)
   const autoSaveCountRef = useRef(0)
@@ -137,16 +141,87 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
             'pdfjs-dist/build/pdf.worker.min.js', import.meta.url
           ).toString()
           const doc = await pdfjsLib.getDocument({ data: bytes }).promise
-          for (let i = 1; i <= doc.numPages; i++) {
-            const page = await doc.getPage(i)
+          for (let pageNum = 1; pageNum <= doc.numPages; pageNum++) {
+            const page = await doc.getPage(pageNum)
             const content = await page.getTextContent()
-            const text = content.items.map(item => item.str).join(' ')
-            html += `<p>${escapeHtml(text)}</p>`
+            const items = content.items.filter(item => item.str.trim())
+            if (items.length === 0) continue
+
+            // Group text items into visual lines by Y coordinate
+            const lines = []
+            let curLine = null
+            for (const item of items) {
+              const y = item.transform[5]
+              const h = item.height || 12
+              if (!curLine) {
+                curLine = { text: item.str, y, h }
+              } else {
+                const tolerance = Math.max(curLine.h, h) * 0.5
+                if (Math.abs(y - curLine.y) <= tolerance) {
+                  curLine.text += item.str
+                  if (h > curLine.h) curLine.h = h
+                } else {
+                  lines.push(curLine)
+                  curLine = { text: item.str, y, h }
+                }
+              }
+            }
+            if (curLine) lines.push(curLine)
+
+            // Sort top-to-bottom (Y decreases down the page in PDF space)
+            lines.sort((a, b) => b.y - a.y)
+
+            // Determine body font size from the median line height
+            const sortedH = lines.map(l => l.h).filter(h => h > 0).sort((a, b) => a - b)
+            const medH = sortedH[Math.floor(sortedH.length / 2)] || 12
+            const lineSpacing = medH * 1.5
+
+            // Group lines into semantic blocks; start a new block on headings,
+            // bullet characters, or a gap larger than 1.4× normal line spacing
+            const blocks = []
+            let curBlock = null
+            let prevY = null
+            for (const line of lines) {
+              const text = line.text.trim()
+              if (!text) continue
+              const gap = prevY !== null ? Math.abs(prevY - line.y) : 0
+              const isHeading = line.h > medH * 1.2
+              const hasBullet = /^[•‣◦⁃∙▪●–—-]\s/.test(text)
+              const isNewBlock = !curBlock || isHeading || hasBullet || gap > lineSpacing * 1.4
+              if (isNewBlock) {
+                if (curBlock) blocks.push(curBlock)
+                curBlock = { text, isHeading }
+              } else {
+                curBlock.text += ' ' + text
+              }
+              prevY = line.y
+            }
+            if (curBlock) blocks.push(curBlock)
+
+            for (const block of blocks) {
+              const esc = escapeHtml(block.text)
+              html += block.isHeading ? `<h3>${esc}</h3>` : `<p>${esc}</p>`
+            }
+            if (pageNum < doc.numPages) html += '<hr class="cv-page-break" />'
           }
         } else {
           if (!mammoth) await new Promise(r => setTimeout(r, 400))
           const result = await mammoth.convertToHtml({ arrayBuffer: bytes.buffer })
           html = result.value
+
+          // Render pixel-perfect preview using docx-preview (separate from the
+          // Mammoth HTML editor — docx-preview gets the original bytes so it
+          // renders fonts, spacing, and layout exactly as Word would show them)
+          if (previewRef.current) {
+            const { renderAsync } = await import('docx-preview')
+            await renderAsync(bytes.buffer.slice(0), previewRef.current, null, {
+              inWrapper: true,
+              ignoreWidth: true,
+              ignoreHeight: true,
+              breakPages: true,
+              useBase64URL: true,
+            })
+          }
         }
 
         let draft = null
@@ -157,6 +232,9 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
         if (editorRef.current) {
           editorRef.current.innerHTML = draft || html
         }
+        // If there's a saved draft (user has made edits before), switch to edit
+        // mode so they see their changes rather than the original preview
+        if (draft && fileType !== 'application/pdf') setShowPreview(false)
         setLoading(false)
         setTimeout(() => {
           highlightWeakLines()
@@ -413,6 +491,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     })
     setDirty(true)
     saveDraft()
+    if (!isPdf) setShowPreview(false)
   }
 
   const applyBullet = (bullet, i) => {
@@ -427,14 +506,21 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
       if (prefix.length > 8) match = blocks.find(el => normalize(el.textContent).includes(prefix))
     }
     if (!match) {
+      setUndoStack(prev => prev.slice(0, -1))
       alert("Couldn't find that exact bullet — it may have been edited already.")
       return
     }
     const escaped = bullet.original.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+')
     const re = new RegExp(escaped, 'i')
-    match.textContent = re.test(match.textContent)
-      ? match.textContent.replace(re, bullet.improved)
-      : bullet.improved
+    if (!re.test(match.textContent)) {
+      // Regex didn't match — do NOT fall back to replacing the whole element.
+      // This can happen when PDF text extraction produces different whitespace
+      // or Unicode characters than the backend parser. Bail out safely.
+      setUndoStack(prev => prev.slice(0, -1))
+      alert("Couldn't apply the fix precisely — please copy the suggestion and edit manually.")
+      return
+    }
+    match.textContent = match.textContent.replace(re, bullet.improved)
     match.classList.remove('cv-weak-line')
     match.removeAttribute('data-suggestion')
     match.removeAttribute('data-cv-node-id')
@@ -448,6 +534,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     })
     setDirty(true)
     saveDraft()
+    if (!isPdf) setShowPreview(false)
   }
 
   const handleCopy = async (text, index) => {
@@ -501,6 +588,15 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
             {restoredMsg && <span className="cv-restored-msg">✓ Version restored</span>}
           </div>
           <div className="cv-modal-header-actions">
+            {!isPdf && (
+              <button
+                className="cv-header-btn"
+                onClick={() => setShowPreview(p => !p)}
+                title={showPreview ? 'Switch to editable text view' : 'Switch to original document view'}
+              >
+                {showPreview ? '✏️ Edit mode' : '👁 Preview'}
+              </button>
+            )}
             <button className="cv-header-btn cv-undo-btn" onClick={handleUndo} disabled={undoStack.length === 0} title="Undo (within this session)">↩ Undo</button>
             <button className="cv-header-btn cv-undo-btn" onClick={handleRedo} disabled={redoStack.length === 0} title="Redo">↪ Redo</button>
             <button className="cv-header-btn" onClick={() => saveVersion('Manual save')} disabled={!dirty}>Save version</button>
@@ -524,37 +620,49 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
             {error && <div className="cv-modal-error">{error}</div>}
 
             <div style={{ display: loading || error ? 'none' : 'contents' }}>
-              {weakBullets.length > 0 && (
-                <div className="cv-weak-hint">
-                  <span className="cv-weak-hint-dot" />
-                  Highlighted lines have suggestions — click to improve them
-                </div>
-              )}
-
-              {bubble && (
+              {/* docx-preview: pixel-perfect Word rendering (DOCX only) */}
+              {!isPdf && (
                 <div
-                  className="cv-inline-bubble"
-                  style={{ top: bubble.top, left: bubble.left }}
-                  onMouseDown={e => e.preventDefault()}
-                >
-                  <div className="cv-inline-bubble-label">✨ Suggested rewrite</div>
-                  <div className="cv-inline-bubble-text">{bubble.suggestion}</div>
-                  <div className="cv-inline-bubble-actions">
-                    <button className="cv-inline-accept" onClick={handleAcceptBubble}>✓ Accept</button>
-                    <button className="cv-inline-dismiss" onClick={handleDismissBubble}>✕ Dismiss</button>
-                  </div>
-                  <div className="cv-inline-bubble-arrow" />
-                </div>
+                  ref={previewRef}
+                  className="cv-docx-preview"
+                  style={{ display: showPreview ? 'block' : 'none' }}
+                />
               )}
 
-              <div
-                ref={editorRef}
-                className="cv-modal-docx cv-modal-editable"
-                contentEditable
-                suppressContentEditableWarning
-                onInput={handleEditorInput}
-                onClick={handleEditorClick}
-              />
+              {/* Text editor: always shown for PDF, shown for DOCX after edits */}
+              <div style={{ display: !showPreview || isPdf ? 'contents' : 'none' }}>
+                {weakBullets.length > 0 && (
+                  <div className="cv-weak-hint">
+                    <span className="cv-weak-hint-dot" />
+                    Highlighted lines have suggestions — click to improve them
+                  </div>
+                )}
+
+                {bubble && (
+                  <div
+                    className="cv-inline-bubble"
+                    style={{ top: bubble.top, left: bubble.left }}
+                    onMouseDown={e => e.preventDefault()}
+                  >
+                    <div className="cv-inline-bubble-label">✨ Suggested rewrite</div>
+                    <div className="cv-inline-bubble-text">{bubble.suggestion}</div>
+                    <div className="cv-inline-bubble-actions">
+                      <button className="cv-inline-accept" onClick={handleAcceptBubble}>✓ Accept</button>
+                      <button className="cv-inline-dismiss" onClick={handleDismissBubble}>✕ Dismiss</button>
+                    </div>
+                    <div className="cv-inline-bubble-arrow" />
+                  </div>
+                )}
+
+                <div
+                  ref={editorRef}
+                  className="cv-modal-docx cv-modal-editable"
+                  contentEditable
+                  suppressContentEditableWarning
+                  onInput={handleEditorInput}
+                  onClick={handleEditorClick}
+                />
+              </div>
             </div>
           </div>
 
