@@ -124,3 +124,55 @@ function downloadBlob(blob, fileName) {
   document.body.removeChild(a)
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
+
+const BASE_URL = 'https://api.getcviq.com'
+
+/**
+ * Export a DOCX by patching the original file bytes in-place rather than
+ * regenerating from extracted HTML.  Preserves all original fonts, layout,
+ * tables, images, and spacing — only the matched text is changed.
+ *
+ * Falls back to exportEditedDocx (HTML rebuild) if the API call fails so the
+ * user always gets a download even if patching is unavailable.
+ *
+ * @param {string} fileBase64  Base64 of the original .docx file
+ * @param {string} originalFileName  e.g. "my_cv.docx"
+ * @param {Array<{original:string, improved:string}>} fixes  Applied AI fixes in order
+ * @param {string} editedHtml  HTML from the editor (used as fallback)
+ * @returns {Promise<{skipped: string[]}>}  originals that couldn't be patched
+ */
+export async function patchExportDocx(fileBase64, originalFileName, fixes, editedHtml) {
+  const binary = atob(fileBase64)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+  const blob = new Blob([bytes], {
+    type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  })
+  const outName = originalFileName.replace(/\.[^.]+$/, '') + '_edited.docx'
+
+  const formData = new FormData()
+  formData.append('file', new File([blob], originalFileName))
+  formData.append('fixes', JSON.stringify(fixes))
+  formData.append('filename', outName)
+
+  let res
+  try {
+    res = await fetch(`${BASE_URL}/patch-export`, { method: 'POST', body: formData })
+  } catch {
+    // Network failure — fall back to HTML rebuild
+    await exportEditedDocx(editedHtml, outName)
+    return { skipped: [], fallback: true }
+  }
+
+  if (!res.ok) {
+    // API error — fall back to HTML rebuild
+    await exportEditedDocx(editedHtml, outName)
+    return { skipped: [], fallback: true }
+  }
+
+  const skippedRaw = res.headers.get('X-Skipped-Fixes')
+  const skipped = skippedRaw ? JSON.parse(skippedRaw) : []
+  const fileBlob = await res.blob()
+  downloadBlob(fileBlob, outName)
+  return { skipped, fallback: false }
+}
