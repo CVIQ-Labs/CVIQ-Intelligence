@@ -733,8 +733,28 @@
 .cv-panel-right { display: flex; flex-direction: column; overflow: hidden; background: #fff; }
 
 .cv-modal-docx { padding: 32px; background: #fff; margin: 16px; border-radius: var(--radius-sm); box-shadow: 0 1px 4px rgba(10,22,40,0.08); flex: 1; }
-.cv-modal-editable { outline: none; cursor: text; min-height: 100%; }
+.cv-modal-editable { outline: none; cursor: text; min-height: 100%; font-size: 13.5px; line-height: 1.65; color: var(--dark); }
 .cv-modal-editable:focus { box-shadow: inset 0 0 0 2px var(--blue-glow); border-radius: var(--radius-sm); }
+
+/* Typography for both PDF-extracted and Mammoth DOCX content */
+.cv-modal-editable h1,
+.cv-modal-editable h2,
+.cv-modal-editable h3,
+.cv-modal-editable h4 { font-weight: 700; line-height: 1.3; margin: 0.7em 0 0.25em; color: var(--dark); }
+.cv-modal-editable h1 { font-size: 1.45em; }
+.cv-modal-editable h2 { font-size: 1.2em; }
+.cv-modal-editable h3 { font-size: 1.05em; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid var(--border); padding-bottom: 3px; margin-top: 1em; }
+.cv-modal-editable h4 { font-size: 1em; }
+.cv-modal-editable p { margin: 0.2em 0; }
+.cv-modal-editable ul,
+.cv-modal-editable ol { margin: 0.2em 0 0.2em 1.3em; padding: 0; }
+.cv-modal-editable li { margin: 0.15em 0; }
+.cv-modal-editable strong,
+.cv-modal-editable b { font-weight: 700; }
+.cv-modal-editable em,
+.cv-modal-editable i { font-style: italic; }
+.cv-modal-editable a { color: var(--blue); }
+.cv-modal-editable hr.cv-page-break { margin: 14px 0; border: none; border-top: 1px dashed var(--border); }
 .cv-modal-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--text-dim); font-size: 13.5px; }
 .cv-modal-error { padding: 40px; text-align: center; color: var(--red); font-size: 14px; }
 .loading-spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: cv-spin 0.8s linear infinite; }

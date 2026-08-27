@@ -137,11 +137,68 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
             'pdfjs-dist/build/pdf.worker.min.js', import.meta.url
           ).toString()
           const doc = await pdfjsLib.getDocument({ data: bytes }).promise
-          for (let i = 1; i <= doc.numPages; i++) {
-            const page = await doc.getPage(i)
+          for (let pageNum = 1; pageNum <= doc.numPages; pageNum++) {
+            const page = await doc.getPage(pageNum)
             const content = await page.getTextContent()
-            const text = content.items.map(item => item.str).join(' ')
-            html += `<p>${escapeHtml(text)}</p>`
+            const items = content.items.filter(item => item.str.trim())
+            if (items.length === 0) continue
+
+            // Group text items into visual lines by Y coordinate
+            const lines = []
+            let curLine = null
+            for (const item of items) {
+              const y = item.transform[5]
+              const h = item.height || 12
+              if (!curLine) {
+                curLine = { text: item.str, y, h }
+              } else {
+                const tolerance = Math.max(curLine.h, h) * 0.5
+                if (Math.abs(y - curLine.y) <= tolerance) {
+                  curLine.text += item.str
+                  if (h > curLine.h) curLine.h = h
+                } else {
+                  lines.push(curLine)
+                  curLine = { text: item.str, y, h }
+                }
+              }
+            }
+            if (curLine) lines.push(curLine)
+
+            // Sort top-to-bottom (Y decreases down the page in PDF space)
+            lines.sort((a, b) => b.y - a.y)
+
+            // Determine body font size from the median line height
+            const sortedH = lines.map(l => l.h).filter(h => h > 0).sort((a, b) => a - b)
+            const medH = sortedH[Math.floor(sortedH.length / 2)] || 12
+            const lineSpacing = medH * 1.5
+
+            // Group lines into semantic blocks; start a new block on headings,
+            // bullet characters, or a gap larger than 1.4× normal line spacing
+            const blocks = []
+            let curBlock = null
+            let prevY = null
+            for (const line of lines) {
+              const text = line.text.trim()
+              if (!text) continue
+              const gap = prevY !== null ? Math.abs(prevY - line.y) : 0
+              const isHeading = line.h > medH * 1.2
+              const hasBullet = /^[•‣◦⁃∙▪●–—\-]\s/.test(text)
+              const isNewBlock = !curBlock || isHeading || hasBullet || gap > lineSpacing * 1.4
+              if (isNewBlock) {
+                if (curBlock) blocks.push(curBlock)
+                curBlock = { text, isHeading }
+              } else {
+                curBlock.text += ' ' + text
+              }
+              prevY = line.y
+            }
+            if (curBlock) blocks.push(curBlock)
+
+            for (const block of blocks) {
+              const esc = escapeHtml(block.text)
+              html += block.isHeading ? `<h3>${esc}</h3>` : `<p>${esc}</p>`
+            }
+            if (pageNum < doc.numPages) html += '<hr class="cv-page-break" />'
           }
         } else {
           if (!mammoth) await new Promise(r => setTimeout(r, 400))
