@@ -50,7 +50,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
   const [bubble, setBubble] = useState(null)
   // showPreview: DOCX starts in pixel-perfect docx-preview mode; switches to
   // the text editor automatically when the user applies their first fix.
-  const [showPreview, setShowPreview] = useState(fileType !== 'application/pdf')
+  const [showPreview, setShowPreview] = useState(true)
 
   const editorRef = useRef(null)
   const previewRef = useRef(null)
@@ -207,6 +207,25 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
             }
             if (pageNum < doc.numPages) html += '<hr class="cv-page-break" />'
           }
+
+          // Render pixel-perfect preview via PDF.js canvas — reuses the already-loaded doc
+          if (previewRef.current) {
+            const container = previewRef.current
+            container.innerHTML = ''
+            const targetWidth = 760
+            for (let pageNum = 1; pageNum <= doc.numPages; pageNum++) {
+              const page = await doc.getPage(pageNum)
+              const naturalVp = page.getViewport({ scale: 1 })
+              const scale = targetWidth / naturalVp.width
+              const viewport = page.getViewport({ scale })
+              const canvas = document.createElement('canvas')
+              canvas.width = viewport.width
+              canvas.height = viewport.height
+              canvas.style.cssText = 'display:block;max-width:100%;margin:0 auto 12px;box-shadow:0 2px 12px rgba(10,22,40,0.12);border-radius:2px;background:#fff;'
+              container.appendChild(canvas)
+              await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise
+            }
+          }
         } else {
           if (!mammoth) await new Promise(r => setTimeout(r, 400))
           const result = await mammoth.convertToHtml({ arrayBuffer: bytes.buffer })
@@ -237,7 +256,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
         }
         // If there's a saved draft (user has made edits before), switch to edit
         // mode so they see their changes rather than the original preview
-        if (draft && fileType !== 'application/pdf') setShowPreview(false)
+        if (draft) setShowPreview(false)
         setLoading(false)
         setTimeout(() => {
           highlightWeakLines()
@@ -494,7 +513,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     })
     setDirty(true)
     saveDraft()
-    if (!isPdf) setShowPreview(false)
+    setShowPreview(false)
   }
 
   const applyBullet = (bullet, i) => {
@@ -538,7 +557,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     appliedFixesRef.current.push({ original: bullet.original, improved: bullet.improved })
     setDirty(true)
     saveDraft()
-    if (!isPdf) setShowPreview(false)
+    setShowPreview(false)
   }
 
   const handleCopy = async (text, index) => {
@@ -628,15 +647,13 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
             {restoredMsg && <span className="cv-restored-msg">✓ Version restored</span>}
           </div>
           <div className="cv-modal-header-actions">
-            {!isPdf && (
-              <button
-                className="cv-header-btn"
-                onClick={() => setShowPreview(p => !p)}
-                title={showPreview ? 'Switch to editable text view' : 'Switch to original document view'}
-              >
-                {showPreview ? '✏️ Edit mode' : '👁 Preview'}
-              </button>
-            )}
+            <button
+              className="cv-header-btn"
+              onClick={() => setShowPreview(p => !p)}
+              title={showPreview ? 'Switch to editable text view' : 'Switch to original document view'}
+            >
+              {showPreview ? '✏️ Edit mode' : '👁 Preview'}
+            </button>
             <button className="cv-header-btn cv-undo-btn" onClick={handleUndo} disabled={undoStack.length === 0} title="Undo (within this session)">↩ Undo</button>
             <button className="cv-header-btn cv-undo-btn" onClick={handleRedo} disabled={redoStack.length === 0} title="Redo">↪ Redo</button>
             <button className="cv-header-btn" onClick={() => saveVersion('Manual save')} disabled={!dirty}>Save version</button>
@@ -660,14 +677,12 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
             {error && <div className="cv-modal-error">{error}</div>}
 
             <div style={{ display: loading || error ? 'none' : 'contents' }}>
-              {/* docx-preview: pixel-perfect Word rendering (DOCX only) */}
-              {!isPdf && (
-                <div
-                  ref={previewRef}
-                  className="cv-docx-preview"
-                  style={{ display: showPreview ? 'block' : 'none' }}
-                />
-              )}
+              {/* pixel-perfect preview: docx-preview for DOCX, PDF.js canvas for PDF */}
+              <div
+                ref={previewRef}
+                className="cv-docx-preview"
+                style={{ display: showPreview ? 'block' : 'none' }}
+              />
 
               {/* Text editor: always shown for PDF, shown for DOCX after edits */}
               <div style={{ display: !showPreview || isPdf ? 'contents' : 'none' }}>
@@ -736,8 +751,6 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
             {/* Feedback tab */}
             {activeTab === 'feedback' && (
               <div className="cv-feedback-scroll">
-                {isPdf && <p className="cv-pdf-note">PDFs are edited as extracted text — formatting from the original file isn't preserved.</p>}
-
                 {totalFeedback > 0 && (
                   <div className="cv-feedback-progress">
                     <div className="cv-feedback-progress-bar">
