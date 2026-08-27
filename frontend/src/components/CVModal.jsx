@@ -684,8 +684,8 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
                 style={{ display: showPreview ? 'block' : 'none' }}
               />
 
-              {/* Text editor: always shown for PDF, shown for DOCX after edits */}
-              <div style={{ display: !showPreview || isPdf ? 'contents' : 'none' }}>
+              {/* Text editor: shown when not in preview mode */}
+              <div style={{ display: !showPreview ? 'contents' : 'none' }}>
                 {weakBullets.length > 0 && (
                   <div className="cv-weak-hint">
                     <span className="cv-weak-hint-dot" />
