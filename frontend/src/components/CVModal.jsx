@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { exportEditedDocx, exportEditedPdf, patchExportDocx } from '../utils/exportEditedCV'
+import { exportEditedDocx, exportEditedPdf, patchExportDocx, patchExportPdf } from '../utils/exportEditedCV'
 
 let mammoth = null
 import('mammoth').then(m => { mammoth = m.default || m })
@@ -583,6 +583,23 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
         }
       } else if (exportFormat === 'docx') {
         await exportEditedDocx(html, fileName.replace(/\.[^.]+$/, '') + '_edited.docx')
+      } else if (exportFormat === 'pdf' && fileBase64 && appliedFixesRef.current.length > 0) {
+        // Patch the original PDF bytes in-place: preserves fonts and layout.
+        // Falls back to HTML rebuild if the API is unavailable.
+        const { skipped, fallback } = await patchExportPdf(
+          fileBase64,
+          fileName,
+          appliedFixesRef.current,
+          html,
+        )
+        if (fallback) {
+          console.warn('patch-export unavailable — used HTML rebuild fallback')
+        } else if (skipped.length > 0) {
+          alert(
+            `${skipped.length} fix${skipped.length > 1 ? 'es' : ''} couldn't be located in the original PDF and were skipped:\n\n` +
+              skipped.map(s => `• ${s.slice(0, 80)}${s.length > 80 ? '…' : ''}`).join('\n'),
+          )
+        }
       } else {
         exportEditedPdf(html, fileName.replace(/\.[^.]+$/, '') + '_edited.pdf')
       }
