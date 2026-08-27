@@ -427,14 +427,21 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
       if (prefix.length > 8) match = blocks.find(el => normalize(el.textContent).includes(prefix))
     }
     if (!match) {
+      setUndoStack(prev => prev.slice(0, -1))
       alert("Couldn't find that exact bullet — it may have been edited already.")
       return
     }
     const escaped = bullet.original.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+')
     const re = new RegExp(escaped, 'i')
-    match.textContent = re.test(match.textContent)
-      ? match.textContent.replace(re, bullet.improved)
-      : bullet.improved
+    if (!re.test(match.textContent)) {
+      // Regex didn't match — do NOT fall back to replacing the whole element.
+      // This can happen when PDF text extraction produces different whitespace
+      // or Unicode characters than the backend parser. Bail out safely.
+      setUndoStack(prev => prev.slice(0, -1))
+      alert("Couldn't apply the fix precisely — please copy the suggestion and edit manually.")
+      return
+    }
+    match.textContent = match.textContent.replace(re, bullet.improved)
     match.classList.remove('cv-weak-line')
     match.removeAttribute('data-suggestion')
     match.removeAttribute('data-cv-node-id')
