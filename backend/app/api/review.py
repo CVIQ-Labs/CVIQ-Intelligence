@@ -8,7 +8,7 @@ from app.rag.pipeline import run_review_pipeline
 from app.review.scorer import validate_and_clean
 from app.Models.cv_models import ReviewResponse
 from app.core.exceptions import CVReviewerError
-from app.core.auth import get_current_user, get_user_tier, require_beta_access
+from app.core.auth import get_current_user, get_user_tier
 
 router = APIRouter()
 
@@ -77,7 +77,7 @@ def _detect_pii(text: str) -> None:
 async def review_cv(
     cv_file: UploadFile = File(...),
     job_description: str = Form(...),
-    user: dict = Depends(require_beta_access),
+    user: dict = Depends(get_current_user),
 ):
     file_bytes = await cv_file.read()
 

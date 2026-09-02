@@ -222,7 +222,7 @@ function CVBeforeAfter() {
 export default function Home() {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
-  const { user, betaAccess } = useAuth()
+  const { user } = useAuth()
 
   useScrollReveal('.reveal')
 
@@ -278,7 +278,7 @@ export default function Home() {
                   </>
                 ) : (
                   <>
-                    <button className="b-btn-ghost" onClick={() => { setMenuOpen(false); navigate('/waitlist', { state: { source: 'nav' } }) }}>Join waitlist</button>
+                    <button className="b-btn-ghost" onClick={() => { setMenuOpen(false); navigate('/signup') }}>Sign up</button>
                     <button className="b-btn-ghost" onClick={() => { setMenuOpen(false); navigate('/login') }}>Log in</button>
                   </>
                 )}
@@ -307,14 +307,14 @@ export default function Home() {
               CV Intelligence · AI-Powered CV Reviews
             </div>
             <h1 className="b-h1">
-              Smarter CV's.<br />Zero Stress. <em>Real Results</em>
+              Smarter CVs.<br />Zero Stress. <em>Real Results</em>
             </h1>
             <p className="b-hero-sub">
               75% of CVs never reach a human. CVIQ tells you exactly what's wrong and rewrites it for you in seconds.
             </p>
             <div className="b-hero-actions">
-              <button className="b-btn-primary" onClick={() => navigate(betaAccess ? '/upload' : '/waitlist')}>
-                {betaAccess ? 'Analyse my CV →' : 'Join the Waitlist →'}
+              <button className="b-btn-primary" onClick={() => navigate(user ? '/upload' : '/signup')}>
+                {user ? 'Analyse my CV →' : 'Get started free →'}
               </button>
               <button className="b-btn-secondary" onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}>
                 See how it works
@@ -441,9 +441,9 @@ export default function Home() {
         {/* ── Pricing ── */}
         <section className="b-section b-pricing reveal" id="pricing">
           <div className="b-pricing-waitlist-inline">
-            <span>Join our waitlist for our private beta.</span>
-            <button onClick={() => navigate('/waitlist', { state: { source: 'before_pricing' } })}>
-              Join the waitlist →
+            <span>No subscription required to get started.</span>
+            <button onClick={() => navigate(user ? '/upload' : '/signup')}>
+              {user ? 'Analyse my CV →' : 'Create free account →'}
             </button>
           </div>
           <div className="b-section-head">
@@ -545,6 +545,15 @@ export default function Home() {
             <a href="#features">Features</a>
             <a href="#pricing">Pricing</a>
           </div>
+
+          {/* ── Contact Us ── */}
+          <div className="b-footer-contact">
+            <span className="b-footer-contact-label">Contact us</span>
+            <a href="mailto:cviq.customerservice@outlook.com" className="b-footer-contact-email">
+              cviq.customerservice@outlook.com
+            </a>
+          </div>
+
           <p className="b-footer-copy">
             © 2026 CVIQ Inc. · CV Intelligence Platform ·{' '}
             <a href="/terms" onClick={e => { e.preventDefault(); navigate('/terms') }}>Terms &amp; Conditions</a>
@@ -552,11 +561,11 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* ── Mobile sticky waitlist CTA (hidden on desktop via CSS) ── */}
+      {/* ── Mobile sticky CTA (hidden on desktop via CSS) ── */}
       <div className="b-mobile-sticky-waitlist">
-        <span>Early access available</span>
-        <button onClick={() => navigate('/waitlist', { state: { source: 'mobile_sticky' } })}>
-          Join waitlist →
+        <span>Free CV review in 60 seconds</span>
+        <button onClick={() => navigate(user ? '/upload' : '/signup')}>
+          {user ? 'Analyse my CV →' : 'Get started →'}
         </button>
       </div>
     </div>
