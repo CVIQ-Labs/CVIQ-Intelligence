@@ -286,6 +286,16 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-footer-copy a:hover { color: #0a1628; }
 [data-theme="dark"] .b-footer-copy a:hover { color: #f1f5f9; }
 
+/* ── Footer: Contact us ───────────────────────────────
+   Sits between the nav-link group and the copyright line. Label uses
+   the same small/muted treatment as .b-footer-links, the email uses
+   the accent blue already established for links/eyebrows elsewhere on
+   this page so it reads as clickable without needing an underline. ── */
+.b-footer-contact { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.b-footer-contact-label { font-size: 13px; color: #64748b; font-weight: 600; }
+.b-footer-contact-email { font-size: 13px; color: #2563eb; text-decoration: none; font-weight: 600; transition: color 0.15s; }
+.b-footer-contact-email:hover { color: #1d4ed8; text-decoration: underline; text-underline-offset: 2px; }
+
 /* ── Scroll reveal ───────────────────────────────────── */
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s cubic-bezier(0.16,1,0.3,1), transform 0.65s cubic-bezier(0.16,1,0.3,1); }
 .reveal.revealed { opacity: 1; transform: none; }
@@ -393,6 +403,7 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
   .b-pricing-cards { grid-template-columns: 1fr; max-width: 440px; }
   .b-footer { padding: 28px 20px; flex-direction: column; gap: 20px; text-align: center; }
   .b-footer-links { justify-content: center; flex-wrap: wrap; gap: 16px; }
+  .b-footer-contact { justify-content: center; }
   .b-page .testimonials-section { padding: 72px 20px; }
   .b-cta-h2 { font-size: 44px; letter-spacing: -2px; }
 }
