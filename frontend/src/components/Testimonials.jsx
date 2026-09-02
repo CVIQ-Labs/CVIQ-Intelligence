@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import '../styles/testimonials.css'
 
-const BASE_URL = 'https://cvreview-api.duckdns.org'
+const BASE_URL = 'https://api.getcviq.com'
 const COLOURS = ['#1d4ed8','#0f6e56','#6366f1','#f59e0b','#ec4899','#ef4444','#10b981']
 
 // Testimonial submissions are turned off for now (ahead of the private beta

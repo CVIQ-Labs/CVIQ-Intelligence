@@ -445,17 +445,18 @@ CVIQ-Intelligence/
 - [x] Resend transactional email (waitlist confirmations, bypasses Supabase rate limit)
 - [x] Research agent (Tavily + Claude Haiku, company/role-scoped KB cache, metadata retrieval)
 - [x] Waitlist endpoint with Supabase storage and email confirmation
-- [ ] Settings page with account management (frontend)
-- [ ] Prometheus metrics endpoint (`/metrics`) - request latency, score distributions, error rates
-- [ ] Grafana dashboard - visualise metrics from Prometheus
+- [x] Settings page with account management (frontend)
+- [x] Prometheus metrics endpoint (`/metrics`) - request latency, score distributions, error rates
+- [x] Grafana dashboard - visualise metrics from Prometheus
 - [ ] Migrate research agent to MCP-based agentic tool use (depending on production results)
 - [ ] Migrate to Azure AKS when funded (Terraform + Kubernetes manifests already in place)
-
+- [ ]  Refine onboarding flow — new UX, simplified steps, and improved clarity for first‑time users.
+- [ ]   Implement V2 stability layer — full UI regression suite, component isolation tests, and backend reliability checks ahead of public rollout.
 ---
 
 ## Team
 
-Built by [Seyi Bello](https://github.com/seyiabello), [Jamie Moore-Arthur](https://github.com/jamiemoorearthur), [Rochelle Smith](https://github.com/rochellejjsmith), and Sade Smith.
+Built by [Seyi Bello](https://github.com/seyiabello), [Jamie Moore-Arthur](https://github.com/jamiemoorearthur), [Rochelle Smith](https://github.com/rochellejjsmith), and [Sade Smith](https://github.com/sadeanikaa)
 
 - **Seyi** - Co-Founder and Lead AI Platform Engineer. Built the full AI platform including the RAG pipeline, research agent, embeddings, vector store, review logic, and all API endpoints. Also built and owns the entire infrastructure from scratch including Docker containerisation, Terraform IaC, Kubernetes manifests, Oracle Cloud deployment, Caddy reverse proxy, GitHub Actions CI/CD, and all security scanning.
 - **Jamie** - Founder and CEO. Knowledge base content, ingestion pipeline, file upload, infrastructure support, DNS and domain management

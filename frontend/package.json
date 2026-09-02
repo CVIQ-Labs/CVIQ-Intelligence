@@ -17,6 +17,7 @@
     "axios": "^1.16.1",
     "clsx": "^2.1.1",
     "docx": "^9.7.1",
+    "docx-preview": "^0.4.0",
     "framer-motion": "^12.40.0",
     "jspdf": "^4.2.1",
     "mammoth": "^1.12.0",

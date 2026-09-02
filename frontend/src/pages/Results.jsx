@@ -27,7 +27,7 @@ const JD_KEY = 'cviq:last-jd'
 // accounts) can see real results — everyone else gets the waiting-list
 // page below. This is a UX convenience only; the backend must
 // independently reject non-approved requests regardless of this flag.
-const BETA_LAUNCHED = false
+const BETA_LAUNCHED = true
 
 function ProGate({ feature }) {
   const navigate = useNavigate()

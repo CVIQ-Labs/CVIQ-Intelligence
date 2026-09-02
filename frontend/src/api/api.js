@@ -1,4 +1,4 @@
-const BASE_URL = 'https://cvreview-api.duckdns.org'
+const BASE_URL = 'https://api.getcviq.com'
 
 function authHeaders(token) {
   return token ? { Authorization: `Bearer ${token}` } : {}

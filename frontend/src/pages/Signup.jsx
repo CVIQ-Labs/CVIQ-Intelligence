@@ -1,19 +1,42 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { supabase } from '../utils/supabase'
+import SocialLoginButtons from '../components/SocialLoginButtons'
 import cviqLogoBlue from '../assets/cviq-icon-blue.png'
 import cviqLogoWhite from '../assets/cviq-icon-white.png'
 import '../styles/Auth.css'
 
-// Site is admin-only for now (Sade, Rochelle, Seyi, Jamie). Public sign-up
-// is disabled entirely — there's no form here anymore, just a waitlist
-// CTA. Admin accounts already exist (created directly in Supabase), so
-// they never need this page; they go straight to /login. Kept as a real
-// route rather than redirecting away immediately, since "Create account"
-// links pointing here (nav, footer text elsewhere) still need somewhere
-// sensible to land rather than erroring.
 export default function Signup() {
   const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+
+  const handleSignup = async () => {
+    if (!email.trim() || !password.trim()) {
+      return setError('Please enter your email and password.')
+    }
+    if (password.length < 8) {
+      return setError('Password must be at least 8 characters.')
+    }
+
+    try {
+      setLoading(true)
+      setError(null)
+
+      const { error: signUpError } = await supabase.auth.signUp({ email, password })
+      if (signUpError) throw signUpError
+
+      setSuccess(true)
+    } catch (err) {
+      setError(err.message || 'Sign up failed. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="auth-page">
@@ -24,7 +47,6 @@ export default function Signup() {
             <img src={cviqLogoWhite} alt="CVIQ" className="auth-logo-img cviq-logo-dark" width="40" height="40" />
           </div>
           <div className={`auth-nav-right ${menuOpen ? 'open' : ''}`}>
-            <button className="auth-nav-link" onClick={() => { setMenuOpen(false); navigate(-1) }}>← Back</button>
             <Link to="/login" className="auth-nav-link" onClick={() => setMenuOpen(false)}>Sign in</Link>
           </div>
           <button className="auth-burger" onClick={() => setMenuOpen(m => !m)} aria-label="Menu">
@@ -35,18 +57,76 @@ export default function Signup() {
 
       <div className="auth-container">
         <div className="auth-card">
-          <div className="auth-eyebrow">Early access</div>
-          <h1 className="auth-h1">Sign-ups are invite-only right now</h1>
-          <p className="auth-sub">
-            We're getting things ready before we launch. Join the waitlist and we'll email you
-            when the website is live.
-          </p>
-          <button className="auth-btn-submit" onClick={() => navigate('/waitlist', { state: { source: 'signup_invite_only' } })}>
-            Join the waitlist →
-          </button>
-          <div className="auth-footer-text">
-            Already have an account? <Link to="/login">Sign in</Link>
-          </div>
+          {success ? (
+            <>
+              <div className="auth-eyebrow">Almost there</div>
+              <h1 className="auth-h1">Check your email</h1>
+              <p className="auth-sub">
+                We sent a confirmation link to <strong>{email}</strong>. Click it to activate your account, then sign in.
+              </p>
+              <button className="auth-btn-submit" onClick={() => navigate('/login')}>
+                Go to sign in
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="auth-eyebrow">Create account</div>
+              <h1 className="auth-h1">Get started free</h1>
+              <p className="auth-sub">
+                Free CV review in under 60 seconds. No credit card required.
+              </p>
+
+              <SocialLoginButtons disabled={loading} />
+
+              <div className="auth-divider">
+                <span>or continue with email</span>
+              </div>
+
+              <div className="auth-form">
+                <div className="auth-field">
+                  <label className="auth-label" htmlFor="email">Email address</label>
+                  <input
+                    id="email"
+                    className="auth-input"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleSignup()}
+                    autoComplete="email"
+                  />
+                </div>
+
+                <div className="auth-field">
+                  <label className="auth-label" htmlFor="password">Password</label>
+                  <input
+                    id="password"
+                    className="auth-input"
+                    type="password"
+                    placeholder="At least 8 characters"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleSignup()}
+                    autoComplete="new-password"
+                  />
+                </div>
+
+                {error && <div className="auth-error">{error}</div>}
+
+                <button
+                  className="auth-btn-submit"
+                  onClick={handleSignup}
+                  disabled={loading}
+                >
+                  {loading ? 'Creating account...' : 'Create free account'}
+                </button>
+              </div>
+
+              <div className="auth-footer-text">
+                Already have an account? <Link to="/login">Sign in</Link>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

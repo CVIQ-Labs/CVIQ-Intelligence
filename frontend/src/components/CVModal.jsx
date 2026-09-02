@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { exportEditedDocx, exportEditedPdf } from '../utils/exportEditedCV'
+import { exportEditedDocx, exportEditedPdf, patchExportDocx, patchExportPdf } from '../utils/exportEditedCV'
 
 let mammoth = null
 import('mammoth').then(m => { mammoth = m.default || m })
@@ -48,9 +48,16 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
   // and strings) — NOT a live DOM node reference. See `nodeId` below and
   // handleAcceptBubble's comment for why.
   const [bubble, setBubble] = useState(null)
+  // showPreview: DOCX starts in pixel-perfect docx-preview mode; switches to
+  // the text editor automatically when the user applies their first fix.
+  const [showPreview, setShowPreview] = useState(true)
 
   const editorRef = useRef(null)
+  const previewRef = useRef(null)
   const panelLeftRef = useRef(null)
+  // Ordered list of AI fixes applied this session — used by the in-place
+  // DOCX patcher at export time so the original file's formatting is preserved.
+  const appliedFixesRef = useRef([])
   const autoSaveRef = useRef(null)
   const autoSaveCountRef = useRef(0)
   const isPdf = fileType === 'application/pdf'
@@ -137,16 +144,106 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
             'pdfjs-dist/build/pdf.worker.min.js', import.meta.url
           ).toString()
           const doc = await pdfjsLib.getDocument({ data: bytes }).promise
-          for (let i = 1; i <= doc.numPages; i++) {
-            const page = await doc.getPage(i)
+          for (let pageNum = 1; pageNum <= doc.numPages; pageNum++) {
+            const page = await doc.getPage(pageNum)
             const content = await page.getTextContent()
-            const text = content.items.map(item => item.str).join(' ')
-            html += `<p>${escapeHtml(text)}</p>`
+            const items = content.items.filter(item => item.str.trim())
+            if (items.length === 0) continue
+
+            // Group text items into visual lines by Y coordinate
+            const lines = []
+            let curLine = null
+            for (const item of items) {
+              const y = item.transform[5]
+              const h = item.height || 12
+              if (!curLine) {
+                curLine = { text: item.str, y, h }
+              } else {
+                const tolerance = Math.max(curLine.h, h) * 0.5
+                if (Math.abs(y - curLine.y) <= tolerance) {
+                  curLine.text += item.str
+                  if (h > curLine.h) curLine.h = h
+                } else {
+                  lines.push(curLine)
+                  curLine = { text: item.str, y, h }
+                }
+              }
+            }
+            if (curLine) lines.push(curLine)
+
+            // Sort top-to-bottom (Y decreases down the page in PDF space)
+            lines.sort((a, b) => b.y - a.y)
+
+            // Determine body font size from the median line height
+            const sortedH = lines.map(l => l.h).filter(h => h > 0).sort((a, b) => a - b)
+            const medH = sortedH[Math.floor(sortedH.length / 2)] || 12
+            const lineSpacing = medH * 1.5
+
+            // Group lines into semantic blocks; start a new block on headings,
+            // bullet characters, or a gap larger than 1.4× normal line spacing
+            const blocks = []
+            let curBlock = null
+            let prevY = null
+            for (const line of lines) {
+              const text = line.text.trim()
+              if (!text) continue
+              const gap = prevY !== null ? Math.abs(prevY - line.y) : 0
+              const isHeading = line.h > medH * 1.2
+              const hasBullet = /^[•‣◦⁃∙▪●–—-]\s/.test(text)
+              const isNewBlock = !curBlock || isHeading || hasBullet || gap > lineSpacing * 1.4
+              if (isNewBlock) {
+                if (curBlock) blocks.push(curBlock)
+                curBlock = { text, isHeading }
+              } else {
+                curBlock.text += ' ' + text
+              }
+              prevY = line.y
+            }
+            if (curBlock) blocks.push(curBlock)
+
+            for (const block of blocks) {
+              const esc = escapeHtml(block.text)
+              html += block.isHeading ? `<h3>${esc}</h3>` : `<p>${esc}</p>`
+            }
+            if (pageNum < doc.numPages) html += '<hr class="cv-page-break" />'
+          }
+
+          // Render pixel-perfect preview via PDF.js canvas — reuses the already-loaded doc
+          if (previewRef.current) {
+            const container = previewRef.current
+            container.innerHTML = ''
+            const targetWidth = 760
+            for (let pageNum = 1; pageNum <= doc.numPages; pageNum++) {
+              const page = await doc.getPage(pageNum)
+              const naturalVp = page.getViewport({ scale: 1 })
+              const scale = targetWidth / naturalVp.width
+              const viewport = page.getViewport({ scale })
+              const canvas = document.createElement('canvas')
+              canvas.width = viewport.width
+              canvas.height = viewport.height
+              canvas.style.cssText = 'display:block;max-width:100%;margin:0 auto 12px;box-shadow:0 2px 12px rgba(10,22,40,0.12);border-radius:2px;background:#fff;'
+              container.appendChild(canvas)
+              await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise
+            }
           }
         } else {
           if (!mammoth) await new Promise(r => setTimeout(r, 400))
           const result = await mammoth.convertToHtml({ arrayBuffer: bytes.buffer })
           html = result.value
+
+          // Render pixel-perfect preview using docx-preview (separate from the
+          // Mammoth HTML editor — docx-preview gets the original bytes so it
+          // renders fonts, spacing, and layout exactly as Word would show them)
+          if (previewRef.current) {
+            const { renderAsync } = await import('docx-preview')
+            await renderAsync(bytes.buffer.slice(0), previewRef.current, null, {
+              inWrapper: true,
+              ignoreWidth: true,
+              ignoreHeight: true,
+              breakPages: true,
+              useBase64URL: true,
+            })
+          }
         }
 
         let draft = null
@@ -157,6 +254,9 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
         if (editorRef.current) {
           editorRef.current.innerHTML = draft || html
         }
+        // If there's a saved draft (user has made edits before), switch to edit
+        // mode so they see their changes rather than the original preview
+        if (draft) setShowPreview(false)
         setLoading(false)
         setTimeout(() => {
           highlightWeakLines()
@@ -413,6 +513,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     })
     setDirty(true)
     saveDraft()
+    if (!isPdf) setShowPreview(false)
   }
 
   const applyBullet = (bullet, i) => {
@@ -427,14 +528,21 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
       if (prefix.length > 8) match = blocks.find(el => normalize(el.textContent).includes(prefix))
     }
     if (!match) {
+      setUndoStack(prev => prev.slice(0, -1))
       alert("Couldn't find that exact bullet — it may have been edited already.")
       return
     }
     const escaped = bullet.original.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+')
     const re = new RegExp(escaped, 'i')
-    match.textContent = re.test(match.textContent)
-      ? match.textContent.replace(re, bullet.improved)
-      : bullet.improved
+    if (!re.test(match.textContent)) {
+      // Regex didn't match — do NOT fall back to replacing the whole element.
+      // This can happen when PDF text extraction produces different whitespace
+      // or Unicode characters than the backend parser. Bail out safely.
+      setUndoStack(prev => prev.slice(0, -1))
+      alert("Couldn't apply the fix precisely — please copy the suggestion and edit manually.")
+      return
+    }
+    match.textContent = match.textContent.replace(re, bullet.improved)
     match.classList.remove('cv-weak-line')
     match.removeAttribute('data-suggestion')
     match.removeAttribute('data-cv-node-id')
@@ -446,8 +554,10 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
       }
       return next
     })
+    appliedFixesRef.current.push({ original: bullet.original, improved: bullet.improved })
     setDirty(true)
     saveDraft()
+    if (!isPdf) setShowPreview(false)
   }
 
   const handleCopy = async (text, index) => {
@@ -460,7 +570,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     }
   }
 
-  // ── Export — strip highlights from clone ─────────────────────────────────
+  // ── Export ────────────────────────────────────────────────────────────────
   const handleExport = async () => {
     if (!editorRef.current) return
     setExporting(exportFormat)
@@ -472,11 +582,47 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
         el.removeAttribute('data-cv-node-id')
       })
       const html = clone.innerHTML
-      if (exportFormat === 'docx') {
+
+      if (exportFormat === 'docx' && fileBase64 && appliedFixesRef.current.length > 0) {
+        // Patch the original DOCX bytes in-place: preserves fonts, layout,
+        // tables, images.  Falls back to HTML rebuild if the API is unavailable.
+        const { skipped, fallback } = await patchExportDocx(
+          fileBase64,
+          fileName,
+          appliedFixesRef.current,
+          html,
+        )
+        if (fallback) {
+          console.warn('patch-export unavailable — used HTML rebuild fallback')
+        } else if (skipped.length > 0) {
+          alert(
+            `${skipped.length} fix${skipped.length > 1 ? 'es' : ''} couldn't be located in the original document and were skipped:\n\n` +
+            skipped.map(s => `• ${s.slice(0, 80)}${s.length > 80 ? '…' : ''}`).join('\n')
+          )
+        }
+      } else if (exportFormat === 'docx') {
         await exportEditedDocx(html, fileName.replace(/\.[^.]+$/, '') + '_edited.docx')
+      } else if (exportFormat === 'pdf' && fileBase64 && appliedFixesRef.current.length > 0) {
+        // Patch the original PDF bytes in-place: preserves fonts and layout.
+        // Falls back to HTML rebuild if the API is unavailable.
+        const { skipped, fallback } = await patchExportPdf(
+          fileBase64,
+          fileName,
+          appliedFixesRef.current,
+          html,
+        )
+        if (fallback) {
+          console.warn('patch-export unavailable — used HTML rebuild fallback')
+        } else if (skipped.length > 0) {
+          alert(
+            `${skipped.length} fix${skipped.length > 1 ? 'es' : ''} couldn't be located in the original PDF and were skipped:\n\n` +
+              skipped.map(s => `• ${s.slice(0, 80)}${s.length > 80 ? '…' : ''}`).join('\n'),
+          )
+        }
       } else {
         exportEditedPdf(html, fileName.replace(/\.[^.]+$/, '') + '_edited.pdf')
       }
+
       setDirty(false)
       clearAllDraftData()
     } catch (e) {
@@ -501,6 +647,13 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
             {restoredMsg && <span className="cv-restored-msg">✓ Version restored</span>}
           </div>
           <div className="cv-modal-header-actions">
+            <button
+              className="cv-header-btn"
+              onClick={() => setShowPreview(p => !p)}
+              title={showPreview ? 'Switch to editable text view' : 'Switch to original document view'}
+            >
+              {showPreview ? '✏️ Edit mode' : '👁 Preview'}
+            </button>
             <button className="cv-header-btn cv-undo-btn" onClick={handleUndo} disabled={undoStack.length === 0} title="Undo (within this session)">↩ Undo</button>
             <button className="cv-header-btn cv-undo-btn" onClick={handleRedo} disabled={redoStack.length === 0} title="Redo">↪ Redo</button>
             <button className="cv-header-btn" onClick={() => saveVersion('Manual save')} disabled={!dirty}>Save version</button>
@@ -524,37 +677,47 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
             {error && <div className="cv-modal-error">{error}</div>}
 
             <div style={{ display: loading || error ? 'none' : 'contents' }}>
-              {weakBullets.length > 0 && (
-                <div className="cv-weak-hint">
-                  <span className="cv-weak-hint-dot" />
-                  Highlighted lines have suggestions — click to improve them
-                </div>
-              )}
-
-              {bubble && (
-                <div
-                  className="cv-inline-bubble"
-                  style={{ top: bubble.top, left: bubble.left }}
-                  onMouseDown={e => e.preventDefault()}
-                >
-                  <div className="cv-inline-bubble-label">✨ Suggested rewrite</div>
-                  <div className="cv-inline-bubble-text">{bubble.suggestion}</div>
-                  <div className="cv-inline-bubble-actions">
-                    <button className="cv-inline-accept" onClick={handleAcceptBubble}>✓ Accept</button>
-                    <button className="cv-inline-dismiss" onClick={handleDismissBubble}>✕ Dismiss</button>
-                  </div>
-                  <div className="cv-inline-bubble-arrow" />
-                </div>
-              )}
-
+              {/* pixel-perfect preview: docx-preview for DOCX, PDF.js canvas for PDF */}
               <div
-                ref={editorRef}
-                className="cv-modal-docx cv-modal-editable"
-                contentEditable
-                suppressContentEditableWarning
-                onInput={handleEditorInput}
-                onClick={handleEditorClick}
+                ref={previewRef}
+                className="cv-docx-preview"
+                style={{ display: showPreview ? 'block' : 'none' }}
               />
+
+              {/* Text editor: shown when not in preview mode */}
+              <div style={{ display: !showPreview ? 'contents' : 'none' }}>
+                {weakBullets.length > 0 && (
+                  <div className="cv-weak-hint">
+                    <span className="cv-weak-hint-dot" />
+                    Highlighted lines have suggestions — click to improve them
+                  </div>
+                )}
+
+                {bubble && (
+                  <div
+                    className="cv-inline-bubble"
+                    style={{ top: bubble.top, left: bubble.left }}
+                    onMouseDown={e => e.preventDefault()}
+                  >
+                    <div className="cv-inline-bubble-label">✨ Suggested rewrite</div>
+                    <div className="cv-inline-bubble-text">{bubble.suggestion}</div>
+                    <div className="cv-inline-bubble-actions">
+                      <button className="cv-inline-accept" onClick={handleAcceptBubble}>✓ Accept</button>
+                      <button className="cv-inline-dismiss" onClick={handleDismissBubble}>✕ Dismiss</button>
+                    </div>
+                    <div className="cv-inline-bubble-arrow" />
+                  </div>
+                )}
+
+                <div
+                  ref={editorRef}
+                  className="cv-modal-docx cv-modal-editable"
+                  contentEditable
+                  suppressContentEditableWarning
+                  onInput={handleEditorInput}
+                  onClick={handleEditorClick}
+                />
+              </div>
             </div>
           </div>
 
@@ -588,8 +751,6 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
             {/* Feedback tab */}
             {activeTab === 'feedback' && (
               <div className="cv-feedback-scroll">
-                {isPdf && <p className="cv-pdf-note">PDFs are edited as extracted text — formatting from the original file isn't preserved.</p>}
-
                 {totalFeedback > 0 && (
                   <div className="cv-feedback-progress">
                     <div className="cv-feedback-progress-bar">
