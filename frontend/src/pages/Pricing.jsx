@@ -1,8 +1,5 @@
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js'
-import { createCheckoutSession } from '../api/stripe'
-import { supabase } from '../utils/supabase'
 import { useAuth } from '../utils/useAuth'
 import cviqLogoBlue from '../assets/cviq-icon-blue.png'
 import cviqLogoWhite from '../assets/cviq-icon-white.png'
@@ -69,30 +66,8 @@ const PLANS = [
 ]
 
 export default function Pricing() {
-  const [checkoutOpen, setCheckoutOpen] = useState(false)
-  const [error, setError] = useState(null)
-  const [selectedPlan, setSelectedPlan] = useState(null)
   const { user, isPro, loading: authLoading } = useAuth()
   const navigate = useNavigate()
-
-  const stripePromiseRef = useRef(null)
-
-  const getStripePromise = useCallback(async () => {
-    if (!stripePromiseRef.current) {
-      const { loadStripe } = await import('@stripe/stripe-js')
-      stripePromiseRef.current = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
-    }
-    return stripePromiseRef.current
-  }, [])
-
-  const fetchClientSecret = useCallback(async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    const token = session?.access_token
-    const { clientSecret } = await createCheckoutSession(token, selectedPlan)
-    return clientSecret
-  }, [selectedPlan])
-
-  const options = useMemo(() => ({ fetchClientSecret }), [fetchClientSecret])
 
   // Redirect to login only once we actually know there's no user — this
   // runs as a side effect AFTER the initial paint, instead of blocking
@@ -110,9 +85,16 @@ export default function Pricing() {
   const handlePlanClick = (planKey) => {
     if (!user) return // guard: ignore clicks before we know auth state
     if (planKey === 'free') { navigate('/upload'); return }
-    setSelectedPlan(planKey)
-    setError(null)
-    setCheckoutOpen(true)
+    const paymentLinks = {
+      pro: 'https://buy.stripe.com/00w8wQ4hyaZpbuS62G6kg01',
+      'pro-annual': 'https://buy.stripe.com/bJe8wQ29q0kL7eC3Uy6kg00',
+    }
+    const link = paymentLinks[planKey]
+    if (!link) return
+    // client_reference_id tells the Stripe webhook which account to
+    // upgrade once payment completes — without it, a successful
+    // payment through the link has no way to be tied back to a user.
+    window.location.assign(`${link}?client_reference_id=${encodeURIComponent(user.id)}`)
   }
 
   return (
@@ -180,9 +162,6 @@ export default function Pricing() {
                 )}
               </div>
 
-              {error && selectedPlan === plan.key && (
-                <div className="pricing-error">{error}</div>
-              )}
             </div>
           ))}
         </div>
@@ -192,30 +171,6 @@ export default function Pricing() {
         </div>
       </div>
 
-      {checkoutOpen && (
-        <div className="checkout-modal-backdrop" onClick={() => setCheckoutOpen(false)}>
-          <div className="checkout-modal" onClick={e => e.stopPropagation()}>
-            <button className="checkout-close" onClick={() => setCheckoutOpen(false)}>✕</button>
-            <StripeCheckout getStripePromise={getStripePromise} options={options} />
-          </div>
-        </div>
-      )}
     </div>
-  )
-}
-
-function StripeCheckout({ getStripePromise, options }) {
-  const [stripePromise, setStripePromise] = useState(null)
-
-  useMemo(() => {
-    getStripePromise().then(setStripePromise)
-  }, [getStripePromise])
-
-  if (!stripePromise) return null
-
-  return (
-    <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
-      <EmbeddedCheckout />
-    </EmbeddedCheckoutProvider>
   )
 }
