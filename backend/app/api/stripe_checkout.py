@@ -2,17 +2,23 @@ import os
 import stripe
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends
+from pydantic import BaseModel
 
 from app.core.auth import get_current_user
 
 router = APIRouter()
 
 STRIPE_SECRET = os.getenv("STRIPE_SECRET_KEY")
-PRICE_ID = os.getenv("STRIPE_PRICE_ID")
+STRIPE_PRICE_ID_TIER_1 = os.getenv("STRIPE_PRICE_ID_TIER_1")
+STRIPE_PRICE_ID_TIER_2 = os.getenv("STRIPE_PRICE_ID_TIER_2")
 YOUR_DOMAIN = os.getenv(
     "YOUR_DOMAIN",
     "https://cviq27.vercel.app"
 )
+
+
+class CheckoutRequest(BaseModel):
+    plan: str
 
 
 def get_client():
@@ -25,12 +31,20 @@ def get_client():
 
 
 @router.post("/create-checkout-session")
-async def create_checkout_session(user: Optional[dict] = Depends(get_current_user)):
+async def create_checkout_session(
+    request: CheckoutRequest,
+    user: Optional[dict] = Depends(get_current_user),
+):
 
-    if not PRICE_ID:
+    price_id = {
+        "pro": STRIPE_PRICE_ID_TIER_1,
+        "pro-annual": STRIPE_PRICE_ID_TIER_2,
+    }.get(request.plan)
+
+    if not price_id:
         raise HTTPException(
             status_code=500,
-            detail="Missing STRIPE_PRICE_ID"
+            detail=f"Missing Stripe price for plan: {request.plan}"
         )
 
     client = get_client()
@@ -38,7 +52,7 @@ async def create_checkout_session(user: Optional[dict] = Depends(get_current_use
     try:
         params = {
             "ui_mode": "embedded",
-            "line_items": [{"price": PRICE_ID, "quantity": 1}],
+            "line_items": [{"price": price_id, "quantity": 1}],
             "mode": "subscription",
             "return_url": f"{YOUR_DOMAIN}/return?session_id={{CHECKOUT_SESSION_ID}}",
         }
