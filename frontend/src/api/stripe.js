@@ -1,12 +1,13 @@
 const BASE_URL = 'https://api.getcviq.com'
 
-export async function createCheckoutSession(token) {
+export async function createCheckoutSession(token, plan) {
   const res = await fetch(`${BASE_URL}/create-checkout-session`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
+    body: JSON.stringify({ plan }),
   })
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))

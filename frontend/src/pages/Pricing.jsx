@@ -88,9 +88,9 @@ export default function Pricing() {
   const fetchClientSecret = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession()
     const token = session?.access_token
-    const { clientSecret } = await createCheckoutSession(token)
+    const { clientSecret } = await createCheckoutSession(token, selectedPlan)
     return clientSecret
-  }, [])
+  }, [selectedPlan])
 
   const options = useMemo(() => ({ fetchClientSecret }), [fetchClientSecret])
 
