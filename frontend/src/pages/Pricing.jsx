@@ -89,7 +89,12 @@ export default function Pricing() {
       pro: 'https://buy.stripe.com/00w8wQ4hyaZpbuS62G6kg01',
       'pro-annual': 'https://buy.stripe.com/bJe8wQ29q0kL7eC3Uy6kg00',
     }
-    window.location.href = paymentLinks[planKey]
+    const link = paymentLinks[planKey]
+    if (!link) return
+    // client_reference_id tells the Stripe webhook which account to
+    // upgrade once payment completes — without it, a successful
+    // payment through the link has no way to be tied back to a user.
+    window.location.assign(`${link}?client_reference_id=${encodeURIComponent(user.id)}`)
   }
 
   return (
