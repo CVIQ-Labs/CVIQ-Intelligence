@@ -12,6 +12,7 @@ import { stagger } from '../utils/animations'
 import { extractCvText, filterTrulyMissing } from '../utils/filterKeywords'
 import { useAuth } from '../utils/useAuth'
 import { supabase } from '../utils/supabase'
+import { submitFeedback } from '../api/api'
 import cviqLogoBlue from '../assets/cviq-icon-blue.png'
 import cviqLogoWhite from '../assets/cviq-icon-white.png'
 import '../styles/Results.css'
@@ -81,6 +82,7 @@ export default function Results() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
   const [openCat, setOpenCat] = useState(null)
+  const [feedbackSent, setFeedbackSent] = useState(false)
   const { user, isPro, betaAccess, loading: authLoading } = useAuth()
   const hasAccess = BETA_LAUNCHED || betaAccess
 
@@ -94,6 +96,8 @@ export default function Results() {
       window.history.replaceState({}, '', '/results')
     }
   }, [paymentSuccess])
+
+  const traceId = location.state?.traceId || null
 
   const [result] = useState(() => {
     const n = location.state?.result
@@ -300,6 +304,22 @@ export default function Results() {
             <p className="rp-bottom-text">Applied the changes? Upload your updated CV to track your improvement.</p>
             <button className="rp-bottom-btn" onClick={() => navigate('/upload')}>Review another CV</button>
           </div>
+
+          {traceId && (
+            <div className="rp-feedback">
+              {feedbackSent ? (
+                <p className="rp-feedback-thanks">Thanks for your feedback!</p>
+              ) : (
+                <>
+                  <p className="rp-feedback-label">Was this review helpful?</p>
+                  <div className="rp-feedback-btns">
+                    <button className="rp-feedback-btn" aria-label="Thumbs up" onClick={() => { submitFeedback(traceId, 1); setFeedbackSent(true) }}>👍</button>
+                    <button className="rp-feedback-btn" aria-label="Thumbs down" onClick={() => { submitFeedback(traceId, 0); setFeedbackSent(true) }}>👎</button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </motion.main>
       </div>
 

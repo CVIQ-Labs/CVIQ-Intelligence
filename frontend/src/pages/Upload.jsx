@@ -138,14 +138,15 @@ export default function Upload() {
       const token = session?.access_token
       const sessionId = crypto.randomUUID()
 
-      const [result, fileBase64] = await Promise.all([
+      const [reviewData, fileBase64] = await Promise.all([
         reviewCV(file, jobDescription, token, sessionId),
         fileToBase64(file),
       ])
+      const { _traceId, ...result } = reviewData
       markComplete()
       await new Promise(r => setTimeout(r, 500))
       navigate('/results', {
-        state: { result, cvFile: { base64: fileBase64, type: file.type, name: file.name }, jobDescription },
+        state: { result, cvFile: { base64: fileBase64, type: file.type, name: file.name }, jobDescription, traceId: _traceId },
       })
     } catch (err) {
       setError(getErrorMessage(err))
