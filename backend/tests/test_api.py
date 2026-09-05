@@ -79,7 +79,7 @@ def test_review_returns_200_with_valid_inputs():
     """POST /review with a valid PDF and job description should return a 200 with the review fields."""
     # patch() replaces run_review_pipeline with a function that returns MOCK_REVIEW
     # This means no OpenAI call is made during this test
-    with patch("app.api.review.run_review_pipeline", return_value=MOCK_REVIEW):
+    with patch("app.api.review.run_review_pipeline", return_value=(MOCK_REVIEW, None)):
         response = client.post(
             "/review",
             files={"cv_file": ("cv.pdf", io.BytesIO(MINIMAL_PDF), "application/pdf")},
@@ -101,7 +101,7 @@ def test_review_returns_200_with_valid_inputs():
 
 def test_review_scores_are_within_range():
     """Scores must be between 0 and 100."""
-    with patch("app.api.review.run_review_pipeline", return_value=MOCK_REVIEW):
+    with patch("app.api.review.run_review_pipeline", return_value=(MOCK_REVIEW, None)):
         response = client.post(
             "/review",
             files={"cv_file": ("cv.pdf", io.BytesIO(MINIMAL_PDF), "application/pdf")},
@@ -117,7 +117,7 @@ def test_review_scores_are_within_range():
 
 def test_review_rejects_non_pdf_file():
     """POST /review with a .jpg file should return 400."""
-    with patch("app.api.review.run_review_pipeline", return_value=MOCK_REVIEW):
+    with patch("app.api.review.run_review_pipeline", return_value=(MOCK_REVIEW, None)):
         response = client.post(
             "/review",
             files={"cv_file": ("photo.jpg", io.BytesIO(b"fake image bytes"), "image/jpeg")},
