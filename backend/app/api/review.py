@@ -96,7 +96,8 @@ async def review_cv(
     # ── Pipeline ──────────────────────────────────────────────────────────────
     tier = get_user_tier(user)
     try:
-        raw_review = await asyncio.to_thread(run_review_pipeline, cv_text, job_description, tier=tier)
+        user_id = (user.get("sub") or user.get("id")) if user else None
+        raw_review = await asyncio.to_thread(run_review_pipeline, cv_text, job_description, tier=tier, user_id=user_id)
     except CVReviewerError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
