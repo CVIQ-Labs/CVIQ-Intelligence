@@ -88,4 +88,4 @@ def run_review_pipeline(cv_text: str, job_description: str, tier: str = "paid", 
     except Exception as e:
         logger.warning(f"Langfuse trace update failed: {e}")
 
-    return result
+    return result, (trace.id if trace else None)

@@ -672,6 +672,13 @@
 .rp-bottom-btn { font-family: var(--font-body); font-size: 14.5px; font-weight: 700; color: #fff; background: var(--blue); border: none; border-radius: 999px; padding: 13px 26px; cursor: pointer; box-shadow: 0 8px 20px var(--blue-glow); transition: transform 0.15s ease; }
 .rp-bottom-btn:hover { transform: translateY(-2px); }
 
+.rp-feedback { text-align: center; padding: 24px 0 8px; }
+.rp-feedback-label { font-size: 14px; color: var(--text-dim); margin: 0 0 12px; }
+.rp-feedback-thanks { font-size: 14px; color: var(--text-dim); margin: 0; }
+.rp-feedback-btns { display: flex; gap: 12px; justify-content: center; }
+.rp-feedback-btn { background: none; border: 1px solid var(--border); border-radius: 999px; padding: 8px 18px; font-size: 20px; cursor: pointer; transition: border-color 0.15s, transform 0.15s; }
+.rp-feedback-btn:hover { border-color: var(--blue); transform: scale(1.1); }
+
 .rp-footer { border-top: 1px solid var(--border); background: var(--bg); margin-top: 24px; }
 .rp-footer-inner { max-width: var(--max-w); margin: 0 auto; padding: 24px 28px; display: flex; align-items: center; justify-content: space-between; }
 .rp-footer-copy { font-size: 13px; color: var(--text-dim); margin: 0; }
