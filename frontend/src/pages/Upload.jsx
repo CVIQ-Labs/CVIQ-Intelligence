@@ -136,9 +136,10 @@ export default function Upload() {
 
       const { data: { session } } = await supabase.auth.getSession()
       const token = session?.access_token
+      const sessionId = crypto.randomUUID()
 
       const [result, fileBase64] = await Promise.all([
-        reviewCV(file, jobDescription, token),
+        reviewCV(file, jobDescription, token, sessionId),
         fileToBase64(file),
       ])
       markComplete()
