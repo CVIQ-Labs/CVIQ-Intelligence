@@ -25,7 +25,7 @@ except Exception as e:
     logger.warning(f"Langfuse init failed: {e}")
 
 
-def run_review_pipeline(cv_text: str, job_description: str, tier: str = "paid", user_id: str | None = None) -> dict:
+def run_review_pipeline(cv_text: str, job_description: str, tier: str = "paid", user_id: str | None = None, session_id: str | None = None) -> dict:
     t0 = time.perf_counter()
     trace = None
     try:
@@ -34,6 +34,7 @@ def run_review_pipeline(cv_text: str, job_description: str, tier: str = "paid", 
             trace = _langfuse.trace(
                 name="cv-review",
                 user_id=user_id,
+                session_id=session_id,
                 metadata={
                     "cv_chars": len(cv_text),
                     "jd_chars": len(job_description),

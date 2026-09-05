@@ -77,6 +77,7 @@ def _detect_pii(text: str) -> None:
 async def review_cv(
     cv_file: UploadFile = File(...),
     job_description: str = Form(...),
+    session_id: Optional[str] = Form(None),
     user: dict = Depends(get_current_user),
 ):
     file_bytes = await cv_file.read()
@@ -97,7 +98,7 @@ async def review_cv(
     tier = get_user_tier(user)
     try:
         user_id = (user.get("sub") or user.get("id")) if user else None
-        raw_review = await asyncio.to_thread(run_review_pipeline, cv_text, job_description, tier=tier, user_id=user_id)
+        raw_review = await asyncio.to_thread(run_review_pipeline, cv_text, job_description, tier=tier, user_id=user_id, session_id=session_id)
     except CVReviewerError as e:
         raise HTTPException(status_code=500, detail=str(e))
 

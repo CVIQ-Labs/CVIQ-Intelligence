@@ -4,10 +4,11 @@ function authHeaders(token) {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
-export async function reviewCV(file, jobDescription, token) {
+export async function reviewCV(file, jobDescription, token, sessionId) {
   const formData = new FormData()
   formData.append('cv_file', file)
   formData.append('job_description', jobDescription)
+  if (sessionId) formData.append('session_id', sessionId)
   const res = await fetch(`${BASE_URL}/review`, {
     method: 'POST',
     headers: authHeaders(token),
