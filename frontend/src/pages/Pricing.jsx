@@ -195,7 +195,7 @@ export default function Pricing() {
       {checkoutOpen && (
         <div className="checkout-modal-backdrop" onClick={() => setCheckoutOpen(false)}>
           <div className="checkout-modal" onClick={e => e.stopPropagation()}>
-            <button className="checkout-close" onClick={() => setCheckoutOpen(false)}>✕</button>
+            <button className="checkout-close" onClick={() => setCheckoutOpen(false)} aria-label="Close checkout">✕</button>
             <StripeCheckout getStripePromise={getStripePromise} options={options} />
           </div>
         </div>
