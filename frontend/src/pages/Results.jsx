@@ -196,7 +196,7 @@ export default function Results() {
       {paymentSuccess && (
         <div className="rp-success-banner">
           <span>You're now on Pro. All features are unlocked.</span>
-          <button onClick={() => setPaymentSuccess(false)}>✕</button>
+          <button onClick={() => setPaymentSuccess(false)} aria-label="Dismiss">✕</button>
         </div>
       )}
 
@@ -325,7 +325,7 @@ export default function Results() {
           <div className="chat-panel" onClick={e => e.stopPropagation()}>
             <div className="chat-top">
               <div><div className="chat-title">Ask CVIQ</div></div>
-              <button className="chat-x" onClick={() => setChatOpen(false)}>✕</button>
+              <button className="chat-x" onClick={() => setChatOpen(false)} aria-label="Close chat">✕</button>
             </div>
             <div className="chat-gate">
               <ProGate feature="Ask CVIQ" />
