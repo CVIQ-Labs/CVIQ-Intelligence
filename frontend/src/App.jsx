@@ -1,8 +1,10 @@
 import { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import ErrorBoundary from './components/ErrorBoundary'
+import CookieBanner from './components/CookieBanner'
 import { ToastProvider } from './contexts/ToastContext'
 import './styles/Toast.css'
+import './styles/CookieBanner.css'
 
 const Home = lazy(() => import('./pages/Home'))
 const Upload = lazy(() => import('./pages/Upload'))
@@ -49,6 +51,7 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
+          <CookieBanner />
         </BrowserRouter>
       </ToastProvider>
     </ErrorBoundary>
