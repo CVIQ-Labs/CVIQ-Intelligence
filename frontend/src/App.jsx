@@ -1,6 +1,8 @@
 import { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import ErrorBoundary from './components/ErrorBoundary'
+import { ToastProvider } from './contexts/ToastContext'
+import './styles/Toast.css'
 
 const Home = lazy(() => import('./pages/Home'))
 const Upload = lazy(() => import('./pages/Upload'))
@@ -27,26 +29,28 @@ document.documentElement.setAttribute('data-theme', stored === 'dark' ? 'dark' :
 function App() {
   return (
     <ErrorBoundary>
-      <BrowserRouter>
-        <Suspense fallback={null}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/upload" element={<Upload />} />
-            <Route path="/results" element={<Results />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/return" element={<Return />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/waitlist" element={<Waitlist />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/500" element={<ServerError />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
+      <ToastProvider>
+        <BrowserRouter>
+          <Suspense fallback={null}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/upload" element={<Upload />} />
+              <Route path="/results" element={<Results />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/return" element={<Return />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/waitlist" element={<Waitlist />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/500" element={<ServerError />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      </ToastProvider>
     </ErrorBoundary>
   )
 }
