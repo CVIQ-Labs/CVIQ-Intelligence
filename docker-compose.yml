@@ -9,4 +9,4 @@ services:
       - ./backend/.env
     volumes:
       # Persist ChromaDB data between container restarts
-      - ./backend/data:/app/data
+      - /app/data:/app/data
