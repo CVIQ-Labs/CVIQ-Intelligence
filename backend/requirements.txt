@@ -37,4 +37,5 @@ email-validator>=2.0.0
 
 # Testing
 pytest==9.0.3
-httpx2==2.3.0
+httpx2==2.12.0
+httpcore2==2.12.0
