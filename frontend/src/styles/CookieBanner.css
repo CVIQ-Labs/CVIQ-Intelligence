@@ -1,0 +1,79 @@
+.cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 150;
+    background: #0a1628;
+    padding: 16px 24px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .cookie-banner-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  
+  .cookie-banner-text {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 13.5px;
+    color: #cbd5e1;
+    line-height: 1.5;
+    margin: 0;
+    flex: 1;
+    min-width: 240px;
+  }
+  
+  .cookie-banner-link {
+    background: none;
+    border: none;
+    color: #60a5fa;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+    font-size: inherit;
+    font-family: inherit;
+    padding: 0;
+  }
+  
+  .cookie-banner-actions {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  
+  .cookie-banner-decline {
+    background: transparent;
+    border: 1px solid #334155;
+    color: #cbd5e1;
+    padding: 9px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .cookie-banner-decline:hover { border-color: #475569; }
+  
+  .cookie-banner-accept {
+    background: #2563eb;
+    border: none;
+    color: #fff;
+    padding: 9px 20px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .cookie-banner-accept:hover { background: #1d4ed8; }
+  
+  @media (max-width: 600px) {
+    .cookie-banner-inner { flex-direction: column; align-items: stretch; text-align: center; }
+    .cookie-banner-actions { justify-content: center; }
+  }
