@@ -340,8 +340,6 @@
     background: var(--blue);
   }
   
-  /* Bumped from 32px to 42px — clearly the page's primary heading now,
-     with a wide, unmistakable gap from .section-h2 (20px) below. */
   .hero-h1 {
     font-family: var(--font-display);
     font-weight: 400;
@@ -416,8 +414,6 @@
   /* ==========================================================================
      Dashboard grid
      ========================================================================== */
-  /* Gap widened from 20px to 28px — cards now have clearly visible
-     separation from one another instead of nearly touching. */
   .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
@@ -432,10 +428,6 @@
   /* ==========================================================================
      Section shell
      ========================================================================== */
-  /* Padding increased from 24px 28px to 32px 40px, and the shadow strengthened
-     from a near-invisible 1px/2px blur to a visible 2px/8px blur — cards were
-     reading as flat against the page background before; now they read as
-     distinct, elevated surfaces with real room around their content. */
   .section {
     background: var(--bg);
     border: 1px solid var(--border);
@@ -454,10 +446,6 @@
     margin-bottom: 6px;
   }
   
-  /* Reduced from 26px to 20px and weight lightened to 500 (from the
-     font's default 400 rendering slightly heavier at larger sizes) —
-     paired with the Hero increase above, section titles now read
-     unambiguously as secondary to the page-level heading. */
   .section-h2 {
     font-family: var(--font-display);
     font-weight: 500;
@@ -599,8 +587,6 @@
      Bullet rewrites
      ========================================================================== */
   .bullets-wrap { display: flex; flex-direction: column; gap: 24px; }
-  /* Padding increased from 20px to 24px to match the larger .section padding
-     above — nested cards no longer feel cramped by comparison. */
   .bullet-block { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 24px; background: var(--bg); }
   .bullet-original-row { margin-bottom: 14px; }
   .bullet-tag { display: inline-block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 9px; border-radius: 999px; margin-bottom: 8px; }
@@ -623,8 +609,6 @@
      Line-by-line feedback
      ========================================================================== */
   .lines-wrap { display: flex; flex-direction: column; gap: 16px; }
-  /* Padding increased from 16px 20px to 20px 24px, matching the bullet-block
-     change above for consistency between the two feedback card types. */
   .line-block { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 20px 24px; }
   .line-tag { display: inline-block; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
   .line-tag-grey { color: var(--text-dim); }
@@ -687,6 +671,13 @@
   .rp-bottom-text { font-size: 15px; color: var(--text-dim); margin: 0 0 16px; }
   .rp-bottom-btn { font-family: var(--font-body); font-size: 14.5px; font-weight: 700; color: #fff; background: var(--blue); border: none; border-radius: 999px; padding: 13px 26px; cursor: pointer; box-shadow: 0 8px 20px var(--blue-glow); transition: transform 0.15s ease; }
   .rp-bottom-btn:hover { transform: translateY(-2px); }
+  
+  .rp-feedback { text-align: center; padding: 24px 0 8px; }
+  .rp-feedback-label { font-size: 14px; color: var(--text-dim); margin: 0 0 12px; }
+  .rp-feedback-thanks { font-size: 14px; color: var(--text-dim); margin: 0; }
+  .rp-feedback-btns { display: flex; gap: 12px; justify-content: center; }
+  .rp-feedback-btn { background: none; border: 1px solid var(--border); border-radius: 999px; padding: 8px 18px; font-size: 20px; cursor: pointer; transition: border-color 0.15s, transform 0.15s; }
+  .rp-feedback-btn:hover { border-color: var(--blue); transform: scale(1.1); }
   
   .rp-footer { border-top: 1px solid var(--border); background: var(--bg); margin-top: 24px; }
   .rp-footer-inner { max-width: var(--max-w); margin: 0 auto; padding: 24px 28px; display: flex; align-items: center; justify-content: space-between; }

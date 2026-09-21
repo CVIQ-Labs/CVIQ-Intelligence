@@ -1,5 +1,10 @@
 import { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import ErrorBoundary from './components/ErrorBoundary'
+import CookieBanner from './components/CookieBanner'
+import { ToastProvider } from './contexts/ToastContext'
+import './styles/Toast.css'
+import './styles/CookieBanner.css'
 
 const Home = lazy(() => import('./pages/Home'))
 const Upload = lazy(() => import('./pages/Upload'))
@@ -13,6 +18,8 @@ const Waitlist = lazy(() => import('./pages/Waitlist'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 const Terms = lazy(() => import('./pages/Terms'))
+const NotFound = lazy(() => import('./pages/NotFound'))
+const ServerError = lazy(() => import('./pages/ServerError'))
 
 // Apply theme before first render to avoid flash.
 // We intentionally default to 'light' here and do NOT check the system/OS
@@ -23,24 +30,31 @@ document.documentElement.setAttribute('data-theme', stored === 'dark' ? 'dark' :
 
 function App() {
   return (
-    <BrowserRouter>
-      <Suspense fallback={null}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/upload" element={<Upload />} />
-          <Route path="/results" element={<Results />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/return" element={<Return />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/waitlist" element={<Waitlist />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/terms" element={<Terms />} />
-        </Routes>
-      </Suspense>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <ToastProvider>
+        <BrowserRouter>
+          <Suspense fallback={null}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/upload" element={<Upload />} />
+              <Route path="/results" element={<Results />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/return" element={<Return />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/waitlist" element={<Waitlist />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/500" element={<ServerError />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+          <CookieBanner />
+        </BrowserRouter>
+      </ToastProvider>
+    </ErrorBoundary>
   )
 }
 

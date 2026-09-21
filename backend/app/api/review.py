@@ -1,7 +1,7 @@
 import re
 import asyncio
 from typing import Optional
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends, Response
 
 from app.ingestion.loader import load_text_from_bytes
 from app.rag.pipeline import run_review_pipeline
@@ -77,7 +77,9 @@ def _detect_pii(text: str) -> None:
 async def review_cv(
     cv_file: UploadFile = File(...),
     job_description: str = Form(...),
+    session_id: Optional[str] = Form(None),
     user: dict = Depends(get_current_user),
+    response: Response = None,
 ):
     file_bytes = await cv_file.read()
 
@@ -96,11 +98,16 @@ async def review_cv(
     # ── Pipeline ──────────────────────────────────────────────────────────────
     tier = get_user_tier(user)
     try:
-        raw_review = await asyncio.to_thread(run_review_pipeline, cv_text, job_description, tier=tier)
+        user_id = (user.get("sub") or user.get("id")) if user else None
+        raw_review, trace_id = await asyncio.to_thread(run_review_pipeline, cv_text, job_description, tier=tier, user_id=user_id, session_id=session_id)
     except CVReviewerError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
     # ── Output gate ───────────────────────────────────────────────────────────
     cleaned = validate_and_clean(raw_review)
+
+    if trace_id and response is not None:
+        response.headers["X-Trace-Id"] = trace_id
+        response.headers["Access-Control-Expose-Headers"] = "X-Trace-Id"
 
     return cleaned

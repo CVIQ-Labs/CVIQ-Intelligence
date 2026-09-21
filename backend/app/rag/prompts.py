@@ -1,15 +1,48 @@
+import logging
 from pathlib import Path
 from app.core.config import settings
 
-_PROMPTS_DIR = Path(__file__).parent.parent.parent / "prompts"
+logger = logging.getLogger(__name__)
 
+_PROMPTS_DIR = Path(__file__).parent.parent.parent / "prompts"
 PROMPT_VERSION = settings.prompt_version
 
-def _load_system_prompt() -> str:
-    path = _PROMPTS_DIR / f"system_{PROMPT_VERSION}.txt"
-    return path.read_text(encoding="utf-8").strip()
+_lf_client = None
+try:
+    if settings.langfuse_public_key:
+        from langfuse import Langfuse
+        _lf_client = Langfuse(
+            public_key=settings.langfuse_public_key,
+            secret_key=settings.langfuse_secret_key,
+            host=settings.langfuse_host,
+        )
+except Exception as e:
+    logger.warning(f"Langfuse prompt client init failed: {e}")
 
-SYSTEM_PROMPT = _load_system_prompt()
+
+def get_system_prompt():
+    """Fetch the system prompt from Langfuse (cached 5 min) with local file fallback.
+
+    Returns (prompt_text, langfuse_prompt_object_or_None).
+    Pass the prompt object to Langfuse generations to link prompt versions to traces.
+    """
+    if _lf_client:
+        try:
+            lf_prompt = _lf_client.get_prompt(
+                "cv-review-system",
+                label="production",
+                cache_ttl_seconds=300,
+            )
+            return lf_prompt.prompt, lf_prompt
+        except Exception as e:
+            logger.warning(f"Langfuse prompt fetch failed, falling back to local file: {e}")
+
+    path = _PROMPTS_DIR / f"system_{PROMPT_VERSION}.txt"
+    return path.read_text(encoding="utf-8").strip(), None
+
+
+# Keep for backwards compatibility — loaded from local file only
+SYSTEM_PROMPT = (_PROMPTS_DIR / f"system_{PROMPT_VERSION}.txt").read_text(encoding="utf-8").strip()
 
 
 def build_review_prompt(cv_text: str, job_description: str, context_chunks: list[str]) -> str:
