@@ -4,10 +4,11 @@ function authHeaders(token) {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
-export async function reviewCV(file, jobDescription, token) {
+export async function reviewCV(file, jobDescription, token, sessionId) {
   const formData = new FormData()
   formData.append('cv_file', file)
   formData.append('job_description', jobDescription)
+  if (sessionId) formData.append('session_id', sessionId)
   const res = await fetch(`${BASE_URL}/review`, {
     method: 'POST',
     headers: authHeaders(token),
@@ -19,7 +20,21 @@ export async function reviewCV(file, jobDescription, token) {
     error.response = { status: res.status, data: err }
     throw error
   }
-  return res.json()
+  const traceId = res.headers.get('X-Trace-Id')
+  const data = await res.json()
+  return { ...data, _traceId: traceId }
+}
+
+export async function submitFeedback(traceId, value) {
+  try {
+    await fetch(`${BASE_URL}/score`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ trace_id: traceId, value }),
+    })
+  } catch {
+    // Non-critical — silently ignore network failures
+  }
 }
 
 export async function atsPreview(file, jobDescription, token) {

@@ -1,0 +1,43 @@
+name: Langfuse Alert
+
+on:
+  repository_dispatch:
+    types: [langfuse-alert]
+
+jobs:
+  open-issue:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Open alert issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const payload = context.payload.client_payload || {}
+            const title = payload.title || 'Langfuse Alert Triggered'
+            const metric = payload.metric || 'Unknown metric'
+            const value = payload.value !== undefined ? payload.value : 'N/A'
+            const threshold = payload.threshold !== undefined ? payload.threshold : 'N/A'
+            const timestamp = new Date().toISOString()
+
+            const body = [
+              `## Langfuse Alert: ${title}`,
+              '',
+              `| Field | Value |`,
+              `|-------|-------|`,
+              `| **Metric** | ${metric} |`,
+              `| **Observed value** | ${value} |`,
+              `| **Threshold** | ${threshold} |`,
+              `| **Triggered at** | ${timestamp} |`,
+              '',
+              '_Opened automatically by the Langfuse GitHub Actions automation._',
+            ].join('\n')
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 ${title}`,
+              body,
+              labels: ['langfuse-alert'],
+            })

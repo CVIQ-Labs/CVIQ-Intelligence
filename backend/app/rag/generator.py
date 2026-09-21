@@ -3,7 +3,7 @@ import time
 from app.core.config import settings
 from app.core.llm import get_llm_client
 from app.core.exceptions import LLMError
-from app.rag.prompts import SYSTEM_PROMPT, build_review_prompt
+from app.rag.prompts import get_system_prompt, build_review_prompt
 
 _COST_PER_INPUT_TOKEN = 0.15 / 1_000_000
 _COST_PER_OUTPUT_TOKEN = 0.60 / 1_000_000
@@ -46,9 +46,10 @@ def generate_review(cv_text: str, job_description: str, context_chunks: list[str
     client, model = get_llm_client(tier)
     is_openai = settings.openai_api_key and model == settings.openai_model
 
+    system_prompt_text, lf_prompt = get_system_prompt()
     user_prompt = build_review_prompt(cv_text, job_description, context_chunks)
     messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "system", "content": system_prompt_text},
         {"role": "user", "content": user_prompt},
     ]
 
@@ -59,6 +60,7 @@ def generate_review(cv_text: str, job_description: str, context_chunks: list[str
                 name="gpt-review",
                 model=model,
                 input=messages,
+                prompt=lf_prompt,
             )
     except Exception:
         generation = None
