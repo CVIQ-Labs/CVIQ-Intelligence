@@ -1,0 +1,65 @@
+.ob-page { background: #fff; min-height: 100vh; display: flex; flex-direction: column; font-family: 'Inter', -apple-system, sans-serif; color: #0a1628; -webkit-font-smoothing: antialiased; }
+.ob-nav-inner { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 20px 40px; }
+.ob-logo { cursor: pointer; display: flex; align-items: center; }
+.ob-skip { background: none; border: none; color: #9ca3af; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: color 0.15s; }
+.ob-skip:hover { color: #374151; }
+
+.ob-container { flex: 1; max-width: 640px; margin: 0 auto; padding: 40px 24px 60px; width: 100%; }
+
+/* ── Progress indicator ── */
+.ob-progress { margin-bottom: 48px; }
+.ob-progress-track { width: 100%; height: 4px; background: #eef1f6; border-radius: 999px; overflow: hidden; margin-bottom: 20px; }
+.ob-progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 999px; transition: width 0.4s cubic-bezier(0.16,1,0.3,1); }
+.ob-progress-steps { display: flex; justify-content: space-between; }
+.ob-progress-step { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+.ob-progress-dot { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; background: #f1f5f9; color: #94a3b8; border: 1.5px solid #e5e7eb; transition: all 0.2s ease; }
+.ob-progress-step.active .ob-progress-dot { background: #2563eb; border-color: #2563eb; color: #fff; box-shadow: 0 0 0 4px rgba(37,99,235,0.12); }
+.ob-progress-step.done .ob-progress-dot { background: #16a34a; border-color: #16a34a; color: #fff; }
+.ob-progress-label { font-size: 11.5px; font-weight: 600; color: #9ca3af; }
+.ob-progress-step.active .ob-progress-label { color: #0a1628; }
+.ob-progress-step.done .ob-progress-label { color: #16a34a; }
+
+/* ── Step card ── */
+.ob-card { animation: ob-fade-in 0.3s cubic-bezier(0.16,1,0.3,1); }
+@keyframes ob-fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.ob-step { text-align: center; }
+.ob-eyebrow { font-size: 11px; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; }
+.ob-h1 { font-family: 'Instrument Serif', Georgia, serif; font-size: 36px; font-weight: 400; color: #0a1628; letter-spacing: -1px; line-height: 1.15; margin-bottom: 16px; }
+.ob-sub { font-size: 15px; color: #6b7280; line-height: 1.65; max-width: 460px; margin: 0 auto 32px; }
+
+/* ── Welcome visual ── */
+.ob-welcome-visual { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 36px; }
+.ob-welcome-badge { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px 20px; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 110px; }
+.ob-welcome-badge-green { background: #f0fdf4; border-color: #bbf7d0; }
+.ob-welcome-badge-num { font-size: 24px; font-weight: 800; color: #0a1628; }
+.ob-welcome-badge-num span { font-size: 13px; font-weight: 500; color: #94a3b8; }
+.ob-welcome-badge-label { font-size: 11px; color: #64748b; font-weight: 600; }
+.ob-welcome-arrow { font-size: 20px; color: #cbd5e1; }
+
+/* ── What to expect list ── */
+.ob-expect-list { display: flex; flex-direction: column; gap: 16px; text-align: left; margin-bottom: 36px; }
+.ob-expect-item { display: flex; gap: 14px; align-items: flex-start; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px 18px; }
+.ob-expect-num { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: #2563eb; color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.ob-expect-title { font-size: 14.5px; font-weight: 700; color: #0a1628; margin-bottom: 3px; }
+.ob-expect-body { font-size: 13px; color: #6b7280; line-height: 1.55; }
+
+/* ── Tips list ── */
+.ob-tips-list { display: flex; flex-direction: column; gap: 14px; text-align: left; margin-bottom: 36px; }
+.ob-tip { display: flex; gap: 14px; align-items: flex-start; }
+.ob-tip-icon { flex-shrink: 0; font-size: 22px; line-height: 1; margin-top: 2px; }
+.ob-tip-title { font-size: 14.5px; font-weight: 700; color: #0a1628; margin-bottom: 3px; }
+.ob-tip-body { font-size: 13px; color: #6b7280; line-height: 1.55; }
+
+/* ── Buttons ── */
+.ob-btn-primary { background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%); color: #fff; padding: 15px 36px; border-radius: 100px; font-size: 15px; font-weight: 600; border: none; cursor: pointer; font-family: inherit; transition: all 0.15s; box-shadow: 0 1px 0 0 #1e40af, 0 4px 14px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.2); }
+.ob-btn-primary:hover { background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%); transform: translateY(-1px); }
+.ob-btn-primary:active { transform: translateY(1px); }
+
+@media (max-width: 600px) {
+  .ob-nav-inner { padding: 16px 20px; }
+  .ob-container { padding: 28px 20px 40px; }
+  .ob-h1 { font-size: 28px; }
+  .ob-progress-label { display: none; }
+  .ob-welcome-visual { flex-direction: column; gap: 10px; }
+  .ob-welcome-arrow { transform: rotate(90deg); }
+}

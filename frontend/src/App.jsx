@@ -20,6 +20,7 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 const Terms = lazy(() => import('./pages/Terms'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const ServerError = lazy(() => import('./pages/ServerError'))
+const Onboarding = lazy(() => import('./pages/Onboarding'))
 
 // Apply theme before first render to avoid flash.
 // We intentionally default to 'light' here and do NOT check the system/OS
@@ -49,6 +50,7 @@ function App() {
               <Route path="/terms" element={<Terms />} />
               <Route path="/500" element={<ServerError />} />
               <Route path="*" element={<NotFound />} />
+              <Route path="/onboarding" element={<Onboarding />} />
             </Routes>
           </Suspense>
           <CookieBanner />
