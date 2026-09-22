@@ -660,7 +660,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
             <button className="cv-header-btn cv-header-btn-primary" onClick={handleExport} disabled={!!exporting}>
               {exporting ? 'Exporting…' : `Export .${exportFormat}`}
             </button>
-            <button className="cv-modal-close" onClick={onClose}>✕</button>
+            <button className="cv-modal-close" onClick={onClose} aria-label="Close">✕</button>
           </div>
         </div>
 
