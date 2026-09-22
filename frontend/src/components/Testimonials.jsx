@@ -80,7 +80,7 @@ function SubmitForm({ onClose, onDone }) {
             <p className="t-form-title">Share your experience</p>
             <p className="t-form-sub">Did CVIQ help you land a role? We'd love to hear about it.</p>
           </div>
-          <button className="t-form-close" onClick={onClose}>✕</button>
+          <button className="t-form-close" onClick={onClose} aria-label="Close">✕</button>
         </div>
         <div className="t-form-grid">
           <div className="t-field">
