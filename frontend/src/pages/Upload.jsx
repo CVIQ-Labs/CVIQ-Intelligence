@@ -225,7 +225,7 @@ export default function Upload() {
       {paymentSuccess && (
         <div className="up-success-banner">
           <span>You're now on Pro. All features are unlocked.</span>
-          <button onClick={() => setPaymentSuccess(false)}>✕</button>
+          <button onClick={() => setPaymentSuccess(false)} aria-label="Dismiss">✕</button>
         </div>
       )}
 
@@ -274,7 +274,7 @@ export default function Upload() {
                 <span className="up-file-name">{file.name}</span>
                 <span className="up-file-size">{(file.size / 1024).toFixed(0)} KB — ready to analyse</span>
               </div>
-              <button className="up-file-remove" onClick={() => setFile(null)}>✕</button>
+              <button className="up-file-remove" onClick={() => setFile(null)} aria-label="Remove file">✕</button>
             </div>
           )}
 

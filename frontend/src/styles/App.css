@@ -406,6 +406,15 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
   .b-footer-contact { justify-content: center; }
   .b-page .testimonials-section { padding: 72px 20px; }
   .b-cta-h2 { font-size: 44px; letter-spacing: -2px; }
+
+  /* Fixes horizontal overflow at narrow widths (found during responsive
+     audit at 375px): the demo bar's three items (dots, URL, live badge)
+     don't fit in one row below ~400px, causing the whole card to
+     overflow the viewport sideways. Wrapping lets the badge drop to its
+     own line instead of forcing the card wider than the screen. */
+  .b-demo-bar { flex-wrap: wrap; gap: 8px; }
+  .b-demo-url { max-width: none; flex: 1 1 100%; order: 3; }
+  .b-demo-live { font-size: 11px; padding: 4px 10px; }
 }
 
 /* ── Signup plan grid (Free / Pro) ───────────────────── */
