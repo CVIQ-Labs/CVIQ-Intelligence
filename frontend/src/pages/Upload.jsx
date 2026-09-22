@@ -56,6 +56,20 @@ function getErrorMessage(err) {
   return { title: 'Something went wrong', message: detail || 'Please try again.' }
 }
 
+// Turns react-dropzone's rejection reasons into the same friendly title/
+// message shape as getErrorMessage, so validation errors read consistently
+// with backend errors rather than looking like a different kind of failure.
+function getRejectionMessage(fileRejections) {
+  if (fileRejections.length > 1) {
+    return { title: 'One file at a time', message: 'Please upload a single CV file.' }
+  }
+  const codes = fileRejections[0]?.errors?.map(e => e.code) || []
+  if (codes.includes('file-invalid-type')) {
+    return { title: 'Unsupported file type', message: 'Please upload your CV as a .pdf or .docx file.' }
+  }
+  return { title: "Couldn't accept that file", message: 'Please upload your CV as a .pdf or .docx file.' }
+}
+
 export default function Upload() {
   const [file, setFile] = useState(null)
   const [jobDescription, setJobDescription] = useState('')
@@ -112,11 +126,17 @@ export default function Upload() {
     setStageComplete(true)
   }
 
-  const onDrop = useCallback((acceptedFiles) => {
+  // Now handles rejectedFiles too — previously a wrong-type or multi-file
+  // drop just silently did nothing, with no feedback to the user at all.
+  const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
+    if (rejectedFiles.length > 0) {
+      setError(getRejectionMessage(rejectedFiles))
+      return
+    }
     if (acceptedFiles.length > 0) { setFile(acceptedFiles[0]); setError(null) }
   }, [])
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     onDrop,
     accept: {
       'application/pdf': ['.pdf'],
@@ -259,10 +279,15 @@ export default function Upload() {
             <p>We recommend removing personal details such as your home address before uploading.</p>
           </div>
 
-          <div {...getRootProps()} className={`up-dropzone ${isDragActive ? 'active' : ''} ${file ? 'has-file' : ''}`}>
+          <div
+            {...getRootProps()}
+            className={`up-dropzone ${isDragActive ? 'active' : ''} ${isDragReject ? 'reject' : ''} ${file ? 'has-file' : ''}`}
+          >
             <input {...getInputProps()} />
-            <div className="up-dropzone-icon">📄</div>
-            <p className="up-dropzone-title">{isDragActive ? 'Drop it here' : 'Drag and drop your CV here'}</p>
+            <div className="up-dropzone-icon">{isDragReject ? '⚠️' : '📄'}</div>
+            <p className="up-dropzone-title">
+              {isDragReject ? 'Only .pdf or .docx files' : isDragActive ? 'Drop it here' : 'Drag and drop your CV here'}
+            </p>
             <p className="up-dropzone-sub">or click to browse — .pdf or .docx</p>
             <button className="up-btn-choose" type="button">Choose file</button>
           </div>
