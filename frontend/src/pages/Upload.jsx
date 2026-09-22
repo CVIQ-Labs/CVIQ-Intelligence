@@ -81,10 +81,24 @@ export default function Upload() {
     }
   }, [paymentSuccess])
 
-  // ── Auth gate ─────────────────────────────────────────────────────────────
+   // ── Auth gate ─────────────────────────────────────────────────────────────
+  // First-time users are routed through /onboarding once before ever
+  // landing here. The completed flag lives in localStorage, so it's a
+  // one-time detour per browser rather than per account.
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (authLoading) return
+    if (!user) {
       navigate('/login', { state: { from: '/upload' } })
+      return
+    }
+    try {
+      const onboarded = localStorage.getItem('cviq:onboarding-complete')
+      if (!onboarded) {
+        navigate('/onboarding', { replace: true })
+      }
+    } catch {
+      // localStorage may be unavailable (e.g. private browsing) — skip
+      // onboarding rather than blocking access to Upload entirely
     }
   }, [user, authLoading, navigate])
 
