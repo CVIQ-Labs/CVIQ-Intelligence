@@ -37,7 +37,7 @@ Be concise, specific, and practical. Do not give generic advice — always tie y
 async def chat(body: ChatRequest):
     query = f"{body.message} {body.job_description[:400]}"
     try:
-        context_chunks = retrieve_context(query, n_results=4)
+        context_chunks, _ = retrieve_context(query, n_results=4)
     except Exception:
         context_chunks = []
 
