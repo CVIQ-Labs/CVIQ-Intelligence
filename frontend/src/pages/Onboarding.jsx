@@ -75,8 +75,7 @@ export default function Onboarding() {
               <div className="ob-eyebrow">Welcome to CVIQ</div>
               <h1 className="ob-h1">Let's get your CV ready in under a minute</h1>
               <p className="ob-sub">
-                CVIQ compares your CV against any job description and tells you exactly what to fix —
-                missing keywords, weak bullet points, formatting issues, and more.
+                CVIQ compares your CV against any job description and tells you exactly what to fix missing keywords, weak bullet points, formatting issues, and more.
               </p>
               <div className="ob-welcome-visual">
                 <div className="ob-welcome-badge">
@@ -104,7 +103,7 @@ export default function Onboarding() {
                   <span className="ob-expect-num">1</span>
                   <div>
                     <div className="ob-expect-title">Upload your CV</div>
-                    <div className="ob-expect-body">Drag and drop a .pdf or .docx — we'll extract and structure it instantly.</div>
+                    <div className="ob-expect-body">Drag and drop a .pdf or .docx we'll extract and structure it instantly.</div>
                   </div>
                 </div>
                 <div className="ob-expect-item">
@@ -118,7 +117,7 @@ export default function Onboarding() {
                   <span className="ob-expect-num">3</span>
                   <div>
                     <div className="ob-expect-title">Get your review</div>
-                    <div className="ob-expect-body">A recruiter score, ATS match, missing keywords, and rewritten bullet points — all in under 60 seconds.</div>
+                    <div className="ob-expect-body">A recruiter score, ATS match, missing keywords, and rewritten bullet points all in under 60 seconds.</div>
                   </div>
                 </div>
               </div>
@@ -145,7 +144,7 @@ export default function Onboarding() {
                   <span className="ob-tip-icon">📋</span>
                   <div>
                     <div className="ob-tip-title">Have the job description ready</div>
-                    <div className="ob-tip-body">Copy the full listing, not just the title — more detail means better keyword matching.</div>
+                    <div className="ob-tip-body">Copy the full listing, not just the title more detail means better keyword matching.</div>
                   </div>
                 </div>
                 <div className="ob-tip">

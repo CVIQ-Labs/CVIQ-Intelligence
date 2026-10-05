@@ -32,7 +32,7 @@ const PLANS = [
     features: [
       'Everything in Free',
       'AI bullet point rewrites',
-      'Line-by-line feedback',
+      'Line by line feedback',
       'AI profile summary rewrite',
       'CV editor with inline suggestions',
       'Unlimited Ask CVIQ chat',
@@ -48,11 +48,11 @@ const PLANS = [
     period: '/yr',
     billed: '£8.33/mo billed annually',
     saving: 'Save 45%',
-    description: 'Everything in Pro, for a full year — for the price of about 6 and a half months.',
+    description: 'Everything in Pro, for a full year for the price of about 6 and a half months.',
     features: [
       'Everything in Pro',
       'AI bullet point rewrites',
-      'Line-by-line feedback',
+      'Line by line feedback',
       'AI profile summary rewrite',
       'CV editor with inline suggestions',
       'Unlimited Ask CVIQ chat',
