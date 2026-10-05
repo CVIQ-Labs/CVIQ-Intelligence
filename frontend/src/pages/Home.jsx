@@ -404,7 +404,7 @@ export default function Home() {
               <div className="b-hiw-text">
                 <div className="b-hiw-step">Step 03</div>
                 <h3 className="b-hiw-title">Get your review</h3>
-                <p className="b-hiw-body">Scores, keyword gaps, strengths, weaknesses, and AI-rewritten bullets in seconds.</p>
+                <p className="b-hiw-body">Scores, keyword gaps, strengths, weaknesses, and AI rewritten bullets in seconds.</p>
               </div>
             </div>
 
@@ -418,7 +418,7 @@ export default function Home() {
         <section className="b-section b-features reveal" id="features">
           <div className="b-section-head">
             <div className="b-label">What you get</div>
-            <h2 className="b-h2">From upload to<br />offer-ready.</h2>
+            <h2 className="b-h2">From upload to<br />offer ready.</h2>
             <p className="b-section-sub">Every tool you need to compete for the role.</p>
           </div>
           <div className="b-features-grid">
@@ -476,9 +476,9 @@ export default function Home() {
               <ul className="b-pricing-list">
                 <li className="b-pricing-yes">Everything in Free</li>
                 <li className="b-pricing-yes">AI bullet point rewrites</li>
-                <li className="b-pricing-yes">Line-by-line feedback</li>
+                <li className="b-pricing-yes">Line by line feedback</li>
                 <li className="b-pricing-yes">AI profile summary rewrite</li>
-                <li className="b-pricing-yes">CV editor with suggestions</li>
+                <li className="b-pricing-yes">CV eitor with suggestions</li>
                 <li className="b-pricing-yes">Unlimited Ask CVIQ chat</li>
               </ul>
               <button className="b-btn-outline-full" onClick={() => {
@@ -501,7 +501,7 @@ export default function Home() {
               <ul className="b-pricing-list">
                 <li className="b-pricing-yes">Everything in Pro</li>
                 <li className="b-pricing-yes">AI bullet point rewrites</li>
-                <li className="b-pricing-yes">Line-by-line feedback</li>
+                <li className="b-pricing-yes">Line by line feedback</li>
                 <li className="b-pricing-yes">AI profile summary rewrite</li>
                 <li className="b-pricing-yes">CV editor with suggestions</li>
                 <li className="b-pricing-yes">Unlimited Ask CVIQ chat</li>
@@ -525,7 +525,7 @@ export default function Home() {
         <section className="b-cta reveal">
           <div className="b-blob b-blob-centre" />
           <h2 className="b-cta-h2">Stop guessing.<br /><em>Start getting interviews.</em></h2>
-          <p className="b-cta-sub">Upload your CV and get a full AI-powered review in under 60 seconds.</p>
+          <p className="b-cta-sub">Upload your CV and get a full AI powered review in under 60 seconds.</p>
           <button className="b-btn-primary" onClick={() => navigate('/upload')}>
             Analyse my CV for free →
           </button>

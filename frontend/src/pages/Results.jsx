@@ -64,7 +64,7 @@ function FreeBanner({ isPro, navigate }) {
   if (isPro) return null
   return (
     <div className="free-tier-banner">
-      <span>You're on the free plan — some features are locked.</span>
+      <span>You're on the free plan some features are locked.</span>
       <button onClick={() => {
         try { localStorage.setItem('cviq:upgrade-return', '/results') } catch {
           // localStorage may be unavailable (e.g. private browsing) — ignore
