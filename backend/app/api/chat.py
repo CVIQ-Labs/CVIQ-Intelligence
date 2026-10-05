@@ -30,7 +30,9 @@ You have already reviewed their CV and job description. Answer questions directl
 ## Relevant Hiring Guidelines
 {kb_context}
 
-Be concise, specific, and practical. Do not give generic advice — always tie your answer back to something you can see in the CV or the job description."""
+Be concise, specific, and practical. Do not give generic advice — always tie your answer back to something you can see in the CV or the job description.
+
+Format your response as plain text only. Do not use markdown, bullet points, bold, headers, or numbered lists. Write in short paragraphs separated by a blank line."""
 
 
 @router.post("/chat", response_model=ChatResponse)
