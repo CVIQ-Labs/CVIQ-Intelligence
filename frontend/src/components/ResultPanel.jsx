@@ -32,7 +32,7 @@ export default function ResultPanel({ cvText, jobDescription, open, onClose }) {
           {msgs.map((m,i)=>(
             <div key={i} className={`chat-msg ${m.role==='user'?'chat-msg-user':'chat-msg-ai'}`}>
               {m.role==='assistant'&&<div className="chat-ai-label">CVIQ</div>}
-              <div className="chat-msg-text">{m.content}</div>
+              <div className="chat-msg-text">{m.content.split('\n').map((line, j) => <span key={j}>{line}{j < m.content.split('\n').length - 1 && <br/>}</span>)}</div>
             </div>
           ))}
           {loading && <div className="chat-msg chat-msg-ai"><div className="chat-ai-label">CVIQ</div><Loading variant="dots" /></div>}

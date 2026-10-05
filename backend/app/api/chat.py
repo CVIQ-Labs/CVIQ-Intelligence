@@ -30,14 +30,16 @@ You have already reviewed their CV and job description. Answer questions directl
 ## Relevant Hiring Guidelines
 {kb_context}
 
-Be concise, specific, and practical. Do not give generic advice — always tie your answer back to something you can see in the CV or the job description."""
+Be concise, specific, and practical. Do not give generic advice — always tie your answer back to something you can see in the CV or the job description.
+
+When using numbered lists or bullet points, put a blank line between each item."""
 
 
 @router.post("/chat", response_model=ChatResponse)
 async def chat(body: ChatRequest):
     query = f"{body.message} {body.job_description[:400]}"
     try:
-        context_chunks = retrieve_context(query, n_results=4)
+        context_chunks, _ = retrieve_context(query, n_results=4)
     except Exception:
         context_chunks = []
 
