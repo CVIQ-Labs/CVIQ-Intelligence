@@ -11,8 +11,15 @@
 .up-privacy-note { display: flex; align-items: flex-start; gap: 10px; background: #f8faff; border: 1px solid #dbeafe; border-radius: 12px; padding: 14px 16px; }
 .up-privacy-icon { font-size: 14px; color: #2563eb; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
 .up-privacy-note p { font-size: 13px; color: #4b6cb7; line-height: 1.5; margin: 0; }
-.up-dropzone { border: 2px dashed #e5e7eb; border-radius: 16px; padding: 48px 24px; text-align: center; cursor: pointer; transition: all 0.2s; background: #f9fafb; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.up-dropzone:hover, .up-dropzone.active { border-color: #2563eb; background: #f0f7ff; }
+
+/* Added transform to the transition list, and scale on .active for a
+   visible "lift" when dragging a file over the zone. Added .reject for
+   a distinct red state when the dragged file type won't be accepted —
+   previously an invalid drag looked identical to a valid one until drop. */
+.up-dropzone { border: 2px dashed #e5e7eb; border-radius: 16px; padding: 48px 24px; text-align: center; cursor: pointer; transition: all 0.2s, transform 0.2s; background: #f9fafb; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.up-dropzone:hover { border-color: #2563eb; background: #f0f7ff; }
+.up-dropzone.active { border-color: #2563eb; background: #f0f7ff; transform: scale(1.015); box-shadow: 0 8px 24px rgba(37,99,235,0.12); }
+.up-dropzone.reject { border-color: #ef4444; background: #fef2f2; transform: scale(1.015); box-shadow: 0 8px 24px rgba(239,68,68,0.12); }
 .up-dropzone.has-file { border-color: #16a34a; background: #f0fdf4; border-style: solid; }
 .up-dropzone-icon { font-size: 40px; margin-bottom: 4px; }
 .up-dropzone-title { font-size: 16px; font-weight: 600; color: #0a1628; }

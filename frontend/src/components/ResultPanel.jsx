@@ -25,7 +25,7 @@ export default function ResultPanel({ cvText, jobDescription, open, onClose }) {
             <div className="chat-title">Ask CVIQ</div>
             <div className="chat-subtitle">I'm looking at your CV and job description. Ask anything.</div>
           </div>
-          <button className="chat-x" onClick={onClose}>✕</button>
+          <button className="chat-x" onClick={onClose} aria-label="Close chat">✕</button>
         </div>
         <div className="chat-msgs">
           {msgs.length===0 && <div className="chat-prompts">{prompts.map(p=><button key={p} className="chat-prompt" onClick={()=>setInput(p)}>{p}</button>)}</div>}

@@ -170,7 +170,6 @@ export default function Pricing() {
           <p>All prices in GBP. No hidden fees. Cancel any time from your account settings.</p>
         </div>
       </div>
-
     </div>
   )
 }
