@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { supabase } from './supabase'
 
 // Flip to true to re-enable paid tier gating once subscriptions are live.
-const PAID_TIERS_ENABLED = false
+export const PAID_TIERS_ENABLED = false
 
 export function useAuth() {
   const [user, setUser] = useState(null)

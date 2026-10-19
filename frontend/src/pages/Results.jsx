@@ -10,7 +10,7 @@ import { ActionPlan, RecruiterView, SW, LineFeedback, Summary, ATSDeep } from '.
 import ResultPanel from '../components/ResultPanel'
 import { stagger } from '../utils/animations'
 import { extractCvText, filterTrulyMissing } from '../utils/filterKeywords'
-import { useAuth } from '../utils/useAuth'
+import { useAuth, PAID_TIERS_ENABLED } from '../utils/useAuth'
 import { supabase } from '../utils/supabase'
 import { submitFeedback } from '../api/api'
 import cviqLogoBlue from '../assets/cviq-icon-blue.png'
@@ -214,7 +214,7 @@ export default function Results() {
               <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" width="40" height="40" />
               <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" width="40" height="40" />
             </div>
-            {isPro && <span className="rp-pro-badge">Pro</span>}
+            {isPro && PAID_TIERS_ENABLED && <span className="rp-pro-badge">Pro</span>}
           </div>
           <div className={`rp-nav-right ${menuOpen ? 'open' : ''}`}>
             <button className="rp-nav-ghost" onClick={() => { setChatOpen(true); setMenuOpen(false) }}>Ask CVIQ</button>

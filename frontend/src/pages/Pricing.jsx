@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../utils/useAuth'
+import { useAuth, PAID_TIERS_ENABLED } from '../utils/useAuth'
 import cviqLogoBlue from '../assets/cviq-icon-blue.png'
 import cviqLogoWhite from '../assets/cviq-icon-white.png'
 import '../styles/Pricing.css'
@@ -84,7 +84,7 @@ export default function Pricing() {
 
   const handlePlanClick = (planKey) => {
     if (!user) return // guard: ignore clicks before we know auth state
-    if (planKey === 'free') { navigate('/upload'); return }
+    if (planKey === 'free' || !PAID_TIERS_ENABLED) { navigate('/upload'); return }
     const paymentLinks = {
       pro: 'https://buy.stripe.com/00w8wQ4hyaZpbuS62G6kg01',
       'pro-annual': 'https://buy.stripe.com/bJe8wQ29q0kL7eC3Uy6kg00',
@@ -112,6 +112,11 @@ export default function Pricing() {
       </nav>
 
       <div className="pricing-container">
+        {!PAID_TIERS_ENABLED && (
+          <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 10, padding: '14px 20px', marginBottom: 28, textAlign: 'center', fontSize: 15, color: '#1d4ed8' }}>
+            All features are currently free — no subscription needed. Paid plans are coming soon.
+          </div>
+        )}
         <div className="pricing-header">
           <div className="pricing-eyebrow">Pricing</div>
           <h1 className="pricing-h1">Simple, <em>honest</em> pricing</h1>
