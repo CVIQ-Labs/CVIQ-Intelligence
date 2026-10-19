@@ -302,7 +302,7 @@ export default function Upload() {
             <p className="up-dropzone-title">
               {isDragReject ? 'Only .pdf or .docx files' : isDragActive ? 'Drop it here' : 'Drag and drop your CV here'}
             </p>
-            <p className="up-dropzone-sub">or click to browse — .pdf or .docx</p>
+            <p className="up-dropzone-sub">or click to browse (.pdf or .docx)</p>
             <button className="up-btn-choose" type="button">Choose file</button>
           </div>
 
@@ -311,7 +311,7 @@ export default function Upload() {
               <div className="up-file-icon">📎</div>
               <div className="up-file-info">
                 <span className="up-file-name">{file.name}</span>
-                <span className="up-file-size">{(file.size / 1024).toFixed(0)} KB — ready to analyse</span>
+                <span className="up-file-size">{(file.size / 1024).toFixed(0)} KB, ready to analyse</span>
               </div>
               <button className="up-file-remove" onClick={() => setFile(null)} aria-label="Remove file">✕</button>
             </div>

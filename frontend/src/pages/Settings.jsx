@@ -155,7 +155,7 @@ export default function Settings() {
           {!authLoading && !isPro && (
             <div className="settings-upgrade-row">
               <button className="settings-upgrade-btn" onClick={() => navigate('/pricing')}>
-                Upgrade to Pro — £15/mo
+                Upgrade to Pro (£15/mo)
               </button>
             </div>
           )}

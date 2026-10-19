@@ -48,7 +48,7 @@ const PLANS = [
     period: '/yr',
     billed: '£8.33/mo billed annually',
     saving: 'Save 45%',
-    description: 'Everything in Pro, for a full year — for the price of about 6 and a half months.',
+    description: 'Everything in Pro, for a full year. About 6 and a half months worth of Pro.',
     features: [
       'Everything in Pro',
       'AI bullet point rewrites',
@@ -114,7 +114,7 @@ export default function Pricing() {
       <div className="pricing-container">
         {!PAID_TIERS_ENABLED && (
           <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 10, padding: '14px 20px', marginBottom: 28, textAlign: 'center', fontSize: 15, color: '#1d4ed8' }}>
-            All features are currently free — no subscription needed. Paid plans are coming soon.
+            All features are currently free. No subscription needed. Paid plans are coming soon.
           </div>
         )}
         <div className="pricing-header">
