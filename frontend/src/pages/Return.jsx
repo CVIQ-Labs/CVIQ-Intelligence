@@ -18,7 +18,7 @@ export default function Return() {
   // just to set state we can already compute during the initial render.
   const [state, setState] = useState(() => (getInitialSessionId() ? 'loading' : 'error'))
   const [message, setMessage] = useState(() =>
-    getInitialSessionId() ? '' : 'Missing checkout session — please try upgrading again.'
+    getInitialSessionId() ? '' : 'Missing checkout session. Please try upgrading again.'
   )
 
   // The actual async work (asking Stripe about the session) genuinely

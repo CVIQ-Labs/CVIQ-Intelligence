@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Testimonials from '../components/Testimonials'
 import cviqLogoBlue from '../assets/cviq-icon-blue.png'
 import cviqLogoWhite from '../assets/cviq-icon-white.png'
-import { useAuth } from '../utils/useAuth'
+import { useAuth, PAID_TIERS_ENABLED } from '../utils/useAuth'
 import { supabase } from '../utils/supabase'
 import '../styles/App.css'
 import TeamSection from '../components/TeamSection'
@@ -441,82 +441,103 @@ export default function Home() {
 
         {/* ── Pricing ── */}
         <section className="b-section b-pricing reveal" id="pricing">
-          <div className="b-pricing-waitlist-inline">
-            <span>No subscription required to get started.</span>
-            <button onClick={() => navigate(user ? '/upload' : '/signup')}>
-              {user ? 'Analyse my CV →' : 'Create free account →'}
-            </button>
-          </div>
           <div className="b-section-head">
             <div className="b-label">Pricing</div>
-            <h2 className="b-h2">Start free.<br />Upgrade when you're ready.</h2>
+            {PAID_TIERS_ENABLED
+              ? <h2 className="b-h2">Start free.<br />Upgrade when you're ready.</h2>
+              : <h2 className="b-h2">Everything free,<br />for now.</h2>
+            }
           </div>
 
-          <div className="b-pricing-cards">
-            <div className="b-pricing-card reveal">
-              <div className="b-pricing-tier">Free</div>
-              <div className="b-pricing-price">£0<span>/mo</span></div>
-              <div className="b-pricing-desc">For job seekers getting started</div>
-              <ul className="b-pricing-list">
-                <li className="b-pricing-yes">CV score & ATS check</li>
-                <li className="b-pricing-yes">Recruiter assessment</li>
-                <li className="b-pricing-yes">Missing keyword detection</li>
-                <li className="b-pricing-yes">Action plan & recommendations</li>
-                <li className="b-pricing-no">AI bullet rewrites</li>
-                <li className="b-pricing-no">CV editor & download</li>
-              </ul>
-              <button className="b-btn-outline-full" onClick={() => user ? navigate('/upload') : navigate('/signup')}>
-                Get started free
-              </button>
-            </div>
+          {PAID_TIERS_ENABLED ? (
+            <div className="b-pricing-cards">
+              <div className="b-pricing-card reveal">
+                <div className="b-pricing-tier">Free</div>
+                <div className="b-pricing-price">£0<span>/mo</span></div>
+                <div className="b-pricing-desc">For job seekers getting started</div>
+                <ul className="b-pricing-list">
+                  <li className="b-pricing-yes">CV score & ATS check</li>
+                  <li className="b-pricing-yes">Recruiter assessment</li>
+                  <li className="b-pricing-yes">Missing keyword detection</li>
+                  <li className="b-pricing-yes">Action plan & recommendations</li>
+                  <li className="b-pricing-no">AI bullet rewrites</li>
+                  <li className="b-pricing-no">CV editor & download</li>
+                </ul>
+                <button className="b-btn-outline-full" onClick={() => user ? navigate('/upload') : navigate('/signup')}>
+                  Get started free
+                </button>
+              </div>
 
-            <div className="b-pricing-card reveal" style={{ transitionDelay: '0.1s' }}>
-              <div className="b-pricing-tier">Pro</div>
-              <div className="b-pricing-price">£15<span>/mo</span></div>
-              <div className="b-pricing-desc">For long-term users</div>
-              <ul className="b-pricing-list">
-                <li className="b-pricing-yes">Everything in Free</li>
-                <li className="b-pricing-yes">AI bullet point rewrites</li>
-                <li className="b-pricing-yes">Line by line feedback</li>
-                <li className="b-pricing-yes">AI profile summary rewrite</li>
-                <li className="b-pricing-yes">CV eitor with suggestions</li>
-                <li className="b-pricing-yes">Unlimited Ask CVIQ chat</li>
-              </ul>
-              <button className="b-btn-outline-full" onClick={() => {
-                if (user) { navigate('/pricing') }
-                else { try { localStorage.setItem('cviq:intended-plan', 'pro') } catch {
-                  // localStorage may be unavailable (e.g. private browsing) — ignore
-                }; navigate('/signup') }
-              }}>
-                Start Pro - £15/mo →
-              </button>
-            </div>
+              <div className="b-pricing-card reveal" style={{ transitionDelay: '0.1s' }}>
+                <div className="b-pricing-tier">Pro</div>
+                <div className="b-pricing-price">£15<span>/mo</span></div>
+                <div className="b-pricing-desc">For long-term users</div>
+                <ul className="b-pricing-list">
+                  <li className="b-pricing-yes">Everything in Free</li>
+                  <li className="b-pricing-yes">AI bullet point rewrites</li>
+                  <li className="b-pricing-yes">Line-by-line feedback</li>
+                  <li className="b-pricing-yes">AI profile summary rewrite</li>
+                  <li className="b-pricing-yes">CV editor with suggestions</li>
+                  <li className="b-pricing-yes">Unlimited Ask CVIQ chat</li>
+                </ul>
+                <button className="b-btn-outline-full" onClick={() => {
+                  if (user) { navigate('/pricing') }
+                  else { try { localStorage.setItem('cviq:intended-plan', 'pro') } catch {
+                    // localStorage may be unavailable (e.g. private browsing) — ignore
+                  }; navigate('/signup') }
+                }}>
+                  Start Pro - £15/mo →
+                </button>
+              </div>
 
-            <div className="b-pricing-card b-pricing-pro reveal" style={{ transitionDelay: '0.2s' }}>
-              <div className="b-pricing-badge b-pricing-badge-green">Best value</div>
-              <div className="b-pricing-tier">Pro Annual</div>
-              <div className="b-pricing-price">£100<span>/yr</span></div>
-              <div className="b-pricing-billed">£8.33/mo billed annually</div>
-              <div className="b-pricing-saving">Save 45%</div>
-              <div className="b-pricing-desc">Everything in Pro, for a full year.</div>
-              <ul className="b-pricing-list">
-                <li className="b-pricing-yes">Everything in Pro</li>
-                <li className="b-pricing-yes">AI bullet point rewrites</li>
-                <li className="b-pricing-yes">Line by line feedback</li>
-                <li className="b-pricing-yes">AI profile summary rewrite</li>
-                <li className="b-pricing-yes">CV editor with suggestions</li>
-                <li className="b-pricing-yes">Unlimited Ask CVIQ chat</li>
-              </ul>
-              <button className="b-btn-primary-full" onClick={() => {
-                if (user) { navigate('/pricing') }
-                else { try { localStorage.setItem('cviq:intended-plan', 'pro-annual') } catch {
-                  // localStorage may be unavailable (e.g. private browsing) — ignore
-                }; navigate('/signup') }
-              }}>
-                Get Pro Annual - £100/yr →
-              </button>
+              <div className="b-pricing-card b-pricing-pro reveal" style={{ transitionDelay: '0.2s' }}>
+                <div className="b-pricing-badge b-pricing-badge-green">Best value</div>
+                <div className="b-pricing-tier">Pro Annual</div>
+                <div className="b-pricing-price">£100<span>/yr</span></div>
+                <div className="b-pricing-billed">£8.33/mo billed annually</div>
+                <div className="b-pricing-saving">Save 45%</div>
+                <div className="b-pricing-desc">Everything in Pro, for a full year.</div>
+                <ul className="b-pricing-list">
+                  <li className="b-pricing-yes">Everything in Pro</li>
+                  <li className="b-pricing-yes">AI bullet point rewrites</li>
+                  <li className="b-pricing-yes">Line-by-line feedback</li>
+                  <li className="b-pricing-yes">AI profile summary rewrite</li>
+                  <li className="b-pricing-yes">CV editor with suggestions</li>
+                  <li className="b-pricing-yes">Unlimited Ask CVIQ chat</li>
+                </ul>
+                <button className="b-btn-primary-full" onClick={() => {
+                  if (user) { navigate('/pricing') }
+                  else { try { localStorage.setItem('cviq:intended-plan', 'pro-annual') } catch {
+                    // localStorage may be unavailable (e.g. private browsing) — ignore
+                  }; navigate('/signup') }
+                }}>
+                  Get Pro Annual - £100/yr →
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="b-pricing-cards" style={{ justifyContent: 'center' }}>
+              <div className="b-pricing-card b-pricing-pro reveal" style={{ maxWidth: 400 }}>
+                <div className="b-pricing-badge b-pricing-badge-green">Free during early access</div>
+                <div className="b-pricing-tier">All features</div>
+                <div className="b-pricing-price">£0<span>/mo</span></div>
+                <div className="b-pricing-desc">Full access while we grow. No card required.</div>
+                <ul className="b-pricing-list">
+                  <li className="b-pricing-yes">CV score & ATS check</li>
+                  <li className="b-pricing-yes">Recruiter assessment</li>
+                  <li className="b-pricing-yes">Missing keyword detection</li>
+                  <li className="b-pricing-yes">Action plan & recommendations</li>
+                  <li className="b-pricing-yes">AI bullet point rewrites</li>
+                  <li className="b-pricing-yes">Line-by-line feedback</li>
+                  <li className="b-pricing-yes">AI profile summary rewrite</li>
+                  <li className="b-pricing-yes">Ask CVIQ chat</li>
+                </ul>
+                <button className="b-btn-primary-full" onClick={() => user ? navigate('/upload') : navigate('/signup')}>
+                  {user ? 'Analyse my CV →' : 'Get started free →'}
+                </button>
+              </div>
+            </div>
+          )}
         </section>
 
                {/* ── Testimonials ── */}

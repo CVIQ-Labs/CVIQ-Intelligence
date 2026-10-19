@@ -189,7 +189,7 @@ export default function Testimonials() {
       </div>
 
       {loading && <p className="t-status">Loading...</p>}
-      {!loading && total === 0 && <p className="t-status">No testimonials yet — be the first!</p>}
+      {!loading && total === 0 && <p className="t-status">No testimonials yet. Be the first!</p>}
 
       {!loading && total > 0 && !showForm && (
         <div className="t-stage">
@@ -283,7 +283,7 @@ export default function Testimonials() {
         </div>
 
         {loading && <p className="t-status">Loading...</p>}
-        {!loading && total === 0 && <p className="t-status">No testimonials yet — be the first!</p>}
+        {!loading && total === 0 && <p className="t-status">No testimonials yet. Be the first!</p>}
 
         {!loading && total > 0 && (
           <div className="t-stage">

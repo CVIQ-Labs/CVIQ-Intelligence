@@ -65,6 +65,8 @@ async def require_beta_access(user: dict = Depends(require_user)) -> dict:
 
 def get_user_tier(user: Optional[dict]) -> str:
     """Return 'paid' if the user has an active pro subscription, otherwise 'free'."""
+    if not settings.paid_tiers_enabled:
+        return "paid"
     if not user:
         return "free"
     supabase = _get_supabase()
