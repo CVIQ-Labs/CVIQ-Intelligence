@@ -424,3 +424,129 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 @media (max-width: 600px) {
   .signup-plan-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Team section ── */
+.b-team { background: #fff; }
+.b-team-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  max-width: 1120px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+.b-team-card {
+  flex: 0 1 calc((100% - 48px) / 3);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.b-team-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+  border-color: #bfdbfe;
+}
+
+/* Photo panel: real <img> when provided, tinted initial placeholder otherwise */
+.b-team-photo {
+  position: relative;
+  aspect-ratio: 4 / 4.2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, var(--tint-a) 0%, var(--tint-b) 100%);
+  overflow: hidden;
+}
+.b-team-photo::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -20%;
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.55);
+  filter: blur(30px);
+}
+.b-team-photo img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+.b-team-initial {
+  position: relative;
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 96px;
+  line-height: 1;
+  color: var(--tint-ink);
+  opacity: 0.85;
+}
+
+.b-team-body { display: flex; flex-direction: column; padding: 24px 24px 26px; flex: 1; }
+.b-team-role {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #2563eb;
+  margin-bottom: 8px;
+}
+.b-team-name {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+  color: #0a1628;
+  margin: 0 0 10px;
+}
+.b-team-bio { font-size: 14px; line-height: 1.65; color: #64748b; margin: 0 0 20px; flex: 1; }
+.b-team-linkedin {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1d4ed8;
+  text-decoration: none;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: #f8faff;
+  border: 1px solid #dbeafe;
+  transition: all 0.15s;
+}
+.b-team-linkedin:hover,
+.b-team-linkedin:focus-visible { background: #2563eb; color: #fff; border-color: #2563eb; }
+
+/* Dark mode */
+[data-theme="dark"] .b-team { background: #0a0f1a; }
+[data-theme="dark"] .b-team-card { background: #111827; border-color: #1e2d45; }
+[data-theme="dark"] .b-team-card:hover { border-color: #1e3a5f; box-shadow: 0 16px 40px rgba(0,0,0,0.4); }
+[data-theme="dark"] .b-team-photo { background: linear-gradient(160deg, #1a2235 0%, #111827 100%); }
+[data-theme="dark"] .b-team-photo::before { background: rgba(96,165,250,0.12); }
+[data-theme="dark"] .b-team-initial { color: #60a5fa; }
+[data-theme="dark"] .b-team-role { color: #60a5fa; }
+[data-theme="dark"] .b-team-name { color: #f1f5f9; }
+[data-theme="dark"] .b-team-bio { color: #94a3b8; }
+[data-theme="dark"] .b-team-linkedin { background: #1a2235; border-color: #1e2d45; color: #93c5fd; }
+[data-theme="dark"] .b-team-linkedin:hover,
+[data-theme="dark"] .b-team-linkedin:focus-visible { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+
+@media (max-width: 1000px) {
+  .b-team-card { flex-basis: calc((100% - 24px) / 2); }
+}
+@media (max-width: 600px) {
+  .b-team-card { flex-basis: 100%; }
+  .b-team-photo { aspect-ratio: 4 / 3; }
+}
