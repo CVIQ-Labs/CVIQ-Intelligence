@@ -70,8 +70,8 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-demo-dots span:nth-child(1) { background: #fc5753; }
 .b-demo-dots span:nth-child(2) { background: #fdbc40; }
 .b-demo-dots span:nth-child(3) { background: #33c748; }
-.b-demo-url { flex: 1; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 5px 14px; font-size: 12px; color: #9ca3af; text-align: center; max-width: 260px; margin: 0 auto; }
-.b-demo-live { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #16a34a; font-weight: 600; background: #f0fdf4; padding: 5px 14px; border-radius: 100px; border: 1px solid #bbf7d0; white-space: nowrap; }
+.b-demo-url { flex: 1; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 5px 14px; font-size: 12px; color: #64748b; text-align: center; max-width: 260px; margin: 0 auto; }
+.b-demo-live { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #15803d; font-weight: 600; background: #f0fdf4; padding: 5px 14px; border-radius: 100px; border: 1px solid #bbf7d0; white-space: nowrap; }
 .b-demo-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #16a34a; animation: b-pulse 2s infinite; }
 .b-demo-hero-band { padding: 20px 28px 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; border-bottom: 1px solid #f1f5f9; background: #fff; }
 .b-demo-hero-eyebrow { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: #2563eb; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
@@ -83,21 +83,21 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-demo-scores-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 16px; padding: 20px 28px; }
 .b-demo-score-hero { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; }
 .b-demo-score-cell { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; }
-.b-demo-score-label { font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+.b-demo-score-label { font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
 .b-demo-score-num { font-size: 40px; font-weight: 800; letter-spacing: -2px; line-height: 1; margin-bottom: 4px; }
-.b-demo-score-denom { font-size: 16px; color: #94a3b8; font-weight: 400; letter-spacing: 0; }
+.b-demo-score-denom { font-size: 16px; color: #64748b; font-weight: 400; letter-spacing: 0; }
 .b-demo-score-sm { font-size: 26px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
 .b-demo-track { height: 5px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-top: 10px; }
 .b-demo-fill { height: 100%; border-radius: 3px; transition: width 1.4s cubic-bezier(0.16,1,0.3,1); }
 .b-demo-lower { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 0 28px 24px; }
 .b-demo-keywords { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; }
-.b-demo-kw-label { font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+.b-demo-kw-label { font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
 .b-demo-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .b-demo-tag { background: #eff6ff; color: #2563eb; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; border: 1px solid #bfdbfe; }
 .b-demo-bullet-wrap { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
-.b-demo-bullet-label { font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
-.b-demo-before { font-size: 12px; color: #94a3b8; line-height: 1.5; border-left: 2px solid #e2e8f0; padding-left: 10px; }
-.b-demo-arrow { font-size: 11px; color: #94a3b8; text-align: center; font-weight: 500; }
+.b-demo-bullet-label { font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+.b-demo-before { font-size: 12px; color: #64748b; line-height: 1.5; border-left: 2px solid #e2e8f0; padding-left: 10px; }
+.b-demo-arrow { font-size: 11px; color: #64748b; text-align: center; font-weight: 500; }
 .b-demo-after { font-size: 12px; color: #16a34a; line-height: 1.5; border-left: 2px solid #16a34a; padding-left: 10px; font-weight: 500; }
 
 /* ── Section shared ──────────────────────────────────── */
@@ -124,7 +124,7 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-cv-name { font-size: 18px; font-weight: 800; color: #0a1628; letter-spacing: -0.5px; margin-bottom: 2px; }
 .b-cv-role { font-size: 13px; color: #6b7280; font-weight: 500; margin-bottom: 14px; }
 .b-cv-divider { height: 1px; background: #f1f5f9; margin: 12px 0; }
-.b-cv-section-title { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+.b-cv-section-title { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
 .b-cv-company { font-size: 12px; font-weight: 700; color: #374151; margin-bottom: 8px; }
 .b-cv-bullet { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; line-height: 1.6; margin-bottom: 7px; }
 .b-cv-bullet-bad { color: #6b7280; }
@@ -281,8 +281,8 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-footer-links { display: flex; gap: 28px; }
 .b-footer-links a { font-size: 13px; color: #64748b; text-decoration: none; transition: color 0.15s; }
 .b-footer-links a:hover { color: #0a1628; }
-.b-footer-copy { font-size: 12px; color: #94a3b8; }
-.b-footer-copy a { color: #94a3b8; text-decoration: underline; text-underline-offset: 2px; transition: color 0.15s; }
+.b-footer-copy { font-size: 12px; color: #64748b; }
+.b-footer-copy a { color: #64748b; text-decoration: underline; text-underline-offset: 2px; transition: color 0.15s; }
 .b-footer-copy a:hover { color: #0a1628; }
 [data-theme="dark"] .b-footer-copy a:hover { color: #f1f5f9; }
 

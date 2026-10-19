@@ -322,7 +322,7 @@ export default function Upload() {
             <textarea
               id="job-desc"
               className="up-textarea"
-              placeholder="Paste the full job description here — the more detail the better..."
+              placeholder="Paste the full job description here, the more detail the better..."
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
               rows={9}

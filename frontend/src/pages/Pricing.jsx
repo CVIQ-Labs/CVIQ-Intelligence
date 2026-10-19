@@ -32,7 +32,7 @@ const PLANS = [
     features: [
       'Everything in Free',
       'AI bullet point rewrites',
-      'Line-by-line feedback',
+      'Line by line feedback',
       'AI profile summary rewrite',
       'CV editor with inline suggestions',
       'Unlimited Ask CVIQ chat',
@@ -52,7 +52,7 @@ const PLANS = [
     features: [
       'Everything in Pro',
       'AI bullet point rewrites',
-      'Line-by-line feedback',
+      'Line by line feedback',
       'AI profile summary rewrite',
       'CV editor with inline suggestions',
       'Unlimited Ask CVIQ chat',

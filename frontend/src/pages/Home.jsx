@@ -404,7 +404,7 @@ export default function Home() {
               <div className="b-hiw-text">
                 <div className="b-hiw-step">Step 03</div>
                 <h3 className="b-hiw-title">Get your review</h3>
-                <p className="b-hiw-body">Scores, keyword gaps, strengths, weaknesses, and AI-rewritten bullets in seconds.</p>
+                <p className="b-hiw-body">Scores, keyword gaps, strengths, weaknesses, and AI rewritten bullets in seconds.</p>
               </div>
             </div>
 
@@ -546,7 +546,7 @@ export default function Home() {
         <section className="b-cta reveal">
           <div className="b-blob b-blob-centre" />
           <h2 className="b-cta-h2">Stop guessing.<br /><em>Start getting interviews.</em></h2>
-          <p className="b-cta-sub">Upload your CV and get a full AI-powered review in under 60 seconds.</p>
+          <p className="b-cta-sub">Upload your CV and get a full AI powered review in under 60 seconds.</p>
           <button className="b-btn-primary" onClick={() => navigate('/upload')}>
             Analyse my CV for free →
           </button>
