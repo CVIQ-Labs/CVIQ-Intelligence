@@ -6,6 +6,7 @@ import cviqLogoWhite from '../assets/cviq-icon-white.png'
 import { useAuth, PAID_TIERS_ENABLED } from '../utils/useAuth'
 import { supabase } from '../utils/supabase'
 import '../styles/App.css'
+import TeamSection from '../components/TeamSection'
 
 
 function useCountUp(from, to, duration, start) {
@@ -539,10 +540,14 @@ export default function Home() {
           )}
         </section>
 
-        {/* ── Testimonials ── */}
-        <Testimonials />
-
-        {/* ── Final CTA ── */}
+               {/* ── Testimonials ── */}
+               <Testimonials />
+               
+               {/* ── Team ── */}
+               <TeamSection />
+               
+               {/* ── Final CTA ── */}
+               
         <section className="b-cta reveal">
           <div className="b-blob b-blob-centre" />
           <h2 className="b-cta-h2">Stop guessing.<br /><em>Start getting interviews.</em></h2>
