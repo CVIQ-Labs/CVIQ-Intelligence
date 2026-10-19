@@ -32,6 +32,10 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434/v1"
     ollama_model: str = "llama3.1:8b"
 
+    # Set PAID_TIERS_ENABLED=true in .env to re-enable tier gating.
+    # When false, all users receive the paid tier regardless of subscription.
+    paid_tiers_enabled: bool = False
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
