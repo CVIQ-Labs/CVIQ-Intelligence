@@ -113,7 +113,7 @@ export function Sidebar({ result, cvFile, onOpenCV, onOpenChat, openCat, setOpen
 
 export function Hero({ result }) {
   const rc = scoreColor(result.recruiter_score, 10)
-  const band = result.recruiter_score >= 8 ? 'Likely to be shortlisted' : result.recruiter_score >= 5 ? 'Competitive — could be stronger' : 'Significant improvements needed'
+  const band = result.recruiter_score >= 8 ? 'Likely to be shortlisted' : result.recruiter_score >= 5 ? 'Competitive, could be stronger' : 'Significant improvements needed'
   return (
     <motion.div className="hero" variants={fade}>
       <div className="hero-top">

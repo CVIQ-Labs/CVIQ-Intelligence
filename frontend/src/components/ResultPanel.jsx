@@ -42,7 +42,7 @@ export default function ResultPanel({ cvText, jobDescription, open, onClose }) {
           <input className="chat-input" placeholder="Ask your recruiter..." value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&send()} disabled={loading}/>
           <button className="chat-send" onClick={send} disabled={loading||!input.trim()}>Send</button>
         </div>
-        <div className="chat-note">Responses take 10–20 seconds — running on a local model</div>
+        <div className="chat-note">Responses take 10–20 seconds (running on a local model)</div>
       </div>
     </div>
   )

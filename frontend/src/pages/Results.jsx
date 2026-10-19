@@ -10,7 +10,7 @@ import { ActionPlan, RecruiterView, SW, LineFeedback, Summary, ATSDeep } from '.
 import ResultPanel from '../components/ResultPanel'
 import { stagger } from '../utils/animations'
 import { extractCvText, filterTrulyMissing } from '../utils/filterKeywords'
-import { useAuth } from '../utils/useAuth'
+import { useAuth, PAID_TIERS_ENABLED } from '../utils/useAuth'
 import { supabase } from '../utils/supabase'
 import { submitFeedback } from '../api/api'
 import cviqLogoBlue from '../assets/cviq-icon-blue.png'
@@ -43,7 +43,7 @@ function ProGate({ feature }) {
         }
         navigate('/pricing')
       }}>
-        Upgrade to Pro — £15/mo
+        Upgrade to Pro (£15/mo)
       </button>
     </div>
   )
@@ -64,7 +64,7 @@ function FreeBanner({ isPro, navigate }) {
   if (isPro) return null
   return (
     <div className="free-tier-banner">
-      <span>You're on the free plan some features are locked.</span>
+      <span>You're on the free plan. Some features are locked.</span>
       <button onClick={() => {
         try { localStorage.setItem('cviq:upgrade-return', '/results') } catch {
           // localStorage may be unavailable (e.g. private browsing) — ignore
@@ -214,7 +214,7 @@ export default function Results() {
               <img src={cviqLogoBlue} alt="CVIQ" className="rp-logo-img cviq-logo-light" width="40" height="40" />
               <img src={cviqLogoWhite} alt="CVIQ" className="rp-logo-img cviq-logo-dark" width="40" height="40" />
             </div>
-            {isPro && <span className="rp-pro-badge">Pro</span>}
+            {isPro && PAID_TIERS_ENABLED && <span className="rp-pro-badge">Pro</span>}
           </div>
           <div className={`rp-nav-right ${menuOpen ? 'open' : ''}`}>
             <button className="rp-nav-ghost" onClick={() => { setChatOpen(true); setMenuOpen(false) }}>Ask CVIQ</button>

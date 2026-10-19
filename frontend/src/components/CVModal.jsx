@@ -529,7 +529,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
     }
     if (!match) {
       setUndoStack(prev => prev.slice(0, -1))
-      alert("Couldn't find that exact bullet — it may have been edited already.")
+      alert("Couldn't find that exact bullet. It may have been edited already.")
       return
     }
     const escaped = bullet.original.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+')
@@ -539,7 +539,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
       // This can happen when PDF text extraction produces different whitespace
       // or Unicode characters than the backend parser. Bail out safely.
       setUndoStack(prev => prev.slice(0, -1))
-      alert("Couldn't apply the fix precisely — please copy the suggestion and edit manually.")
+      alert("Couldn't apply the fix precisely. Please copy the suggestion and edit manually.")
       return
     }
     match.textContent = match.textContent.replace(re, bullet.improved)
@@ -643,7 +643,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
         <div className="cv-modal-header">
           <div className="cv-modal-title-wrap">
             <span className="cv-modal-filename">{fileName}</span>
-            {dirty && <span className="cv-dirty-dot" title="Unsaved changes — auto-saving" />}
+            {dirty && <span className="cv-dirty-dot" title="Unsaved changes, auto-saving" />}
             {restoredMsg && <span className="cv-restored-msg">✓ Version restored</span>}
           </div>
           <div className="cv-modal-header-actions">
@@ -689,7 +689,7 @@ function CVModal({ fileBase64, fileType, fileName, onClose, missingKeywords = []
                 {weakBullets.length > 0 && (
                   <div className="cv-weak-hint">
                     <span className="cv-weak-hint-dot" />
-                    Highlighted lines have suggestions — click to improve them
+                    Highlighted lines have suggestions. Click to improve them.
                   </div>
                 )}
 
