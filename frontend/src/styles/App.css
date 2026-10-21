@@ -548,5 +548,31 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 }
 @media (max-width: 600px) {
   .b-team-card { flex-basis: 100%; }
-  .b-team-photo { aspect-ratio: 4 / 3; }
+  .b-team-photo { aspect-ratio: 1 / 1; }
 }
+/* ── Team photos: blue/grey until hovered ──
+   A blue-to-slate layer sits over each photo using the "color" blend mode,
+   which keeps the photo's light and dark detail but swaps its colours for
+   the layer's. It fades out when the card is hovered or keyboard-focused. */
+   .b-team-photo { isolation: isolate; }
+   .b-team-photo.has-photo::after {
+     content: '';
+     position: absolute;
+     inset: 0;
+     background: linear-gradient(160deg, #2563eb 0%, #475569 100%);
+     mix-blend-mode: color;
+     opacity: 0.75;
+     pointer-events: none;
+     transition: opacity 0.45s ease;
+   }
+   .b-team-card:hover .b-team-photo.has-photo::after,
+   .b-team-card:focus-within .b-team-photo.has-photo::after { opacity: 0; }
+   
+   /* Touch screens have no hover, so show the full-colour photo there */
+   @media (hover: none) {
+     .b-team-photo.has-photo::after { opacity: 0; }
+   }
+   
+   @media (prefers-reduced-motion: reduce) {
+     .b-team-photo.has-photo::after { transition: none; }
+   }
