@@ -1,7 +1,7 @@
 .ob-page { background: #fff; min-height: 100vh; display: flex; flex-direction: column; font-family: 'Inter', -apple-system, sans-serif; color: #0a1628; -webkit-font-smoothing: antialiased; }
 .ob-nav-inner { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 20px 40px; }
 .ob-logo { cursor: pointer; display: flex; align-items: center; }
-.ob-skip { background: none; border: none; color: #9ca3af; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: color 0.15s; }
+.ob-skip { background: none; border: none; color: #64748b; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: color 0.15s; }
 .ob-skip:hover { color: #374151; }
 
 .ob-container { flex: 1; max-width: 640px; margin: 0 auto; padding: 40px 24px 60px; width: 100%; }
@@ -12,10 +12,10 @@
 .ob-progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 999px; transition: width 0.4s cubic-bezier(0.16,1,0.3,1); }
 .ob-progress-steps { display: flex; justify-content: space-between; }
 .ob-progress-step { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
-.ob-progress-dot { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; background: #f1f5f9; color: #94a3b8; border: 1.5px solid #e5e7eb; transition: all 0.2s ease; }
+.ob-progress-dot { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; background: #f1f5f9; color: #64748b; border: 1.5px solid #e5e7eb; transition: all 0.2s ease; }
 .ob-progress-step.active .ob-progress-dot { background: #2563eb; border-color: #2563eb; color: #fff; box-shadow: 0 0 0 4px rgba(37,99,235,0.12); }
 .ob-progress-step.done .ob-progress-dot { background: #16a34a; border-color: #16a34a; color: #fff; }
-.ob-progress-label { font-size: 11.5px; font-weight: 600; color: #9ca3af; }
+.ob-progress-label { font-size: 11.5px; font-weight: 600; color: #64748b; }
 .ob-progress-step.active .ob-progress-label { color: #0a1628; }
 .ob-progress-step.done .ob-progress-label { color: #16a34a; }
 
@@ -32,7 +32,7 @@
 .ob-welcome-badge { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px 20px; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 110px; }
 .ob-welcome-badge-green { background: #f0fdf4; border-color: #bbf7d0; }
 .ob-welcome-badge-num { font-size: 24px; font-weight: 800; color: #0a1628; }
-.ob-welcome-badge-num span { font-size: 13px; font-weight: 500; color: #94a3b8; }
+.ob-welcome-badge-num span { font-size: 13px; font-weight: 500; color: #64748b; }
 .ob-welcome-badge-label { font-size: 11px; color: #64748b; font-weight: 600; }
 .ob-welcome-arrow { font-size: 20px; color: #cbd5e1; }
 
