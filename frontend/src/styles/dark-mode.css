@@ -578,3 +578,29 @@
     color: #f1f5f9;
   }
   [data-theme="dark"] .chat-note { color: #475569; }
+
+    /* ── Onboarding ── */
+    [data-theme="dark"] .ob-page { background: #0a0f1a; color: #e2e8f0; }
+    [data-theme="dark"] .ob-skip { color: #94a3b8; }
+    [data-theme="dark"] .ob-skip:hover { color: #f1f5f9; }
+    [data-theme="dark"] .ob-progress-track { background: #1a2235; }
+    [data-theme="dark"] .ob-progress-dot { background: #1a2235; border-color: #1e2d45; color: #94a3b8; }
+    [data-theme="dark"] .ob-progress-step.active .ob-progress-dot { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+    [data-theme="dark"] .ob-progress-step.done .ob-progress-dot { background: #16a34a; border-color: #16a34a; color: #fff; }
+    [data-theme="dark"] .ob-progress-label { color: #94a3b8; }
+    [data-theme="dark"] .ob-progress-step.active .ob-progress-label { color: #f1f5f9; }
+    [data-theme="dark"] .ob-progress-step.done .ob-progress-label { color: #4ade80; }
+    [data-theme="dark"] .ob-eyebrow { color: #60a5fa; }
+    [data-theme="dark"] .ob-h1 { color: #f1f5f9; }
+    [data-theme="dark"] .ob-sub { color: #94a3b8; }
+    [data-theme="dark"] .ob-welcome-badge { background: #111827; border-color: #1e2d45; }
+    [data-theme="dark"] .ob-welcome-badge-green { background: #052e16; border-color: #166534; }
+    [data-theme="dark"] .ob-welcome-badge-num { color: #f1f5f9; }
+    [data-theme="dark"] .ob-welcome-badge-num span,
+    [data-theme="dark"] .ob-welcome-badge-label { color: #94a3b8; }
+    [data-theme="dark"] .ob-welcome-arrow { color: #475569; }
+    [data-theme="dark"] .ob-expect-item { background: #111827; border-color: #1e2d45; }
+    [data-theme="dark"] .ob-expect-title,
+    [data-theme="dark"] .ob-tip-title { color: #f1f5f9; }
+    [data-theme="dark"] .ob-expect-body,
+    [data-theme="dark"] .ob-tip-body { color: #94a3b8; }
